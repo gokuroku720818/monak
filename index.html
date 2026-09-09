@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 8.0 // BASE DRAG DOMINATION</title>
+<title>FRONTIER FLUX 9.0 // SUPPLY LINE TACTICS</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -59,7 +59,7 @@ canvas#game{display:block;width:100%;height:100%}
   z-index:50;padding:16px
 }
 .select-box{
-  width:min(860px,96vw);max-height:92vh;overflow-y:auto;
+  width:min(880px,96vw);max-height:92vh;overflow-y:auto;
   background:rgba(6,16,24,0.96);border:1px solid #48788a;
   border-radius:16px;padding:24px;box-shadow:0 0 60px rgba(0,0,0,0.9);
   text-align:center
@@ -67,7 +67,7 @@ canvas#game{display:block;width:100%;height:100%}
 .select-box h1{margin:0 0 4px;font-size:26px;letter-spacing:2px}
 .select-box p.sub{color:#8fc0d1;font-size:12px;margin:0 0 16px}
 .class-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:10px;margin-bottom:18px
 }
 .class-card{
@@ -81,7 +81,7 @@ canvas#game{display:block;width:100%;height:100%}
 .class-card p{margin:0;font-size:11px;color:#a6c5d1;line-height:1.45}
 .class-card .stats{font-size:10px;color:#709ca8;margin-top:6px;padding-top:6px;border-top:1px solid #203945}
 .btn-start-game{
-  padding:12px 32px;font-size:15px;font-weight:bold;
+  padding:12px 34px;font-size:15px;font-weight:bold;
   background:#184252;color:#fff;border:1px solid #71e5ff;
   border-radius:8px;cursor:pointer
 }
@@ -116,55 +116,55 @@ canvas#game{display:block;width:100%;height:100%}
 <!-- CLASS SELECT MODAL -->
 <div id="select-modal">
   <div class="select-box">
-    <h1>FRONTIER FLUX // DOMINATION WAR</h1>
-    <p class="sub">아군 기지를 누른 채 다른 기지나 거점으로 드래그하여 병력을 출격시키십시오.</p>
+    <h1>FRONTIER FLUX // SUPPLY ROUTE WAR</h1>
+    <p class="sub">아군 기지에서 다른 거점으로 선을 연결하면 생산된 유닛이 끝없이 행렬을 지어 진격합니다.</p>
     
     <div class="class-grid">
       <div class="class-card active" onclick="pickClass('Mage')">
-        <h3 style="color:#38bdf8">마법사 (Mage) <span>광역 비전 폭격</span></h3>
-        <p>비전 마법봉과 고깔 모자. 원거리 착탄 시 스플래시 폭발 피해를 일으킵니다.</p>
-        <div class="stats">사거리: 6.5 | 광역 폭발: 반경 2.5</div>
+        <h3 style="color:#38bdf8">마법사 (Mage) <span>비전 스태프 & 광역</span></h3>
+        <p>뾰족 고깔모자와 빛나는 룬 완드. 착탄 지점에 넓은 비전 마법 폭발을 일으킵니다.</p>
+        <div class="stats">특징: 광역 스플래시 폭발 | 사거리: 6.5</div>
       </div>
       <div class="class-card" onclick="pickClass('Knight')">
-        <h3 style="color:#ef4444">기사 (Knight) <span>철벽 중장갑</span></h3>
-        <p>십자 투구와 거대한 타워 실드. 높은 체력과 방어력으로 전선을 돌파합니다.</p>
-        <div class="stats">사거리: 1.8 | 방어력: 피해 35% 경감</div>
+        <h3 style="color:#ef4444">기사 (Knight) <span>철벽 타워실드 & 검</span></h3>
+        <p>십자 풀헬름 투구와 대형 카이트 실드. 압도적인 방어력으로 협곡을 틀어막습니다.</p>
+        <div class="stats">특징: 피해 35% 감소 | 체력: 최상</div>
       </div>
       <div class="class-card" onclick="pickClass('Ranger')">
-        <h3 style="color:#22c55e">레인저 (Ranger) <span>초장거리 저격</span></h3>
-        <p>녹색 깃털 후드와 컴파운드 롱보우. 적의 사거리 밖에서 정밀 저격합니다.</p>
-        <div class="stats">사거리: 9.5 | 이동속도: 최상</div>
+        <h3 style="color:#22c55e">레인저 (Ranger) <span>깃털 후드 & 롱보우</span></h3>
+        <p>녹색 깃털 후드와 컴파운드 롱보우. 장애물 너머에서 초장거리 저격을 퍼붓습니다.</p>
+        <div class="stats">특징: 초장거리 저격 | 사거리: 9.5</div>
       </div>
       <div class="class-card" onclick="pickClass('Summoner')">
-        <h3 style="color:#a855f7">서머너 (Summoner) <span>흡혈 암흑 마탄</span></h3>
-        <p>암흑 뿔 투구와 부유 마도서. 공격 시 입힌 피해의 일부를 체력으로 흡혈합니다.</p>
-        <div class="stats">사거리: 6.0 | 피해 흡혈: 35%</div>
+        <h3 style="color:#a855f7">서머너 (Summoner) <span>암흑 뿔 & 부유 마도서</span></h3>
+        <p>흑마도 뿔 투구와 공중에 떠다니는 마도서. 적을 타격할 때마다 체력을 흡혈합니다.</p>
+        <div class="stats">특징: 가한 피해 35% 흡혈 | 사거리: 6.0</div>
       </div>
       <div class="class-card" onclick="pickClass('Barbarian')">
-        <h3 style="color:#f97316">바바리안 (Barbarian) <span>근접 양날 도끼</span></h3>
-        <p>야만 전사의 상체와 초대형 양날 배틀액스. 막강한 근접 파괴력을 지닙니다.</p>
-        <div class="stats">사거리: 1.8 | 공격력: 최상</div>
+        <h3 style="color:#f97316">바바리안 (Barbarian) <span>양날 대형 배틀액스</span></h3>
+        <p>야만 전사의 헝클어진 머리칼과 거대한 양날 도끼. 가공할 근접 파괴력을 자랑합니다.</p>
+        <div class="stats">특징: 파괴적 근접 공격력 | 사거리: 2.0</div>
       </div>
       <div class="class-card" onclick="pickClass('Gunner')">
-        <h3 style="color:#eab308">거너 (Gunner) <span>회전식 개틀링</span></h3>
-        <p>전술 바이저 고글과 3연장 중화기. 빠른 연사속도로 탄막을 퍼붓습니다.</p>
-        <div class="stats">사거리: 7.0 | 초고속 연사 점사</div>
+        <h3 style="color:#eab308">거너 (Gunner) <span>바이저 & 회전 개틀링</span></h3>
+        <p>붉은 전술 바이저와 3연장 회전 총열. 쉴 새 없이 탄막을 쏟아붓습니다.</p>
+        <div class="stats">특징: 초고속 3연발 연사 | 사거리: 7.0</div>
       </div>
     </div>
 
-    <button class="btn-start-game" onclick="startGame()">출진 (START MISSION)</button>
+    <button class="btn-start-game" onclick="startGame()">전장 출진 (START MISSION)</button>
   </div>
 </div>
 
 <div id="top">
   <div class="badge">MY CLASS: <b id="myClassTitle" style="color:#38bdf8">MAGE</b></div>
   <div class="badge">TOTAL UNITS: <b id="army">0</b></div>
-  <div class="badge">MY BASES: <b id="bases">1</b></div>
-  <div class="badge">SURVIVORS: <b id="alive">6/6</b></div>
+  <div class="badge">BASES: <b id="bases">1</b></div>
+  <div class="badge">ALIVE: <b id="alive">6/6</b></div>
   <div class="badge">TIME: <b id="time">10:00</b></div>
 </div>
 
-<div id="directive-bar">아군 기지를 누른 채 다른 기지나 거점으로 드래그하여 병력을 보내세요!</div>
+<div id="guide-bar">기지를 누른 채 다른 기지로 드래그해 보급선을 뚫으세요! (빈 곳 드래그: 맵 이동)</div>
 <div id="toast"></div>
 
 <div id="result">
@@ -190,20 +190,20 @@ function initAudio() {
   if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
 }
 
-function sfxLaunch() {
+function sfxLink() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = "sine";
-  osc.frequency.setValueAtTime(220, t);
-  osc.frequency.exponentialRampToValueAtTime(520, t + 0.18);
-  gain.gain.setValueAtTime(0.2, t);
-  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.18);
+  osc.frequency.setValueAtTime(330, t);
+  osc.frequency.exponentialRampToValueAtTime(660, t + 0.15);
+  gain.gain.setValueAtTime(0.25, t);
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
   osc.connect(gain);
   gain.connect(audioCtx.destination);
   osc.start(t);
-  osc.stop(t + 0.19);
+  osc.stop(t + 0.16);
 }
 
 function sfxAttack(job) {
@@ -281,9 +281,9 @@ const X = C.getContext("2d");
 const MC = document.getElementById("minimap");
 const MX = MC.getContext("2d");
 
-const W = 200, H = 120;
+const W = 220, H = 130;
 let tile = 10;
-let camX = 100, camY = 60;
+let camX = 110, camY = 65;
 let mission = 600;
 let uid = 1;
 let gameOver = false;
@@ -291,6 +291,7 @@ let gameStarted = false;
 
 const units = [];
 const bases = [];
+const obstacles = []; // 통과 불가 산악/협곡 지형
 const particles = [];
 const projectiles = [];
 const explosions = [];
@@ -299,12 +300,12 @@ let playerChoice = "Mage";
 const ALL_JOBS = ["Mage", "Knight", "Ranger", "Summoner", "Barbarian", "Gunner"];
 
 const FACTIONS = [
-  { id: 0, name: "PLAYER",   job: "Mage",      color: "#38bdf8", sub: "#bae6fd", x: 30,  y: 30 },
-  { id: 1, name: "RED",      job: "Knight",    color: "#ef4444", sub: "#fecaca", x: 100, y: 20 },
-  { id: 2, name: "GREEN",    job: "Ranger",    color: "#22c55e", sub: "#bbf7d0", x: 170, y: 30 },
-  { id: 3, name: "PURPLE",   job: "Summoner",  color: "#a855f7", sub: "#f3e8ff", x: 170, y: 90 },
-  { id: 4, name: "ORANGE",   job: "Barbarian", color: "#f97316", sub: "#ffedd5", x: 100, y: 100 },
-  { id: 5, name: "YELLOW",   job: "Gunner",    color: "#eab308", sub: "#fef08a", x: 30,  y: 90 }
+  { id: 0, name: "PLAYER",   job: "Mage",      color: "#38bdf8", sub: "#bae6fd", x: 35,  y: 35 },
+  { id: 1, name: "RED",      job: "Knight",    color: "#ef4444", sub: "#fecaca", x: 110, y: 22 },
+  { id: 2, name: "GREEN",    job: "Ranger",    color: "#22c55e", sub: "#bbf7d0", x: 185, y: 35 },
+  { id: 3, name: "PURPLE",   job: "Summoner",  color: "#a855f7", sub: "#f3e8ff", x: 185, y: 95 },
+  { id: 4, name: "ORANGE",   job: "Barbarian", color: "#f97316", sub: "#ffedd5", x: 110, y: 108 },
+  { id: 5, name: "YELLOW",   job: "Gunner",    color: "#eab308", sub: "#fef08a", x: 35,  y: 95 }
 ];
 
 const JOB_SPECS = {
@@ -342,7 +343,7 @@ function startGame() {
 function resize() {
   C.width = innerWidth;
   C.height = innerHeight;
-  tile = Math.max(5, Math.min(innerWidth / 110, innerHeight / 65));
+  tile = Math.max(5, Math.min(innerWidth / 115, innerHeight / 70));
 }
 addEventListener("resize", resize);
 resize();
@@ -358,12 +359,72 @@ function toast(t) {
   el.textContent = t;
   el.style.opacity = "1";
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.style.opacity = "0", 1400);
+  el._t = setTimeout(() => el.style.opacity = "0", 1500);
 }
 
 /* =========================================================
-   WORLD INIT
+   TERRAIN & WORLD INITIALIZATION
 ========================================================= */
+function initWorld() {
+  units.length = 0;
+  bases.length = 0;
+  obstacles.length = 0;
+  particles.length = 0;
+  projectiles.length = 0;
+  explosions.length = 0;
+
+  mission = 600;
+  uid = 1;
+  gameOver = false;
+  document.getElementById("result").style.display = "none";
+
+  // 1. 산악 장애물 및 좁은 협곡(Chokepoints) 생성
+  // 중앙 십자형 암석 산맥 & 회랑
+  obstacles.push({ x: 95, y: 50, w: 30, h: 6, label: "암석 산맥" });
+  obstacles.push({ x: 95, y: 74, w: 30, h: 6, label: "암석 산맥" });
+  obstacles.push({ x: 70, y: 55, w: 8, h: 20, label: "서부 협곡벽" });
+  obstacles.push({ x: 142, y: 55, w: 8, h: 20, label: "동부 협곡벽" });
+
+  // 2. 6개 진영 본진 코어
+  FACTIONS.forEach(f => {
+    bases.push({
+      id: uid++,
+      type: "CORE",
+      team: f.id,
+      x: f.x, y: f.y,
+      hp: 10000, maxHp: 10000,
+      r: 9.0,
+      supplyTarget: null // 연결된 보급선 대상 기지
+    });
+    for (let i = 0; i < 6; i++) {
+      addUnit(f.id, f.x + rand(-3, 3), f.y + rand(-3, 3), 1);
+    }
+  });
+
+  // 3. 12개 중립 전략 거점 (협곡 길목에 배치)
+  const neutralPositions = [
+    [70, 35], [150, 35], [110, 42],
+    [55, 65], [110, 65], [165, 65],
+    [70, 95], [150, 95], [110, 88],
+    [85, 52], [135, 52], [110, 118]
+  ];
+
+  neutralPositions.forEach(p => {
+    bases.push({
+      id: uid++,
+      type: "OUTPOST",
+      team: -1,
+      x: p[0], y: p[1],
+      hp: 3500, maxHp: 3500,
+      r: 7.2,
+      supplyTarget: null
+    });
+  });
+
+  camX = FACTIONS[0].x;
+  camY = FACTIONS[0].y;
+}
+
 function addUnit(team, x, y, tier = 1, targetBase = null) {
   const f = FACTIONS[team];
   const s = JOB_SPECS[f.job];
@@ -382,75 +443,25 @@ function addUnit(team, x, y, tier = 1, targetBase = null) {
     rng: s.rng + (tier - 1) * 0.5,
     heading: Math.random() * Math.PI * 2,
     cd: Math.random() * 0.4,
-    targetBase // 출격 목표 기지
+    targetBase
   });
-}
-
-function initWorld() {
-  units.length = 0;
-  bases.length = 0;
-  particles.length = 0;
-  projectiles.length = 0;
-  explosions.length = 0;
-
-  mission = 600;
-  uid = 1;
-  gameOver = false;
-  document.getElementById("result").style.display = "none";
-
-  // 6개 진영 본진 코어
-  FACTIONS.forEach(f => {
-    bases.push({
-      id: uid++,
-      type: "CORE",
-      team: f.id,
-      x: f.x, y: f.y,
-      hp: 10000, maxHp: 10000,
-      r: 8.5
-    });
-    for (let i = 0; i < 6; i++) {
-      addUnit(f.id, f.x + rand(-3, 3), f.y + rand(-3, 3), 1);
-    }
-  });
-
-  // 12개 중립 거점 섹터
-  const neutralPositions = [
-    [65, 30], [135, 30], [100, 45],
-    [50, 60], [100, 60], [150, 60],
-    [65, 90], [135, 90], [100, 75],
-    [70, 45], [130, 45], [100, 105]
-  ];
-
-  neutralPositions.forEach(p => {
-    bases.push({
-      id: uid++,
-      type: "OUTPOST",
-      team: -1, // 중립
-      x: p[0], y: p[1],
-      hp: 3500, maxHp: 3500,
-      r: 7.0
-    });
-  });
-
-  // 시작 카메라: 플레이어 본진 포커스
-  camX = FACTIONS[0].x;
-  camY = FACTIONS[0].y;
 }
 
 /* =========================================================
-   PRODUCTION & 10-UNIT 5-TIER MERGE
+   PRODUCTION & SUPPLY LINE ROUTING
 ========================================================= */
 let prodClock = 0;
 
 function handleProduction(dt) {
-  // 기지 1개당 1초마다 1마리씩 자동 생산 (10초에 10마리)
+  // 기지 1개당 1초에 1마리씩 자동 생산 (10초당 10마리)
   prodClock += dt;
   if (prodClock < 1.0) return;
   prodClock = 0;
 
   for (const b of bases) {
     if (b.team >= 0) {
-      addUnit(b.team, b.x + rand(-3.5, 3.5), b.y + rand(-3.5, 3.5), 1, null);
+      // 기지에 보급선이 이어져 있다면, 생산된 유닛이 즉시 보급선 대상 기지로 출격
+      addUnit(b.team, b.x + rand(-3.5, 3.5), b.y + rand(-3.5, 3.5), 1, b.supplyTarget);
     }
   }
 }
@@ -458,7 +469,6 @@ function handleProduction(dt) {
 function handleAutoMerge() {
   for (let team = 0; team < 6; team++) {
     for (let tier = 1; tier <= 4; tier++) {
-      // 기지에 주둔 중이거나 서로 뭉쳐 있는 유닛들
       const match = units.filter(u => u.team === team && u.tier === tier && u.hp > 0);
       if (match.length >= 10) {
         for (let i = 0; i < match.length; i++) {
@@ -496,11 +506,11 @@ function handleAutoMerge() {
 }
 
 /* =========================================================
-   DRAG-TO-SEND BASE MECHANISM (점령전 핵심 조작)
+   DRAG-TO-CONNECT SUPPLY LINE SYSTEM
 ========================================================= */
-let dragStartBase = null;
+let dragSourceBase = null;
 let currentMouse = { x: 0, y: 0 };
-let isDraggingBase = false;
+let isConnectingRoute = false;
 let isPanning = false;
 let panStart = { x: 0, y: 0 };
 
@@ -509,64 +519,65 @@ C.addEventListener("pointerdown", e => {
   initAudio();
   const [wx, wy] = s2w(e.clientX, e.clientY);
 
-  // 플레이어 아군 기지를 눌렀는지 확인
   const clickedBase = bases.find(b => b.team === 0 && dist(wx, wy, b.x, b.y) < b.r + 2);
 
   if (clickedBase) {
-    dragStartBase = clickedBase;
-    isDraggingBase = true;
+    // 이미 연결된 선이 있는 기지를 단순 탭하면 보급선 해제
+    if (clickedBase.supplyTarget) {
+      clickedBase.supplyTarget = null;
+      toast("보급선 해제: 기지 수비 모드");
+    }
+    dragSourceBase = clickedBase;
+    isConnectingRoute = true;
     currentMouse = { x: e.clientX, y: e.clientY };
   } else {
-    // 배경을 누른 경우 화면 드래그 팬
     isPanning = true;
     panStart = { x: e.clientX, y: e.clientY };
   }
 });
 
 window.addEventListener("pointermove", e => {
-  if (isDraggingBase) {
+  if (isConnectingRoute) {
     currentMouse = { x: e.clientX, y: e.clientY };
   } else if (isPanning) {
     const dx = e.clientX - panStart.x;
     const dy = e.clientY - panStart.y;
-    camX = clamp(camX - dx / tile, 20, W - 20);
-    camY = clamp(camY - dy / tile, 20, H - 20);
+    camX = clamp(camX - dx / tile, 25, W - 25);
+    camY = clamp(camY - dy / tile, 25, H - 25);
     panStart = { x: e.clientX, y: e.clientY };
   }
 });
 
 window.addEventListener("pointerup", e => {
-  if (isDraggingBase && dragStartBase) {
+  if (isConnectingRoute && dragSourceBase) {
     const [wx, wy] = s2w(e.clientX, e.clientY);
-    // 도달한 대상 기지/거점 탐색
     const targetBase = bases.find(b => dist(wx, wy, b.x, b.y) < b.r + 2.5);
 
-    if (targetBase && targetBase !== dragStartBase) {
-      // 출발 기지 주변 주둔 유닛의 50%를 해당 목표로 파견
-      const stationedUnits = units.filter(u => u.team === 0 && dist(u.x, u.y, dragStartBase.x, dragStartBase.y) < dragStartBase.r + 4);
-      const sendCount = Math.ceil(stationedUnits.length * 0.5);
+    if (targetBase && targetBase !== dragSourceBase) {
+      // 1. 기지 보급선 영구 개설 (앞으로 생산되는 모든 유닛이 이곳으로 이동)
+      dragSourceBase.supplyTarget = targetBase;
 
-      stationedUnits.slice(0, sendCount).forEach(u => {
-        u.targetBase = targetBase;
-      });
+      // 2. 현재 주둔 중이던 기존 유닛들도 즉시 출격
+      const stationed = units.filter(u => u.team === 0 && dist(u.x, u.y, dragSourceBase.x, dragSourceBase.y) < dragSourceBase.r + 4);
+      stationed.forEach(u => { u.targetBase = targetBase; });
 
-      sfxLaunch();
-      toast(`병력 ${sendCount}기 출격 ➔ ${targetBase.team === 0 ? "아군 기지 지원" : "거점 공격/점령"}`);
+      sfxLink();
+      toast(`[보급선 연결 완료] ➔ ${targetBase.team === 0 ? "아군 전초기지 지원" : "거점 점령 진격로 개설"}`);
     }
   }
 
-  isDraggingBase = false;
-  dragStartBase = null;
+  isConnectingRoute = false;
+  dragSourceBase = null;
   isPanning = false;
 });
 
 /* =========================================================
-   AI SEND MECHANISM (컴퓨터 진영 기지 드래그 AI)
+   AI SUPPLY ROUTE LOGIC
 ========================================================= */
 let aiClock = 0;
 function handleAI(dt) {
   aiClock += dt;
-  if (aiClock < 3.2) return;
+  if (aiClock < 4.0) return;
   aiClock = 0;
 
   for (let team = 1; team < 6; team++) {
@@ -574,16 +585,14 @@ function handleAI(dt) {
     if (!myBases.length) continue;
 
     for (const b of myBases) {
-      const stationed = units.filter(u => u.team === team && dist(u.x, u.y, b.x, b.y) < b.r + 3.5);
-      if (stationed.length >= 8) {
-        // 인근 중립 거점 또는 적 기지 선정
-        const targets = bases.filter(tb => tb !== b);
-        targets.sort((a, bTarget) => dist(b.x, b.y, a.x, a.y) - dist(b.x, b.y, bTarget.x, bTarget.y));
-        const chosenTarget = targets[0];
-
-        if (chosenTarget) {
-          const count = Math.ceil(stationed.length * 0.6);
-          stationed.slice(0, count).forEach(u => { u.targetBase = chosenTarget; });
+      if (!b.supplyTarget || Math.random() < 0.35) {
+        // 인근 미점령 거점이나 적 본진으로 보급선 개설
+        const potential = bases.filter(tb => tb !== b && tb.team !== team);
+        potential.sort((a, bTarget) => dist(b.x, b.y, a.x, a.y) - dist(b.x, b.y, bTarget.x, bTarget.y));
+        if (potential[0]) {
+          b.supplyTarget = potential[0];
+          const stationed = units.filter(u => u.team === team && dist(u.x, u.y, b.x, b.y) < b.r + 4);
+          stationed.forEach(u => { u.targetBase = b.supplyTarget; });
         }
       }
     }
@@ -591,14 +600,14 @@ function handleAI(dt) {
 }
 
 /* =========================================================
-   COMBAT & UNIT BEHAVIOR
+   COMBAT & OBSTACLE AVOIDANCE
 ========================================================= */
 function updateUnits(dt) {
   for (let i = units.length - 1; i >= 0; i--) {
     const u = units[i];
     if (u.hp <= 0) { units.splice(i, 1); continue; }
 
-    // 1. 적 유닛 탐색
+    // 1. 적 탐색
     let target = null, minDist = u.rng + 4;
     for (const other of units) {
       if (other.team !== u.team && other.hp > 0) {
@@ -619,27 +628,24 @@ function updateUnits(dt) {
       }
     }
 
-    // 3. 이동: 출격 목표 기지가 있으면 그곳으로 행렬 이동, 없으면 주변 수비
+    // 3. 이동: 보급선 대상 기지 또는 교전 적 추격
     let destX = u.x, destY = u.y;
     if (u.targetBase) {
       destX = u.targetBase.x;
       destY = u.targetBase.y;
 
-      // 대상 기지에 진입했을 때 처리
       const d = dist(u.x, u.y, u.targetBase.x, u.targetBase.y);
       if (d < u.targetBase.r) {
         if (u.targetBase.team !== u.team) {
-          // 적/중립 기지 공격 및 점령 게이지 감소
           u.targetBase.hp -= u.atk * 0.8;
           if (u.targetBase.hp <= 0) {
             u.targetBase.team = u.team;
             u.targetBase.hp = u.targetBase.maxHp * 0.5;
             sfxBoom();
-            if (u.team === 0) toast("거점 점령 성공! 아군 생산 기지 전환");
+            if (u.team === 0) toast("거점 함락 완료! 아군 전초기지로 편입");
           }
         } else {
-          // 아군 기지 도달 시 주둔
-          u.targetBase = null;
+          u.targetBase = null; // 아군 기지 도착 시 주둔
         }
       }
     } else if (target) {
@@ -649,7 +655,17 @@ function updateUnits(dt) {
 
     const moveD = dist(u.x, u.y, destX, destY);
     if (moveD > 1.6) {
-      u.heading = Math.atan2(destY - u.y, destX - u.x);
+      let desiredAngle = Math.atan2(destY - u.y, destX - u.x);
+
+      // 장애물 회피 (산악 지형 충돌 방지)
+      for (const obs of obstacles) {
+        if (u.x >= obs.x - 2 && u.x <= obs.x + obs.w + 2 &&
+            u.y >= obs.y - 2 && u.y <= obs.y + obs.h + 2) {
+          desiredAngle += Math.PI * 0.45; // 우회 경로 탐색
+        }
+      }
+
+      u.heading = desiredAngle;
       u.x += Math.cos(u.heading) * u.spd * dt;
       u.y += Math.sin(u.heading) * u.spd * dt;
     }
@@ -689,117 +705,111 @@ function executeAttack(u, target) {
 }
 
 /* =========================================================
-   SPRITE RENDERING (직업별 고밀도 고유 실루엣)
+   DETAILED CLASS-SPECIFIC SPRITES
 ========================================================= */
 function drawUnitSprite(u) {
   const [px, py] = w2s(u.x, u.y);
   const f = FACTIONS[u.team];
   const col = f.color;
   const sub = f.sub;
-  const baseSize = 4.5 + (u.tier - 1) * 2.6;
+  const sz = 5.0 + (u.tier - 1) * 2.8;
 
   X.save();
   X.translate(px, py);
   X.rotate(u.heading);
 
-  // 1. 마법사: 뾰족한 고깔 모자 + 룬 스태프 + 비전 보석 오브
+  // 1. 마법사: 고깔 마법 모자 + 룬 스태프 + 보석 오브
   if (u.job === "Mage") {
-    // 마법 고깔 모자 & 로브
     X.fillStyle = col;
     X.beginPath();
-    X.moveTo(baseSize * 1.2, 0);
-    X.lineTo(-baseSize * 0.9, -baseSize * 0.9);
-    X.lineTo(-baseSize * 0.3, 0);
-    X.lineTo(-baseSize * 0.9, baseSize * 0.9);
+    X.moveTo(sz * 1.3, 0);
+    X.lineTo(-sz * 0.9, -sz * 0.9);
+    X.lineTo(-sz * 0.3, 0);
+    X.lineTo(-sz * 0.9, sz * 0.9);
     X.closePath();
     X.fill();
-    // 지팡이
-    X.strokeStyle = "#fff";
-    X.lineWidth = 1.5;
-    X.beginPath(); X.moveTo(-baseSize * 0.2, -baseSize * 0.6); X.lineTo(baseSize * 1.8, -baseSize * 0.6); X.stroke();
-    // 마력 구체
+    // 지팡이 및 마력 보석
+    X.strokeStyle = "#fff"; X.lineWidth = 1.5;
+    X.beginPath(); X.moveTo(-sz * 0.2, -sz * 0.6); X.lineTo(sz * 1.9, -sz * 0.6); X.stroke();
     X.fillStyle = sub;
-    X.beginPath(); X.arc(baseSize * 1.8, -baseSize * 0.6, baseSize * 0.45, 0, Math.PI * 2); X.fill();
+    X.beginPath(); X.arc(sz * 1.9, -sz * 0.6, sz * 0.5, 0, Math.PI * 2); X.fill();
   }
-  // 2. 기사: 슬릿 투구 + 대형 카이트 타워 실드 + 십자 소드
+  // 2. 기사: 슬릿 투구 + 풀플레이트 견갑 + 타워 실드
   else if (u.job === "Knight") {
-    // 타워 실드 (전방 방어벽)
+    // 실드 (전방 방패)
     X.fillStyle = col;
-    X.fillRect(baseSize * 0.3, -baseSize * 1.1, baseSize * 0.5, baseSize * 2.2);
-    // 풀 플레이트 투구
+    X.fillRect(sz * 0.3, -sz * 1.2, sz * 0.6, sz * 2.4);
+    // 풀헬름 머리
     X.fillStyle = "#1e293b";
-    X.beginPath(); X.arc(-baseSize * 0.2, 0, baseSize * 0.75, 0, Math.PI * 2); X.fill();
-    // 소드
+    X.beginPath(); X.arc(-sz * 0.2, 0, sz * 0.8, 0, Math.PI * 2); X.fill();
+    // 십자 슬릿 안광
+    X.fillStyle = "#fff"; X.fillRect(-sz * 0.1, -1, sz * 0.4, 2);
+    // 십자검
     X.fillStyle = sub;
-    X.fillRect(-baseSize * 0.5, baseSize * 0.5, baseSize * 1.8, baseSize * 0.3);
+    X.fillRect(-sz * 0.6, sz * 0.5, sz * 1.9, sz * 0.35);
   }
-  // 3. 레인저: 녹색 깃털 후드 + 컴파운드 롱보우 + 시위
+  // 3. 레인저: 깃털 후드 + 롱보우 활 & 시위
   else if (u.job === "Ranger") {
-    // 롱보우 활 시위
-    X.strokeStyle = col;
-    X.lineWidth = 2;
-    X.beginPath();
-    X.arc(baseSize * 0.2, 0, baseSize * 1.4, -Math.PI * 0.4, Math.PI * 0.4);
-    X.stroke();
-    // 장전된 화살
-    X.strokeStyle = "#fff";
-    X.lineWidth = 1.5;
-    X.beginPath(); X.moveTo(-baseSize * 0.6, 0); X.lineTo(baseSize * 1.8, 0); X.stroke();
+    // 롱보우 활몸체
+    X.strokeStyle = col; X.lineWidth = 2;
+    X.beginPath(); X.arc(sz * 0.2, 0, sz * 1.5, -Math.PI * 0.4, Math.PI * 0.4); X.stroke();
+    // 화살
+    X.strokeStyle = "#fff"; X.lineWidth = 1.5;
+    X.beginPath(); X.moveTo(-sz * 0.6, 0); X.lineTo(sz * 1.9, 0); X.stroke();
     // 후드 본체
     X.fillStyle = col;
-    X.beginPath(); X.arc(-baseSize * 0.3, 0, baseSize * 0.6, 0, Math.PI * 2); X.fill();
+    X.beginPath(); X.arc(-sz * 0.3, 0, sz * 0.65, 0, Math.PI * 2); X.fill();
   }
-  // 4. 서머너: 곡선 뿔 투구 + 부유 흑마도서 + 암흑 룬
+  // 4. 서머너: 곡선 뿔 투구 + 부유 흑마도서
   else if (u.job === "Summoner") {
     X.fillStyle = col;
-    X.beginPath(); X.arc(0, 0, baseSize * 0.7, 0, Math.PI * 2); X.fill();
-    // 양쪽 뿔
+    X.beginPath(); X.arc(0, 0, sz * 0.75, 0, Math.PI * 2); X.fill();
+    // 곡선 뿔
     X.fillStyle = sub;
     X.beginPath();
-    X.moveTo(-baseSize * 0.2, -baseSize * 0.6); X.lineTo(baseSize * 0.5, -baseSize * 1.4); X.lineTo(0, -baseSize * 0.4);
-    X.moveTo(-baseSize * 0.2, baseSize * 0.6); X.lineTo(baseSize * 0.5, baseSize * 1.4); X.lineTo(0, baseSize * 0.4);
+    X.moveTo(-sz * 0.2, -sz * 0.6); X.lineTo(sz * 0.5, -sz * 1.5); X.lineTo(0, -sz * 0.4);
+    X.moveTo(-sz * 0.2, sz * 0.6); X.lineTo(sz * 0.5, sz * 1.5); X.lineTo(0, sz * 0.4);
     X.fill();
-    // 마도서
+    // 부유 마도서
     X.fillStyle = "#e9d5ff";
-    X.fillRect(baseSize * 0.6, -baseSize * 0.4, baseSize * 0.8, baseSize * 0.8);
+    X.fillRect(sz * 0.6, -sz * 0.4, sz * 0.85, sz * 0.85);
   }
-  // 5. 바바리안: 야만 전사 머리칼 + 양날 대형 배틀액스
+  // 5. 바바리안: 야만 머리칼 + 양날 대형 배틀액스
   else if (u.job === "Barbarian") {
-    // 몸체
     X.fillStyle = col;
-    X.fillRect(-baseSize * 0.8, -baseSize * 0.6, baseSize * 1.4, baseSize * 1.2);
+    X.fillRect(-sz * 0.8, -sz * 0.65, sz * 1.4, sz * 1.3);
     // 도끼 자루
     X.fillStyle = "#78350f";
-    X.fillRect(0, -baseSize * 1.5, baseSize * 0.35, baseSize * 3.0);
-    // 양날 도끼날
+    X.fillRect(0, -sz * 1.6, sz * 0.35, sz * 3.2);
+    // 양날 배틀액스 날
     X.fillStyle = sub;
     X.beginPath();
-    X.moveTo(baseSize * 0.35, -baseSize * 1.3); X.lineTo(baseSize * 1.3, -baseSize * 0.7); X.lineTo(baseSize * 0.35, 0);
-    X.moveTo(baseSize * 0.35, baseSize * 1.3); X.lineTo(baseSize * 1.3, baseSize * 0.7); X.lineTo(baseSize * 0.35, 0);
+    X.moveTo(sz * 0.35, -sz * 1.4); X.lineTo(sz * 1.4, -sz * 0.75); X.lineTo(sz * 0.35, 0);
+    X.moveTo(sz * 0.35, sz * 1.4); X.lineTo(sz * 1.4, sz * 0.75); X.lineTo(sz * 0.35, 0);
     X.fill();
   }
-  // 6. 거너: 전술 바이저 + 3연장 중화기 회전 개틀링 배럴
+  // 6. 거너: 전술 바이저 + 3연장 개틀링 배럴
   else if (u.job === "Gunner") {
     X.fillStyle = "#0f172a";
-    X.beginPath(); X.arc(-baseSize * 0.3, 0, baseSize * 0.65, 0, Math.PI * 2); X.fill();
-    // 개틀링 3연장 배럴
+    X.beginPath(); X.arc(-sz * 0.3, 0, sz * 0.7, 0, Math.PI * 2); X.fill();
+    // 붉은 바이저 안광
+    X.fillStyle = "#ef4444"; X.fillRect(-sz * 0.1, -2, sz * 0.3, 4);
+    // 3연장 개틀링 배럴
     X.fillStyle = col;
-    X.fillRect(baseSize * 0.1, -baseSize * 0.6, baseSize * 1.7, baseSize * 0.3);
-    X.fillRect(baseSize * 0.1, -baseSize * 0.15, baseSize * 1.9, baseSize * 0.3);
-    X.fillRect(baseSize * 0.1, baseSize * 0.3, baseSize * 1.7, baseSize * 0.3);
+    X.fillRect(sz * 0.1, -sz * 0.6, sz * 1.8, sz * 0.3);
+    X.fillRect(sz * 0.1, -sz * 0.15, sz * 2.0, sz * 0.3);
+    X.fillRect(sz * 0.1, sz * 0.3, sz * 1.8, sz * 0.3);
   }
 
-  // Tier 2~5 진화 외곽 아우라 & 룬 링
+  // Tier 2~5 진화 아우라 및 회전 링
   if (u.tier >= 2) {
     X.strokeStyle = u.tier >= 4 ? "#ffd700" : "#ffffff";
-    X.lineWidth = u.tier * 0.7;
-    X.beginPath(); X.arc(0, 0, baseSize * 1.4, 0, Math.PI * 2); X.stroke();
+    X.lineWidth = u.tier * 0.75;
+    X.beginPath(); X.arc(0, 0, sz * 1.4, 0, Math.PI * 2); X.stroke();
   }
   if (u.tier >= 4) {
-    // 4~5단계 회전 궤도 링
-    X.strokeStyle = col;
-    X.lineWidth = 1.5;
-    X.beginPath(); X.arc(0, 0, baseSize * 1.8, 0, Math.PI * 2); X.stroke();
+    X.strokeStyle = col; X.lineWidth = 1.5;
+    X.beginPath(); X.arc(0, 0, sz * 1.8, 0, Math.PI * 2); X.stroke();
   }
 
   X.restore();
@@ -807,9 +817,9 @@ function drawUnitSprite(u) {
   // Floating HP Bar
   const bw = 16 + (u.tier - 1) * 7;
   X.fillStyle = "#000";
-  X.fillRect(px - bw / 2, py - baseSize - 6, bw, 3);
+  X.fillRect(px - bw / 2, py - sz - 7, bw, 3);
   X.fillStyle = col;
-  X.fillRect(px - bw / 2, py - baseSize - 6, bw * Math.max(0, u.hp / u.maxHp), 3);
+  X.fillRect(px - bw / 2, py - sz - 7, bw * Math.max(0, u.hp / u.maxHp), 3);
 }
 
 /* =========================================================
@@ -834,7 +844,6 @@ function update(dt) {
     if (explosions[i].life <= 0) explosions.splice(i, 1);
   }
 
-  // 기지 파괴 및 승패 판정
   const pCore = bases.find(b => b.type === "CORE" && b.team === 0);
   if (!pCore || pCore.hp <= 0) {
     gameOver = true;
@@ -851,7 +860,6 @@ function update(dt) {
     return;
   }
 
-  // HUD
   document.getElementById("army").textContent = units.filter(u => u.team === 0).length;
   document.getElementById("bases").textContent = bases.filter(b => b.team === 0).length;
   const aliveCores = bases.filter(b => b.type === "CORE" && b.team >= 0).length;
@@ -866,7 +874,7 @@ function render() {
   X.fillStyle = "#02060a";
   X.fillRect(0, 0, innerWidth, innerHeight);
 
-  // Background Grid
+  // 1. Grid
   X.strokeStyle = "rgba(40,70,90,0.12)";
   for (let x = 0; x < W; x += 10) {
     const [sx] = w2s(x, 0);
@@ -877,18 +885,60 @@ function render() {
     X.beginPath(); X.moveTo(0, sy); X.lineTo(innerWidth, sy); X.stroke();
   }
 
-  // Bases & Sectors
+  // 2. 다채로운 지형 (산악 바위 & 회랑)
+  for (const obs of obstacles) {
+    const [sx, sy] = w2s(obs.x, obs.y);
+    const sw = obs.w * tile;
+    const sh = obs.h * tile;
+
+    X.fillStyle = "#1e293b";
+    X.fillRect(sx, sy, sw, sh);
+    X.strokeStyle = "#334155";
+    X.lineWidth = 2;
+    X.strokeRect(sx, sy, sw, sh);
+
+    X.fillStyle = "#475569";
+    X.font = "bold 10px sans-serif";
+    X.textAlign = "center";
+    X.fillText(obs.label, sx + sw / 2, sy + sh / 2 + 4);
+  }
+
+  // 3. 기지 간 영구 보급선 (Supply Line Routes) 렌더링
+  for (const b of bases) {
+    if (b.supplyTarget) {
+      const [bx1, by1] = w2s(b.x, b.y);
+      const [bx2, by2] = w2s(b.supplyTarget.x, b.supplyTarget.y);
+      const col = b.team >= 0 ? FACTIONS[b.team].color : "#64748b";
+
+      X.save();
+      X.strokeStyle = col;
+      X.lineWidth = 3;
+      X.setLineDash([10, 6]);
+      X.beginPath();
+      X.moveTo(bx1, by1);
+      X.lineTo(bx2, by2);
+      X.stroke();
+
+      // 진격 방향 이동 펄스 점
+      const pulseProgress = (performance.now() % 1200) / 1200;
+      const px = bx1 + (bx2 - bx1) * pulseProgress;
+      const py = by1 + (by2 - by1) * pulseProgress;
+      X.fillStyle = "#fff";
+      X.beginPath(); X.arc(px, py, 4.5, 0, Math.PI * 2); X.fill();
+      X.restore();
+    }
+  }
+
+  // 4. 기지 & 거점 본체
   for (const b of bases) {
     const [bx, by] = w2s(b.x, b.y);
     const col = b.team >= 0 ? FACTIONS[b.team].color : "#475569";
     const rPx = b.r * tile;
 
-    // 기지 아우라 영역
     X.fillStyle = b.team >= 0 ? `${col}18` : "rgba(255,255,255,0.03)";
     X.beginPath(); X.arc(bx, by, rPx, 0, Math.PI * 2); X.fill();
     X.strokeStyle = col; X.lineWidth = 2; X.stroke();
 
-    // 기지 중심 심볼
     X.fillStyle = col;
     if (b.type === "CORE") {
       X.fillRect(bx - 12, by - 12, 24, 24);
@@ -898,40 +948,38 @@ function render() {
       X.strokeStyle = "#fff"; X.lineWidth = 1.5; X.stroke();
     }
 
-    // 주둔 유닛 수 표시
     const count = units.filter(u => u.team === b.team && dist(u.x, u.y, b.x, b.y) < b.r + 2).length;
     X.fillStyle = "#fff";
     X.font = "bold 11px system-ui";
     X.textAlign = "center";
     X.fillText(b.team >= 0 ? `${count}` : "중립", bx, by - rPx - 6);
 
-    // HP Bar
     X.fillStyle = "#000"; X.fillRect(bx - 18, by + rPx + 4, 36, 4);
     X.fillStyle = col; X.fillRect(bx - 18, by + rPx + 4, 36 * Math.max(0, b.hp / b.maxHp), 4);
   }
 
-  // Units
+  // 5. 유닛 스프라이트
   for (const u of units) drawUnitSprite(u);
 
-  // Projectiles
+  // 6. 투사체 & 폭발
   for (const p of projectiles) {
     const [sx, sy] = w2s(p.sx, p.sy);
     const [tx, ty] = w2s(p.tx, p.ty);
     X.strokeStyle = FACTIONS[p.team].color;
-    X.lineWidth = 1.5 + (p.tier || 1) * 0.7;
+    X.lineWidth = 1.5 + (p.tier || 1) * 0.8;
     X.beginPath(); X.moveTo(sx, sy); X.lineTo(tx, ty); X.stroke();
   }
 
-  // Explosions
   for (const exp of explosions) {
     const [ex, ey] = w2s(exp.x, exp.y);
     X.strokeStyle = "#38bdf8"; X.lineWidth = 2;
     X.beginPath(); X.arc(ex, ey, exp.r, 0, Math.PI * 2); X.stroke();
   }
 
-  // Drag Arrow (출격 타겟팅 드래그 선)
-  if (isDraggingBase && dragStartBase) {
-    const [sx, sy] = w2s(dragStartBase.x, dragStartBase.y);
+  // 7. 실시간 드래그 타겟팅 선
+  if (isConnectingRoute && dragSourceBase) {
+    const [sx, sy] = w2s(dragSourceBase.x, dragSourceBase.y);
+    X.save();
     X.strokeStyle = "#38bdf8";
     X.lineWidth = 3;
     X.setLineDash([8, 5]);
@@ -939,12 +987,12 @@ function render() {
     X.moveTo(sx, sy);
     X.lineTo(currentMouse.x, currentMouse.y);
     X.stroke();
-    X.setLineDash([]);
 
     X.fillStyle = "#38bdf8";
     X.beginPath();
     X.arc(currentMouse.x, currentMouse.y, 7, 0, Math.PI * 2);
     X.fill();
+    X.restore();
   }
 
   renderMinimap();
@@ -954,6 +1002,24 @@ function renderMinimap() {
   MX.clearRect(0, 0, 180, 108);
   MX.fillStyle = "#03080d"; MX.fillRect(0, 0, 180, 108);
   const mx = 180 / W, my = 108 / H;
+
+  // 산악 장애물
+  for (const obs of obstacles) {
+    MX.fillStyle = "#334155";
+    MX.fillRect(obs.x * mx, obs.y * my, obs.w * mx, obs.h * my);
+  }
+
+  // 기지 보급선
+  for (const b of bases) {
+    if (b.supplyTarget) {
+      MX.strokeStyle = b.team >= 0 ? `${FACTIONS[b.team].color}99` : "#475569";
+      MX.lineWidth = 1;
+      MX.beginPath();
+      MX.moveTo(b.x * mx, b.y * my);
+      MX.lineTo(b.supplyTarget.x * mx, b.supplyTarget.y * my);
+      MX.stroke();
+    }
+  }
 
   for (const b of bases) {
     MX.fillStyle = b.team >= 0 ? FACTIONS[b.team].color : "#475569";
@@ -966,7 +1032,6 @@ function renderMinimap() {
     MX.fillRect(u.x * mx - 1, u.y * my - 1, 2, 2);
   }
 
-  // Viewport Frame
   const [vx1, vy1] = s2w(0, 0);
   const [vx2, vy2] = s2w(innerWidth, innerHeight);
   MX.strokeStyle = "rgba(255,255,255,0.4)";
