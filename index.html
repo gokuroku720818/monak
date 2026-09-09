@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRONTIER FLUX // TACTICAL COMMAND 1.0</title>
+<title>FRONTIER FLUX // AUDIO & VFX 3.0</title>
 
 <style>
 *{box-sizing:border-box}
@@ -160,7 +160,7 @@ canvas#canvas{
 }
 
 .menu-card{
- width:min(500px,92vw);
+ width:min(520px,92vw);
  text-align:center;
  padding:38px 28px;
  background:rgba(8,18,26,0.96);
@@ -170,7 +170,7 @@ canvas#canvas{
 }
 
 .menu-title{
- font-size:30px;
+ font-size:28px;
  font-weight:900;
  letter-spacing:4px;
  color:#87c7df;
@@ -185,10 +185,15 @@ canvas#canvas{
 }
 
 .menu-desc{
- font-size:13px;
+ font-size:12px;
  color:#c4d8e3;
- margin-bottom:26px;
+ margin-bottom:24px;
  line-height:1.7;
+ text-align:left;
+ background:rgba(4,9,14,0.6);
+ padding:14px;
+ border-radius:8px;
+ border:1px solid #253947;
 }
 
 .menu-btn{
@@ -234,11 +239,13 @@ canvas#canvas{
 <div id="menuOverlay">
   <div class="menu-card">
     <div class="menu-title">FRONTIER FLUX</div>
-    <div class="menu-sub">TACTICAL COMMAND // BATTLEFIELD EXPANSION</div>
+    <div class="menu-sub">TACTICAL COMMAND // AUDIO SYNTH 3.0</div>
     <div class="menu-desc">
-      병사들은 스스로 자원을 채취하고 진형을 유지하며 교전합니다.<br>
-      사령관은 <b>원하는 지점을 우클릭</b>하여 전술 목표 비콘을 지정하고,<br>
-      하단 덱의 생산 정책을 조율해 전장을 지휘하십시오.
+      🔊 <b>내장 신디사이저 사운드 탑재:</b><br>
+      • 탱크 주포 발사음 & 탄두 착탄 대형 폭발음<br>
+      • 로켓 추진음, 기총소사, 도탄 스파크음<br>
+      • 3기 유닛 결집 시 울리는 공명 진화음<br><br>
+      • <b>외부 음원 다운로드 없이 100% 브라우저 자체 합성 구동</b>
     </div>
     <button id="btnPlay" class="menu-btn">START COMMAND</button>
   </div>
@@ -248,7 +255,7 @@ canvas#canvas{
   <div id="top-bar">
     <div class="stat-group">
       <div class="panel">ORE <b id="ore">0</b></div>
-      <div class="panel">ARMY <b id="pop">0/32</b></div>
+      <div class="panel">ARMY <b id="pop">0 (UNLIMITED)</b></div>
       <div class="panel">RELIC <b id="relic-stat">NEUTRAL</b></div>
       <div class="panel">TIME <b id="timer">06:00</b></div>
     </div>
@@ -263,17 +270,20 @@ canvas#canvas{
   <canvas id="minimap" width="190" height="118"></canvas>
 
   <div id="commander-deck">
-    <button class="btn-cmd active" id="btn-prod-balanced" onclick="setFocus('balanced')">
-      균형 생산<span>보병 + 전차 지원</span>
+    <button class="btn-cmd active" id="btn-prod-all" onclick="setFocus('all')">
+      전군 생산<span>보병+기갑+공중 균형</span>
     </button>
-    <button class="btn-cmd" id="btn-prod-heavy" onclick="setFocus('heavy')">
-      중장갑 집중<span>타이탄 + 전차 돌격</span>
+    <button class="btn-cmd" id="btn-prod-armor" onclick="setFocus('armor')">
+      기갑 집중<span>오토바이 ➔ 탱크 라인</span>
     </button>
-    <button class="btn-cmd" id="btn-prod-eco" onclick="setFocus('eco')">
-      경제 확장<span>일꾼 중심 인프라</span>
+    <button class="btn-cmd" id="btn-prod-air" onclick="setFocus('air')">
+      공군 집중<span>글라이더 ➔ 전투기 라인</span>
+    </button>
+    <button class="btn-cmd" id="btn-prod-infantry" onclick="setFocus('infantry')">
+      보병 집중<span>칼보병 ➔ 바주카 라인</span>
     </button>
     <button class="btn-cmd" onclick="clearDirective()" style="margin-left:12px; border-color:#e06666; color:#ff9494;">
-      목표 해제<span>자율 수비/순찰 복귀</span>
+      목표 해제<span>자율 순찰/수비</span>
     </button>
   </div>
 
@@ -289,6 +299,199 @@ canvas#canvas{
 <script>
 "use strict";
 
+/* =========================================================
+   WEB AUDIO API SYNTHESIZER ENGINE (NO EXTERNAL ASSETS)
+========================================================= */
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+}
+
+// 1. Noise Generator Buffer
+let noiseBuffer = null;
+function getNoiseBuffer() {
+  if (!audioCtx) return null;
+  if (!noiseBuffer) {
+    const bufferSize = audioCtx.sampleRate * 2;
+    noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+  }
+  return noiseBuffer;
+}
+
+// 2. Cannon / Tank Muzzle Sound
+function sfxCannon() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+
+  // Sub-bass thump
+  const osc = audioCtx.createOscillator();
+  const oscGain = audioCtx.createGain();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(140, t);
+  osc.frequency.exponentialRampToValueAtTime(25, t + 0.35);
+
+  oscGain.gain.setValueAtTime(0.45, t);
+  oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+
+  osc.connect(oscGain);
+  oscGain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + 0.36);
+
+  // Muzzle Blast Noise
+  const nBuf = getNoiseBuffer();
+  if (nBuf) {
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = nBuf;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(800, t);
+    filter.frequency.linearRampToValueAtTime(150, t + 0.3);
+
+    const nGain = audioCtx.createGain();
+    nGain.gain.setValueAtTime(0.4, t);
+    nGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+
+    noise.connect(filter);
+    filter.connect(nGain);
+    nGain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + 0.3);
+  }
+}
+
+// 3. Impact & High-Explosive Blast
+function sfxExplosion(power = 1) {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const duration = Math.min(1.2, 0.4 + power * 0.25);
+
+  const nBuf = getNoiseBuffer();
+  if (nBuf) {
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = nBuf;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(500, t);
+    filter.frequency.linearRampToValueAtTime(80, t + duration);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(Math.min(0.6, 0.25 * power), t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + duration);
+  }
+}
+
+// 4. Rifle & Machinegun Tap
+function sfxRifle() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const nBuf = getNoiseBuffer();
+  if (nBuf) {
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = nBuf;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(1800, t);
+    filter.Q.setValueAtTime(2.5, t);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + 0.09);
+  }
+}
+
+// 5. Rocket Launch Whoosh
+function sfxRocket() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(110, t);
+  osc.frequency.exponentialRampToValueAtTime(450, t + 0.25);
+
+  gain.gain.setValueAtTime(0.25, t);
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + 0.26);
+}
+
+// 6. 3-Unit Merge Fanfare
+function sfxMerge() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const notes = [329.63, 440.00, 659.25]; // E4, A4, E5
+
+  notes.forEach((freq, idx) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+
+    gain.gain.setValueAtTime(0.01, t + idx * 0.08);
+    gain.gain.linearRampToValueAtTime(0.25, t + idx * 0.08 + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + idx * 0.08 + 0.35);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t + idx * 0.08);
+    osc.stop(t + idx * 0.08 + 0.36);
+  });
+}
+
+// 7. Tactical Ping
+function sfxPing() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(880, t);
+  osc.frequency.exponentialRampToValueAtTime(440, t + 0.15);
+
+  gain.gain.setValueAtTime(0.2, t);
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + 0.16);
+}
+
+/* =========================================================
+   CANVAS & CORE SETUP
+========================================================= */
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const minimap = document.getElementById("minimap");
@@ -303,25 +506,34 @@ let isRunning = false;
 let gameOver = false;
 let missionTime = 360;
 
-let ore = 220;
-let enemyOre = 220;
-let prodFocus = "balanced";
+let ore = 260;
+let enemyOre = 260;
+let prodFocus = "all";
 
 let directive = null;
+let shakeAmount = 0;
 
 const units = [];
 const structures = [];
 const villages = [];
 const resources = [];
 const particles = [];
+const projectiles = [];
+const shockwaves = [];
+const mergeBeams = [];
+const floatTexts = [];
 
 let uid = 1;
 
-/* =========================================================
-   UTILITIES
-========================================================= */
 const rand = (a, b) => Math.random() * (b - a) + a;
 const dist = (x1, y1, x2, y2) => Math.hypot(x1 - x2, y1 - y2);
+
+function lerpAngle(a, b, t) {
+  let diff = (b - a) % (Math.PI * 2);
+  if (diff < -Math.PI) diff += Math.PI * 2;
+  if (diff > Math.PI) diff -= Math.PI * 2;
+  return a + diff * t;
+}
 
 function resize() {
   canvas.width = innerWidth;
@@ -336,15 +548,28 @@ const w2s = (x, y) => ({ x: camX + x * tile, y: camY + y * tile });
 const s2w = (x, y) => ({ x: (x - camX) / tile, y: (y - camY) / tile });
 
 /* =========================================================
-   ENTITIES & BALANCED SPECS
+   UNIT SPECIFICATIONS & EVOLUTION TREE
 ========================================================= */
 const UNIT_SPECS = {
-  // spd: 속도 하향(20~25%), hp: 체력 상향, r: 물리 반경 확대
-  Worker:  { hp: 90,  atk: 4,  spd: 2.2, rng: 1.5, r: 0.65, pop: 1, cost: 30 },
-  Soldier: { hp: 160, atk: 15, spd: 2.3, rng: 3.0, r: 0.70, pop: 1, cost: 45 },
-  Tank:    { hp: 420, atk: 34, spd: 1.5, rng: 4.2, r: 0.95, pop: 2, cost: 85 },
-  Titan:   { hp: 980, atk: 72, spd: 1.0, rng: 5.0, r: 1.35, pop: 4, cost: 185 },
-  Hero:    { hp: 750, atk: 48, spd: 2.0, rng: 3.8, r: 1.15, pop: 3, cost: 240 }
+  Worker:   { hp: 120, atk: 4,  spd: 2.3, rng: 1.5, r: 0.7, cost: 30, branch: null, tier: 0 },
+  Swordsman:{ hp: 160, atk: 22, spd: 2.6, rng: 1.4, r: 0.65, cost: 35, branch: "infantry", tier: 1 },
+  Rifleman: { hp: 320, atk: 36, spd: 2.3, rng: 3.8, r: 0.75, cost: 90, branch: "infantry", tier: 2 },
+  Bazooka:  { hp: 700, atk: 95, spd: 2.0, rng: 5.5, r: 0.90, cost: 240, branch: "infantry", tier: 3 },
+  Bike:     { hp: 220, atk: 26, spd: 3.2, rng: 2.8, r: 0.80, cost: 55, branch: "armor", tier: 1 },
+  Car:      { hp: 540, atk: 52, spd: 2.5, rng: 4.2, r: 1.05, cost: 140, branch: "armor", tier: 2 },
+  Tank:     { hp: 1350,atk: 140,spd: 1.6, rng: 5.8, r: 1.45, cost: 380, branch: "armor", tier: 3 },
+  Glider:   { hp: 180, atk: 24, spd: 3.0, rng: 3.0, r: 0.85, cost: 50, branch: "air", tier: 1 },
+  Plane:    { hp: 460, atk: 58, spd: 3.3, rng: 4.5, r: 1.15, cost: 130, branch: "air", tier: 2 },
+  Jet:      { hp: 1100,atk: 160,spd: 4.0, rng: 6.2, r: 1.50, cost: 350, branch: "air", tier: 3 }
+};
+
+const NEXT_EVOLUTION = {
+  Swordsman: "Rifleman",
+  Rifleman:  "Bazooka",
+  Bike:      "Car",
+  Car:       "Tank",
+  Glider:    "Plane",
+  Plane:     "Jet"
 };
 
 function createUnit(type, x, y, team) {
@@ -356,49 +581,48 @@ function createUnit(type, x, y, team) {
     x, y,
     hp: s.hp, maxHp: s.hp,
     atk: s.atk, spd: s.spd, rng: s.rng, r: s.r,
-    pop: s.pop,
-    cd: rand(0, 1),
-    target: null,
+    branch: s.branch,
+    tier: s.tier,
+    cd: rand(0, 0.8),
     carry: 0,
     harvestNode: null,
-    heading: team === "player" ? 0 : Math.PI
+    heading: team === "player" ? 0 : Math.PI,
+    targetHeading: team === "player" ? 0 : Math.PI
   };
   units.push(u);
   return u;
 }
 
 function initWorld() {
-  structures.push({ type: "CORE", x: 10, y: 33, team: "player", hp: 2800, maxHp: 2800 });
-  structures.push({ type: "CORE", x: 100, y: 33, team: "enemy", hp: 2800, maxHp: 2800 });
-  structures.push({ type: "RELIC", x: 55, y: 33, team: "neutral", hp: 1200, maxHp: 1200 });
+  structures.push({ type: "CORE", x: 10, y: 33, team: "player", hp: 3500, maxHp: 3500 });
+  structures.push({ type: "CORE", x: 100, y: 33, team: "enemy", hp: 3500, maxHp: 3500 });
+  structures.push({ type: "RELIC", x: 55, y: 33, team: "neutral", hp: 1500, maxHp: 1500 });
 
   villages.push({ x: 32, y: 18, owner: "neutral", prog: 0 });
   villages.push({ x: 32, y: 48, owner: "neutral", prog: 0 });
   villages.push({ x: 78, y: 18, owner: "neutral", prog: 0 });
   villages.push({ x: 78, y: 48, owner: "neutral", prog: 0 });
 
-  resources.push({ x: 18, y: 22, amt: 3000 });
-  resources.push({ x: 18, y: 44, amt: 3000 });
-  resources.push({ x: 92, y: 22, amt: 3000 });
-  resources.push({ x: 92, y: 44, amt: 3000 });
+  resources.push({ x: 18, y: 22, amt: 4000 });
+  resources.push({ x: 18, y: 44, amt: 4000 });
+  resources.push({ x: 92, y: 22, amt: 4000 });
+  resources.push({ x: 92, y: 44, amt: 4000 });
 
-  // Player Starting Force
   for (let i = 0; i < 5; i++) createUnit("Worker", 13 + i * 0.9, 30 + i * 1.3, "player");
-  createUnit("Hero", 16, 33, "player");
-  createUnit("Soldier", 19, 31, "player");
-  createUnit("Soldier", 19, 35, "player");
-  createUnit("Tank", 22, 33, "player");
+  createUnit("Swordsman", 18, 30, "player");
+  createUnit("Swordsman", 18, 32, "player");
+  createUnit("Bike", 21, 33, "player");
+  createUnit("Glider", 20, 36, "player");
 
-  // Enemy Starting Force
   for (let i = 0; i < 5; i++) createUnit("Worker", 97 - i * 0.9, 30 + i * 1.3, "enemy");
-  createUnit("Hero", 94, 33, "enemy");
-  createUnit("Soldier", 91, 31, "enemy");
-  createUnit("Soldier", 91, 35, "enemy");
-  createUnit("Tank", 88, 33, "enemy");
+  createUnit("Swordsman", 92, 30, "enemy");
+  createUnit("Swordsman", 92, 32, "enemy");
+  createUnit("Bike", 89, 33, "enemy");
+  createUnit("Glider", 90, 36, "enemy");
 }
 
 /* =========================================================
-   COMMANDER INTERVENTIONS
+   COMMANDER DIRECTIVES
 ========================================================= */
 window.setFocus = function(mode) {
   prodFocus = mode;
@@ -428,124 +652,260 @@ canvas.addEventListener("contextmenu", e => {
 
   document.getElementById("status-directive").textContent = label;
 
-  for (let i = 0; i < 15; i++) {
-    particles.push({
-      x: directive.x, y: directive.y,
-      vx: (rand(0, 1) - 0.5) * 6, vy: (rand(0, 1) - 0.5) * 6,
-      life: 0.6, color: "#60cbf0"
-    });
-  }
+  sfxPing();
+  shockwaves.push({ x: directive.x, y: directive.y, r: 0.5, maxR: 4.5, life: 0.45, maxLife: 0.45, color: "#60cbf0" });
 });
 
 /* =========================================================
-   EXPANDED UNIT SPRITES (ENLARGED ~1.5x)
+   VFX & WEAPON FIRE (WITH AUDIO SYNTH)
+========================================================= */
+function spawnExplosion(x, y, power = 1) {
+  shakeAmount = Math.min(12, shakeAmount + power * 2.8);
+  sfxExplosion(power);
+
+  shockwaves.push({
+    x, y,
+    r: 0.4,
+    maxR: power * 2.6,
+    life: 0.4,
+    maxLife: 0.4,
+    color: power > 2 ? "#ffd768" : "#ff7b88"
+  });
+
+  const count = Math.floor(power * 14);
+  for (let i = 0; i < count; i++) {
+    const angle = rand(0, Math.PI * 2);
+    const speed = rand(2, 7) * power * 0.7;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: rand(0.3, 0.6),
+      maxLife: 0.6,
+      size: rand(2.5, 5.5) * power * 0.6,
+      color: i % 3 === 0 ? "#ffffff" : (i % 2 === 0 ? "#ff9a3c" : "#e63946")
+    });
+  }
+}
+
+function spawnSlashArc(x, y, heading, isPlayer) {
+  for (let i = 0; i < 7; i++) {
+    const a = heading + rand(-0.7, 0.7);
+    particles.push({
+      x: x + Math.cos(a) * 0.8,
+      y: y + Math.sin(a) * 0.8,
+      vx: Math.cos(a) * 3.5,
+      vy: Math.sin(a) * 3.5,
+      life: 0.25,
+      maxLife: 0.25,
+      size: 2,
+      color: isPlayer ? "#9ce7ff" : "#ffaab0"
+    });
+  }
+}
+
+function fireWeapon(u, target) {
+  const isPlayer = u.team === "player";
+  const dx = target.x - u.x;
+  const dy = target.y - u.y;
+  const d = Math.hypot(dx, dy) || 1;
+
+  if (u.type === "Swordsman") {
+    target.hp -= u.atk;
+    spawnSlashArc(u.x, u.y, u.heading, isPlayer);
+  }
+  else if (u.type === "Bazooka") {
+    sfxRocket();
+    projectiles.push({
+      type: "rocket",
+      x: u.x, y: u.y,
+      vx: (dx / d) * 11, vy: (dy / d) * 11,
+      tx: target.x, ty: target.y,
+      damage: u.atk,
+      team: u.team,
+      isPlayer,
+      life: d / 11
+    });
+  }
+  else if (u.type === "Tank") {
+    sfxCannon();
+    spawnExplosion(u.x + Math.cos(u.heading) * 1.5, u.y + Math.sin(u.heading) * 1.5, 0.6);
+    projectiles.push({
+      type: "tank_shell",
+      x: u.x, y: u.y,
+      vx: (dx / d) * 17, vy: (dy / d) * 17,
+      tx: target.x, ty: target.y,
+      damage: u.atk,
+      team: u.team,
+      isPlayer,
+      life: d / 17
+    });
+  }
+  else if (u.type === "Jet") {
+    sfxRifle();
+    projectiles.push({
+      type: "plasma",
+      x: u.x, y: u.y,
+      vx: (dx / d) * 15, vy: (dy / d) * 15,
+      tx: target.x, ty: target.y,
+      damage: u.atk,
+      team: u.team,
+      isPlayer,
+      life: d / 15
+    });
+  }
+  else {
+    sfxRifle();
+    projectiles.push({
+      type: "bullet",
+      x: u.x, y: u.y,
+      vx: (dx / d) * 14, vy: (dy / d) * 14,
+      tx: target.x, ty: target.y,
+      damage: u.atk,
+      team: u.team,
+      isPlayer,
+      life: d / 14
+    });
+  }
+}
+
+/* =========================================================
+   UNIT DRAWING ROUTINES (SPRITES)
 ========================================================= */
 function drawUnitSprite(u) {
   const p = w2s(u.x, u.y);
   const px = p.x, py = p.y;
   const isPlayer = u.team === "player";
-  const mainCol = isPlayer ? "#50bce2" : "#e65965";
+  const mainCol = isPlayer ? "#4bb5dc" : "#e25460";
   const subCol  = isPlayer ? "#9ce7ff" : "#ffaab0";
-  const darkCol = isPlayer ? "#112935" : "#381318";
+  const darkCol = isPlayer ? "#0f232d" : "#321116";
 
   ctx.save();
   ctx.translate(px, py);
-
-  // Rotate towards target or move direction
   ctx.rotate(u.heading);
 
   if (u.type === "Worker") {
-    // Large Industrial Harvester
     ctx.fillStyle = mainCol;
-    ctx.fillRect(-9, -9, 18, 18);
+    ctx.fillRect(-8, -8, 16, 16);
     ctx.fillStyle = darkCol;
-    ctx.fillRect(-5, -5, 10, 10);
-    // Ore Container Backpack
+    ctx.fillRect(-4, -4, 8, 8);
     ctx.fillStyle = u.carry > 0 ? "#ffd768" : "#2f4652";
-    ctx.fillRect(-13, -6, 4, 12);
-    // Twin Heavy Drills
+    ctx.fillRect(-12, -5, 4, 10);
     ctx.fillStyle = "#dcebf0";
     ctx.beginPath();
-    ctx.moveTo(9, -6); ctx.lineTo(17, -2); ctx.lineTo(9, 2); ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(9, 2); ctx.lineTo(17, 6); ctx.lineTo(9, 10); ctx.fill();
+    ctx.moveTo(8, -5); ctx.lineTo(15, -1); ctx.lineTo(8, 3); ctx.fill();
   }
-  else if (u.type === "Soldier") {
-    // Combat Infantry: Plated Armor & Long Rifle
+  else if (u.type === "Swordsman") {
+    ctx.fillStyle = darkCol;
+    ctx.beginPath(); ctx.arc(-2, 0, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = mainCol;
+    ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(4, -2, 14, 3);
+    ctx.fillStyle = "#a1c2d4";
+    ctx.fillRect(2, -4, 3, 7);
+  }
+  else if (u.type === "Rifleman") {
+    ctx.fillStyle = darkCol;
+    ctx.beginPath(); ctx.arc(-2, 0, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = mainCol;
+    ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = subCol;
+    ctx.fillRect(2, -2, 4, 4);
+    ctx.fillStyle = "#0c151c";
+    ctx.fillRect(4, 3, 16, 3);
+  }
+  else if (u.type === "Bazooka") {
     ctx.fillStyle = darkCol;
     ctx.beginPath(); ctx.arc(-2, 0, 9, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = mainCol;
     ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
-    // Visor
+    ctx.fillStyle = "#1e2e38";
+    ctx.fillRect(-6, -7, 24, 6);
+    ctx.fillStyle = "#e07238";
+    ctx.fillRect(18, -6, 4, 4);
+  }
+  else if (u.type === "Bike") {
+    ctx.fillStyle = "#060b0f";
+    ctx.fillRect(-12, -2, 6, 4);
+    ctx.fillRect(8, -2, 6, 4);
+    ctx.fillStyle = mainCol;
+    ctx.fillRect(-6, -4, 14, 8);
     ctx.fillStyle = subCol;
-    ctx.fillRect(2, -3, 4, 6);
-    // Tactical Rifle
-    ctx.fillStyle = "#0c151c";
-    ctx.fillRect(2, 4, 14, 3);
-    ctx.fillStyle = "#8ba1ad";
-    ctx.fillRect(16, 5, 2, 1);
+    ctx.fillRect(6, -2, 3, 4);
+  }
+  else if (u.type === "Car") {
+    ctx.fillStyle = "#060b0f";
+    ctx.fillRect(-12, -10, 6, 4); ctx.fillRect(-12, 6, 6, 4);
+    ctx.fillRect(6, -10, 6, 4);  ctx.fillRect(6, 6, 6, 4);
+    ctx.fillStyle = mainCol;
+    ctx.fillRect(-12, -7, 24, 14);
+    ctx.fillStyle = darkCol;
+    ctx.beginPath(); ctx.arc(-2, 0, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#0a131a";
+    ctx.fillRect(0, -2, 14, 4);
   }
   else if (u.type === "Tank") {
-    // Heavy Siege Tank: Wide Dual Treads & Cannon
-    ctx.fillStyle = darkCol;
-    ctx.fillRect(-17, -13, 34, 7); // Left Tread
-    ctx.fillRect(-17, 6, 34, 7);   // Right Tread
+    ctx.fillStyle = "#070d12";
+    ctx.fillRect(-22, -16, 44, 9);
+    ctx.fillRect(-22, 7, 44, 9);
+    ctx.fillStyle = "#2a3d4a";
+    for(let wx = -18; wx <= 18; wx += 6) {
+      ctx.beginPath(); ctx.arc(wx, -11.5, 2.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(wx, 11.5, 2.5, 0, Math.PI*2); ctx.fill();
+    }
     ctx.fillStyle = mainCol;
-    ctx.fillRect(-12, -8, 24, 16); // Armored Hull
-    // Turret
-    ctx.fillStyle = subCol;
-    ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
-    // Long Cannon Barrel & Muzzle
-    ctx.fillStyle = "#080f14";
-    ctx.fillRect(4, -3, 20, 6);
-    ctx.fillStyle = "#4a6878";
-    ctx.fillRect(21, -4, 4, 8);
-  }
-  else if (u.type === "Titan") {
-    // Colossal Titan Mech: Heavy Leg Hydraulics & Twin Railguns
-    ctx.fillStyle = darkCol;
-    ctx.fillRect(-20, -18, 12, 10);
-    ctx.fillRect(8, -18, 12, 10);
-    ctx.fillRect(-20, 8, 12, 10);
-    ctx.fillRect(8, 8, 12, 10);
-    // Reinforced Chest Chassis
-    ctx.fillStyle = mainCol;
-    ctx.fillRect(-14, -12, 28, 24);
-    // Twin Heavy Railguns
-    ctx.fillStyle = subCol;
-    ctx.fillRect(10, -8, 18, 4);
-    ctx.fillRect(10, 4, 18, 4);
-    // Reactor Core Glow
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
-  }
-  else if (u.type === "Hero") {
-    // Commander Flagship: Radiant Halo & Command Lance
-    ctx.fillStyle = "#ffe277";
-    ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = mainCol;
-    ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
-    // Crest
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(8, 0); ctx.lineTo(22, 0);
-    ctx.moveTo(4, -8); ctx.lineTo(14, 0); ctx.lineTo(4, 8);
+    ctx.moveTo(-18, -10); ctx.lineTo(16, -10); ctx.lineTo(21, -6);
+    ctx.lineTo(21, 6); ctx.lineTo(16, 10); ctx.lineTo(-18, 10);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = darkCol;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
+
+    ctx.fillStyle = darkCol;
+    ctx.fillRect(-10, -8, 18, 16);
+    ctx.fillStyle = subCol;
+    ctx.beginPath(); ctx.arc(0, 0, 9, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#081017";
+    ctx.fillRect(6, -3, 26, 6);
+    ctx.fillStyle = "#5c8299";
+    ctx.fillRect(28, -5, 6, 10);
+    ctx.fillStyle = "#1e3340";
+    ctx.beginPath(); ctx.arc(-3, -3, 3, 0, Math.PI*2); ctx.fill();
+  }
+  else if (u.type === "Glider") {
+    ctx.fillStyle = mainCol;
+    ctx.beginPath();
+    ctx.moveTo(12, 0); ctx.lineTo(-10, -14); ctx.lineTo(-4, 0); ctx.lineTo(-10, 14);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = darkCol;
+    ctx.fillRect(-4, -2, 8, 4);
+  }
+  else if (u.type === "Plane") {
+    ctx.fillStyle = mainCol;
+    ctx.fillRect(-14, -4, 28, 8);
+    ctx.fillStyle = subCol;
+    ctx.fillRect(-4, -18, 8, 36);
+    ctx.fillRect(-14, -8, 4, 16);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(14, -7, 2, 14);
+  }
+  else if (u.type === "Jet") {
+    ctx.fillStyle = mainCol;
+    ctx.beginPath();
+    ctx.moveTo(22, 0); ctx.lineTo(-14, -18); ctx.lineTo(-8, -4);
+    ctx.lineTo(-16, 0); ctx.lineTo(-8, 4); ctx.lineTo(-14, 18);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = subCol;
+    ctx.beginPath(); ctx.arc(4, 0, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = "#ff6a38";
+    ctx.fillRect(-17, -3, 4, 6);
   }
 
   ctx.restore();
 
-  // Hero Ambient Healing Pulse Ring
-  if (u.type === "Hero") {
-    ctx.strokeStyle = isPlayer ? "rgba(96,203,240,0.22)" : "rgba(230,89,101,0.22)";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(px, py, 7 * tile, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-
-  // Floating HP Bar
   const barW = Math.max(24, u.r * tile * 1.8);
   ctx.fillStyle = "rgba(0,0,0,0.75)";
   ctx.fillRect(px - barW / 2, py - u.r * tile - 10, barW, 4);
@@ -554,25 +914,24 @@ function drawUnitSprite(u) {
 }
 
 /* =========================================================
-   PACED AUTONOMOUS AI
+   STABLE AI SYSTEM
 ========================================================= */
 function updateAI(u, dt) {
-  const moveToward = (tx, ty, arriveDist = 0.6) => {
+  u.heading = lerpAngle(u.heading, u.targetHeading, 0.14);
+
+  const moveToward = (tx, ty, arriveDist = 1.0) => {
     const d = dist(u.x, u.y, tx, ty);
     if (d > arriveDist) {
-      const angle = Math.atan2(ty - u.y, tx - u.x);
-      u.heading = angle;
-      u.x += Math.cos(angle) * u.spd * dt;
-      u.y += Math.sin(angle) * u.spd * dt;
+      u.targetHeading = Math.atan2(ty - u.y, tx - u.x);
+      u.x += Math.cos(u.heading) * u.spd * dt;
+      u.y += Math.sin(u.heading) * u.spd * dt;
       return false;
     }
     return true;
   };
 
-  // 1. WORKER LOGIC
   if (u.type === "Worker") {
     const myCore = structures.find(s => s.type === "CORE" && s.team === u.team);
-
     if (u.carry >= 25) {
       if (myCore && moveToward(myCore.x, myCore.y, 2.5)) {
         if (u.team === "player") ore += u.carry;
@@ -589,9 +948,8 @@ function updateAI(u, dt) {
         }
         u.harvestNode = best;
       }
-
       if (u.harvestNode && moveToward(u.harvestNode.x, u.harvestNode.y, 1.4)) {
-        const harvestRate = Math.min(u.harvestNode.amt, 12 * dt);
+        const harvestRate = Math.min(u.harvestNode.amt, 14 * dt);
         u.harvestNode.amt -= harvestRate;
         u.carry += harvestRate;
       }
@@ -599,7 +957,6 @@ function updateAI(u, dt) {
     return;
   }
 
-  // 2. COMBAT LOGIC
   let nearestThreat = null;
   let minThreatDist = u.rng + 3;
 
@@ -611,100 +968,151 @@ function updateAI(u, dt) {
   }
 
   if (nearestThreat) {
-    u.heading = Math.atan2(nearestThreat.y - u.y, nearestThreat.x - u.x);
+    u.targetHeading = Math.atan2(nearestThreat.y - u.y, nearestThreat.x - u.x);
     if (minThreatDist > u.rng) {
       moveToward(nearestThreat.x, nearestThreat.y, u.rng * 0.85);
     } else {
       u.cd -= dt;
       if (u.cd <= 0) {
-        nearestThreat.hp -= u.atk;
-        // 전투 공방 템포 조절 (0.8~1.3초 간격)
-        u.cd = u.type === "Titan" ? 1.3 : (u.type === "Tank" ? 1.1 : 0.85);
-        particles.push({
-          x: nearestThreat.x, y: nearestThreat.y,
-          vx: (rand(0, 1) - 0.5) * 4, vy: (rand(0, 1) - 0.5) * 4,
-          life: 0.35, color: "#ffffff"
-        });
+        fireWeapon(u, nearestThreat);
+        u.cd = u.type === "Tank" ? 1.3 : (u.type === "Bazooka" || u.type === "Jet" ? 1.2 : 0.85);
       }
     }
     return;
   }
 
-  // Core Siege
   const enemyCore = structures.find(s => s.type === "CORE" && s.team !== u.team);
   if (enemyCore && dist(u.x, u.y, enemyCore.x, enemyCore.y) < u.rng + 2.5) {
+    u.targetHeading = Math.atan2(enemyCore.y - u.y, enemyCore.x - u.x);
     u.cd -= dt;
     if (u.cd <= 0) {
-      enemyCore.hp -= u.atk;
-      u.cd = 0.95;
+      fireWeapon(u, enemyCore);
+      u.cd = 1.0;
     }
     return;
   }
 
-  // 3. STRATEGIC POSITIONING
   if (u.team === "player") {
-    if (directive) {
-      moveToward(directive.x + rand(-2.5, 2.5), directive.y + rand(-2.5, 2.5), 2.5);
-    } else {
-      const hero = units.find(v => v.team === "player" && v.type === "Hero");
-      if (hero && hero !== u) {
-        if (dist(u.x, u.y, hero.x, hero.y) > 7) {
-          moveToward(hero.x + rand(-3, 3), hero.y + rand(-3, 3), 4.5);
-        }
-      } else {
-        moveToward(55 + rand(-4, 4), 33 + rand(-4, 4), 3.5);
-      }
-    }
+    if (directive) moveToward(directive.x, directive.y, 3.5);
+    else moveToward(55, 33, 4.5);
   } else {
     const playerCore = structures.find(s => s.type === "CORE" && s.team === "player");
-    const count = units.filter(e => e.team === "enemy" && e.type !== "Worker").length;
-
-    if (count >= 8 && playerCore) {
+    if (units.filter(e => e.team === "enemy" && e.type !== "Worker").length >= 8 && playerCore) {
       moveToward(playerCore.x, playerCore.y, 4.5);
     } else {
-      moveToward(55 + rand(-5, 5), 33 + rand(-5, 5), 3.5);
+      moveToward(55, 33, 4.5);
     }
   }
 }
 
 /* =========================================================
-   PACED PRODUCTION (6.0s Cycle)
+   3-UNIT MERGE & HIGH-END VISUAL CONVERGENCE
+========================================================= */
+function checkEvolution() {
+  const teams = ["player", "enemy"];
+
+  for (const team of teams) {
+    const evolvable = ["Swordsman", "Rifleman", "Bike", "Car", "Glider", "Plane"];
+
+    for (const type of evolvable) {
+      const matchGroup = units.filter(u => u.team === team && u.type === type && u.hp > 0);
+
+      if (matchGroup.length >= 3) {
+        for (let i = 0; i < matchGroup.length; i++) {
+          const u1 = matchGroup[i];
+          const nearby = matchGroup.filter(other => other !== u1 && dist(u1.x, u1.y, other.x, other.y) < 8.5);
+
+          if (nearby.length >= 2) {
+            const u2 = nearby[0];
+            const u3 = nearby[1];
+            const nextType = NEXT_EVOLUTION[type];
+            if (!nextType) continue;
+
+            const midX = (u1.x + u2.x + u3.x) / 3;
+            const midY = (u1.y + u2.y + u3.y) / 3;
+
+            mergeBeams.push({ x1: u1.x, y1: u1.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
+            mergeBeams.push({ x1: u2.x, y1: u2.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
+            mergeBeams.push({ x1: u3.x, y1: u3.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
+
+            u1.hp = 0; u2.hp = 0; u3.hp = 0;
+            createUnit(nextType, midX, midY, team);
+
+            shockwaves.push({ x: midX, y: midY, r: 0.5, maxR: 5.5, life: 0.55, maxLife: 0.55, color: "#ffe177" });
+            shockwaves.push({ x: midX, y: midY, r: 0.2, maxR: 3.5, life: 0.4, maxLife: 0.4, color: "#ffffff" });
+
+            floatTexts.push({
+              text: `★ ${nextType.toUpperCase()} EVOLVED!`,
+              x: midX, y: midY - 1.2,
+              life: 1.0, maxLife: 1.0,
+              color: team === "player" ? "#ffe177" : "#ff7b88"
+            });
+
+            sfxMerge();
+            shakeAmount = Math.min(10, shakeAmount + 4.5);
+            for (let k = 0; k < 32; k++) {
+              const ang = rand(0, Math.PI * 2);
+              const spd = rand(3, 9);
+              particles.push({
+                x: midX, y: midY,
+                vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+                life: rand(0.4, 0.75), maxLife: 0.75,
+                size: rand(2.5, 4.5),
+                color: k % 2 === 0 ? "#ffd700" : "#ffffff"
+              });
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* =========================================================
+   AUTO PRODUCTION (NO POP CAP)
 ========================================================= */
 let prodTimer = 0;
 
 function handleProduction(dt) {
   prodTimer += dt;
-  if (prodTimer < 6.0) return;
+  if (prodTimer < 4.0) return;
   prodTimer = 0;
 
   const pCore = structures.find(s => s.type === "CORE" && s.team === "player");
-  const pPop = units.filter(u => u.team === "player").reduce((a, b) => a + b.pop, 0);
+  if (pCore) {
+    let orderPool = [];
+    if (prodFocus === "infantry") orderPool = ["Swordsman"];
+    else if (prodFocus === "armor") orderPool = ["Bike"];
+    else if (prodFocus === "air") orderPool = ["Glider"];
+    else orderPool = ["Swordsman", "Bike", "Glider"];
 
-  if (pCore && pPop < 32) {
-    let order = "Soldier";
-    if (prodFocus === "eco") {
-      order = units.filter(u => u.team === "player" && u.type === "Worker").length < 8 ? "Worker" : "Soldier";
-    } else if (prodFocus === "heavy") {
-      order = ore >= UNIT_SPECS.Titan.cost ? "Titan" : (ore >= UNIT_SPECS.Tank.cost ? "Tank" : "Soldier");
-    } else {
-      order = ore >= UNIT_SPECS.Tank.cost ? "Tank" : "Soldier";
+    const chosen = orderPool[Math.floor(rand(0, orderPool.length))];
+    const cost = UNIT_SPECS[chosen].cost;
+
+    if (ore >= cost) {
+      ore -= cost;
+      createUnit(chosen, pCore.x + 3.5, pCore.y + rand(-3, 3), "player");
     }
 
-    if (ore >= UNIT_SPECS[order].cost) {
-      ore -= UNIT_SPECS[order].cost;
-      createUnit(order, pCore.x + 3.5, pCore.y + rand(-3, 3), "player");
+    if (units.filter(u => u.team === "player" && u.type === "Worker").length < 7 && ore >= 30) {
+      ore -= 30;
+      createUnit("Worker", pCore.x + 3.5, pCore.y + rand(-3, 3), "player");
     }
   }
 
   const eCore = structures.find(s => s.type === "CORE" && s.team === "enemy");
-  const ePop = units.filter(u => u.team === "enemy").reduce((a, b) => a + b.pop, 0);
-
-  if (eCore && ePop < 32) {
-    const eTypes = ["Soldier", "Soldier", "Tank", "Titan"];
-    const chosen = eTypes[Math.floor(rand(0, eTypes.length))];
-    if (enemyOre >= UNIT_SPECS[chosen].cost) {
-      enemyOre -= UNIT_SPECS[chosen].cost;
+  if (eCore) {
+    const ePool = ["Swordsman", "Bike", "Glider"];
+    const chosen = ePool[Math.floor(rand(0, ePool.length))];
+    const cost = UNIT_SPECS[chosen].cost;
+    if (enemyOre >= cost) {
+      enemyOre -= cost;
       createUnit(chosen, eCore.x - 3.5, eCore.y + rand(-3, 3), "enemy");
+    }
+    if (units.filter(u => u.team === "enemy" && u.type === "Worker").length < 7 && enemyOre >= 30) {
+      enemyOre -= 30;
+      createUnit("Worker", eCore.x - 3.5, eCore.y + rand(-3, 3), "enemy");
     }
   }
 }
@@ -724,10 +1132,10 @@ function updateObjectives(dt) {
 
   if (pNear > eNear && pNear > 0) {
     relic.team = "player";
-    ore += 3.2 * dt;
+    ore += 4.0 * dt;
   } else if (eNear > pNear && eNear > 0) {
     relic.team = "enemy";
-    enemyOre += 3.2 * dt;
+    enemyOre += 4.0 * dt;
   }
 
   for (const v of villages) {
@@ -739,22 +1147,22 @@ function updateObjectives(dt) {
       }
     }
     if (p > e && p > 0) {
-      v.prog = Math.min(100, v.prog + 14 * dt);
+      v.prog = Math.min(100, v.prog + 16 * dt);
       if (v.prog >= 100) v.owner = "player";
     } else if (e > p && e > 0) {
-      v.prog = Math.max(-100, v.prog - 14 * dt);
+      v.prog = Math.max(-100, v.prog - 16 * dt);
       if (v.prog <= -100) v.owner = "enemy";
     }
-    if (v.owner === "player") ore += 1.3 * dt;
-    if (v.owner === "enemy") enemyOre += 1.3 * dt;
+    if (v.owner === "player") ore += 1.8 * dt;
+    if (v.owner === "enemy") enemyOre += 1.8 * dt;
   }
 
-  ore += 2.2 * dt;
-  enemyOre += 2.2 * dt;
+  ore += 3.0 * dt;
+  enemyOre += 3.0 * dt;
 }
 
 /* =========================================================
-   GAME ENGINE UPDATE
+   SIMULATION ENGINE (PHYSICS & PROJECTILES)
 ========================================================= */
 function update(dt) {
   if (gameOver) return;
@@ -763,6 +1171,10 @@ function update(dt) {
   if (missionTime <= 0) {
     endGame("DEFEAT", "작전 제한 시간이 초과되었습니다.");
     return;
+  }
+
+  if (shakeAmount > 0) {
+    shakeAmount = Math.max(0, shakeAmount - dt * 24);
   }
 
   handleProduction(dt);
@@ -777,20 +1189,67 @@ function update(dt) {
     updateAI(u, dt);
   }
 
-  const pHero = units.find(u => u.team === "player" && u.type === "Hero");
-  if (pHero) {
-    for (const u of units) {
-      if (u.team === "player" && dist(pHero.x, pHero.y, u.x, u.y) < 7) {
-        u.hp = Math.min(u.maxHp, u.hp + 3.0 * dt);
+  checkEvolution();
+
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    p.life -= dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    if (p.type === "rocket" && Math.random() < 0.6) {
+      particles.push({
+        x: p.x, y: p.y,
+        vx: rand(-0.8, 0.8), vy: rand(-0.8, 0.8),
+        life: 0.35, maxLife: 0.35,
+        size: 3,
+        color: "rgba(180, 195, 205, 0.7)"
+      });
+    }
+
+    if (p.life <= 0) {
+      if (p.type === "tank_shell") {
+        spawnExplosion(p.tx, p.ty, 1.8);
+      } else if (p.type === "rocket") {
+        spawnExplosion(p.tx, p.ty, 1.5);
+      } else {
+        spawnExplosion(p.tx, p.ty, 0.4);
       }
+
+      for (const u of units) {
+        if (u.team !== p.team && dist(p.tx, p.ty, u.x, u.y) < 1.6) {
+          u.hp -= p.damage;
+        }
+      }
+
+      const enemyCore = structures.find(s => s.type === "CORE" && s.team !== p.team);
+      if (enemyCore && dist(p.tx, p.ty, enemyCore.x, enemyCore.y) < 3.2) {
+        enemyCore.hp -= p.damage;
+      }
+
+      projectiles.splice(i, 1);
     }
   }
 
-  const playerCore = structures.find(s => s.type === "CORE" && s.team === "player");
-  const enemyCore = structures.find(s => s.type === "CORE" && s.team === "enemy");
+  for (let i = shockwaves.length - 1; i >= 0; i--) {
+    const sw = shockwaves[i];
+    sw.life -= dt;
+    sw.r += ((sw.maxR - sw.r) / (sw.life + 0.1)) * dt;
+    if (sw.life <= 0) shockwaves.splice(i, 1);
+  }
 
-  if (!enemyCore || enemyCore.hp <= 0) endGame("VICTORY", "VOID CORE를 파괴하고 섹터를 평정했습니다.");
-  if (!playerCore || playerCore.hp <= 0) endGame("DEFEAT", "FRONTIER 본진이 함락되었습니다.");
+  for (let i = mergeBeams.length - 1; i >= 0; i--) {
+    const mb = mergeBeams[i];
+    mb.life -= dt;
+    if (mb.life <= 0) mergeBeams.splice(i, 1);
+  }
+
+  for (let i = floatTexts.length - 1; i >= 0; i--) {
+    const ft = floatTexts[i];
+    ft.life -= dt;
+    ft.y -= dt * 1.5;
+    if (ft.life <= 0) floatTexts.splice(i, 1);
+  }
 
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
@@ -799,14 +1258,27 @@ function update(dt) {
     p.y += p.vy * dt;
     if (p.life <= 0) particles.splice(i, 1);
   }
+
+  const playerCore = structures.find(s => s.type === "CORE" && s.team === "player");
+  const enemyCore = structures.find(s => s.type === "CORE" && s.team === "enemy");
+
+  if (!enemyCore || enemyCore.hp <= 0) endGame("VICTORY", "VOID CORE를 파괴하고 영토를 평정했습니다.");
+  if (!playerCore || playerCore.hp <= 0) endGame("DEFEAT", "FRONTIER 기지가 함락되었습니다.");
 }
 
 /* =========================================================
-   RENDER
+   RENDER PIPELINE
 ========================================================= */
 function render() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
 
+  if (shakeAmount > 0) {
+    const sx = (rand(0, 1) - 0.5) * shakeAmount;
+    const sy = (rand(0, 1) - 0.5) * shakeAmount;
+    ctx.translate(sx, sy);
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#04090e";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -820,7 +1292,6 @@ function render() {
     ctx.beginPath(); ctx.moveTo(0, p.y); ctx.lineTo(canvas.width, p.y); ctx.stroke();
   }
 
-  // Resources
   for (const r of resources) {
     if (r.amt <= 0) continue;
     const p = w2s(r.x, r.y);
@@ -831,7 +1302,6 @@ function render() {
     ctx.fillText("ORE", p.x - 9, p.y + 3);
   }
 
-  // Villages
   for (const v of villages) {
     const p = w2s(v.x, v.y);
     ctx.fillStyle = v.owner === "player" ? "#3aa8d4" : (v.owner === "enemy" ? "#e0535e" : "#5d7380");
@@ -841,7 +1311,6 @@ function render() {
     ctx.fillText("BASE", p.x - 13, p.y + 4);
   }
 
-  // Structures
   for (const s of structures) {
     const p = w2s(s.x, s.y);
     if (s.type === "CORE") {
@@ -867,7 +1336,6 @@ function render() {
     }
   }
 
-  // Directive Ping
   if (directive) {
     const dp = w2s(directive.x, directive.y);
     ctx.strokeStyle = "#60cbf0";
@@ -882,20 +1350,79 @@ function render() {
     ctx.fill();
   }
 
-  // Render Units
-  for (const u of units) drawUnitSprite(u);
-
-  // Particles
-  for (const pt of particles) {
-    const pp = w2s(pt.x, pt.y);
-    ctx.fillStyle = pt.color;
-    ctx.fillRect(pp.x, pp.y, 3, 3);
+  for (const mb of mergeBeams) {
+    const sp = w2s(mb.x1, mb.y1);
+    const ep = w2s(mb.x2, mb.y2);
+    const alpha = mb.life / mb.maxLife;
+    ctx.strokeStyle = mb.team === "player" ? `rgba(255, 225, 119, ${alpha})` : `rgba(255, 123, 136, ${alpha})`;
+    ctx.lineWidth = 4 * alpha;
+    ctx.beginPath();
+    ctx.moveTo(sp.x, sp.y);
+    ctx.lineTo(ep.x, ep.y);
+    ctx.stroke();
   }
 
-  // HUD
+  for (const u of units) drawUnitSprite(u);
+
+  for (const pr of projectiles) {
+    const pp = w2s(pr.x, pr.y);
+    if (pr.type === "tank_shell") {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath(); ctx.arc(pp.x, pp.y, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffb703";
+      ctx.beginPath(); ctx.arc(pp.x, pp.y, 2.5, 0, Math.PI * 2); ctx.fill();
+    } else if (pr.type === "rocket") {
+      ctx.fillStyle = "#ff6a38";
+      ctx.fillRect(pp.x - 3, pp.y - 3, 6, 6);
+    } else if (pr.type === "plasma") {
+      ctx.fillStyle = pr.isPlayer ? "#60cbf0" : "#ff5d6c";
+      ctx.beginPath(); ctx.arc(pp.x, pp.y, 3.5, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = pr.isPlayer ? "#8fe3ff" : "#ff9fa7";
+      ctx.beginPath(); ctx.arc(pp.x, pp.y, 2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  for (const sw of shockwaves) {
+    const sp = w2s(sw.x, sw.y);
+    const alpha = sw.life / sw.maxLife;
+    ctx.strokeStyle = sw.color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, sw.r * tile, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+  }
+
+  for (const pt of particles) {
+    const pp = w2s(pt.x, pt.y);
+    const alpha = pt.life / pt.maxLife;
+    ctx.fillStyle = pt.color;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(pp.x, pp.y, pt.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+  }
+
+  for (const ft of floatTexts) {
+    const fp = w2s(ft.x, ft.y);
+    const alpha = ft.life / ft.maxLife;
+    ctx.fillStyle = ft.color;
+    ctx.globalAlpha = alpha;
+    ctx.font = "bold 13px system-ui";
+    ctx.textAlign = "center";
+    ctx.fillText(ft.text, fp.x, fp.y);
+    ctx.globalAlpha = 1.0;
+    ctx.textAlign = "left";
+  }
+
+  ctx.restore();
+
   document.getElementById("ore").textContent = Math.floor(ore);
-  const curPop = units.filter(u => u.team === "player").reduce((a, b) => a + b.pop, 0);
-  document.getElementById("pop").textContent = `${curPop}/32`;
+  const curArmy = units.filter(u => u.team === "player" && u.type !== "Worker").length;
+  document.getElementById("pop").textContent = `${curArmy} UNITS (무제한)`;
 
   const relic = structures.find(s => s.type === "RELIC");
   const relicText = document.getElementById("relic-stat");
@@ -941,7 +1468,7 @@ function endGame(title, msg) {
 }
 
 /* =========================================================
-   ENGINE LOOP
+   LOOP & START
 ========================================================= */
 let last = performance.now();
 function loop(now) {
@@ -957,6 +1484,7 @@ initWorld();
 requestAnimationFrame(loop);
 
 document.getElementById("btnPlay").onclick = () => {
+  initAudio();
   document.getElementById("menuOverlay").style.display = "none";
   isRunning = true;
   document.getElementById("game-status").textContent = "ENGAGED";
