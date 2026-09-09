@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 6.1</title>
+<title>FRONTIER FLUX 6.2 // COMMAND OVERRIDE</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -108,7 +108,7 @@ button.clear{
   <div class="badge">TIME <b id="time">07:00</b></div>
 </div>
 
-<div id="directive-bar">거점이나 전장을 탭하면 전군이 해당 위치로 진격합니다 (화면 드래그로 시점 이동)</div>
+<div id="directive-bar">원하는 위치를 탭하면 전군이 강제 진격합니다 (화면 드래그: 시점 이동)</div>
 <div id="toast"></div>
 
 <div id="panel">
@@ -285,7 +285,7 @@ function sfxPing() {
 }
 
 /* =========================================================
-   CANVAS & CORE SETUP
+   CANVAS & DATA SETUP
 ========================================================= */
 const C = document.getElementById("game");
 const X = C.getContext("2d");
@@ -294,7 +294,7 @@ const MX = MC.getContext("2d");
 
 const W = 140, H = 80;
 let tile = 10;
-let camX = 25, camY = 40; // 시작 시 아군 본진 쪽 포커스
+let camX = 25, camY = 40;
 
 let ore = 300, eOre = 300;
 let mission = 420;
@@ -468,7 +468,7 @@ window.setDoc = function(d) {
 window.clearDir = function() {
   initAudio();
   directive = null;
-  document.getElementById("directive-bar").textContent = "거점이나 전장을 탭하면 전군이 해당 위치로 진격합니다 (화면 드래그로 시점 이동)";
+  document.getElementById("directive-bar").textContent = "원하는 위치를 탭하면 전군이 강제 진격합니다 (화면 드래그: 시점 이동)";
 };
 
 function toast(t) {
@@ -497,36 +497,34 @@ function handleTap(sx, sy) {
 
   if (s && dist(wx, wy, s.x, s.y) < 9) {
     directive = { x: s.x, y: s.y, sector: s.name };
-    document.getElementById("directive-bar").textContent = `지휘 목표: ${s.name} / 전군 총공세`;
-    toast(`${s.name} 공격 명령`);
+    document.getElementById("directive-bar").textContent = `지휘 목표: ${s.name} / 전군 강제 진격`;
+    toast(`${s.name} 점령 진격 명령!`);
   } else {
     directive = {
       x: Math.max(5, Math.min(W - 5, wx)),
       y: Math.max(5, Math.min(H - 5, wy)),
       sector: null
     };
-    document.getElementById("directive-bar").textContent = `지휘 목표: (${Math.round(directive.x)}, ${Math.round(directive.y)})`;
+    document.getElementById("directive-bar").textContent = `지휘 목표: (${Math.round(directive.x)}, ${Math.round(directive.y)}) 강제 이동`;
+    toast("지정 좌표로 전군 진격!");
   }
 
   sfxPing();
-  for (const u of units) {
-    if (u.team === 1 && u.type !== "Worker") u.target = null;
-  }
 }
 
 /* =========================================================
-   CAMERA DRAG & TOUCH CONTROLS
+   CAMERA & TAP HANDLING
 ========================================================= */
 let isDragging = false;
 let startX = 0, startY = 0;
-let dragMoved = false;
+let dragDist = 0;
 
 document.getElementById("panel").addEventListener("pointerdown", e => e.stopPropagation());
 
 C.addEventListener("pointerdown", e => {
   initAudio();
   isDragging = true;
-  dragMoved = false;
+  dragDist = 0;
   startX = e.clientX;
   startY = e.clientY;
 });
@@ -535,17 +533,16 @@ window.addEventListener("pointermove", e => {
   if (!isDragging) return;
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
-  if (Math.hypot(dx, dy) > 8) {
-    dragMoved = true;
-    camX = Math.max(15, Math.min(W - 15, camX - dx / tile));
-    camY = Math.max(15, Math.min(H - 15, camY - dy / tile));
-    startX = e.clientX;
-    startY = e.clientY;
-  }
+  dragDist += Math.hypot(dx, dy);
+
+  camX = Math.max(15, Math.min(W - 15, camX - dx / tile));
+  camY = Math.max(15, Math.min(H - 15, camY - dy / tile));
+  startX = e.clientX;
+  startY = e.clientY;
 });
 
 window.addEventListener("pointerup", e => {
-  if (isDragging && !dragMoved) {
+  if (isDragging && dragDist < 15) {
     handleTap(e.clientX, e.clientY);
   }
   isDragging = false;
@@ -776,6 +773,9 @@ function moveToward(u, x, y, dt, mult) {
   u.y = Math.max(3, Math.min(H - 3, u.y));
 }
 
+/* =========================================================
+   COMBAT AI (지휘 명령 우선 이동 + 이동간 사격)
+========================================================= */
 function updateCombatUnit(u, dt) {
   separateUnits(u);
   let target = nearestEnemy(u);
@@ -785,29 +785,41 @@ function updateCombatUnit(u, dt) {
     if (st && dist(u.x, u.y, st.x, st.y) < u.rng + 5) target = st;
   }
 
+  // 1. 사거리 안의 적이 있으면 이동 중에도 발사
   if (target) {
     const td = dist(u.x, u.y, target.x, target.y);
-    u.heading = Math.atan2(target.y - u.y, target.x - u.x);
-
-    if (td > u.rng) {
-      let mult = 1;
-      if (u.type === "Bike" || u.type === "Car") mult = 1.08;
-      if (u.type === "Tank") mult = 0.95;
-      if (u.type === "Jet") mult = 1.15;
-      moveToward(u, target.x, target.y, dt, mult);
-    } else {
+    if (td <= u.rng) {
       u.cd -= dt;
       if (u.cd <= 0) {
         attack(u, target);
         u.cd = u.type === "Tank" ? 0.8 : u.type === "Jet" ? 0.65 : u.type === "Bazooka" ? 1.15 : 0.85;
       }
     }
-    return;
   }
 
+  // 2. 이동 경로 판정 (플레이어 지휘 명령이 있으면 무조건 그곳으로 강제 진격)
   const dest = getDestination(u);
-  if (dist(u.x, u.y, dest.x, dest.y) > 2.5) {
-    moveToward(u, dest.x, dest.y, dt, 1);
+  const d = dist(u.x, u.y, dest.x, dest.y);
+
+  if (u.team === 1 && directive) {
+    // 플레이어가 목표를 찍은 경우: 목표 지점까지 멈추지 않고 진격
+    if (d > 1.8) {
+      moveToward(u, dest.x, dest.y, dt, 1.05);
+    }
+  } else {
+    // 자율 순찰 상태인 경우: 사거리 밖의 타겟 추격 또는 거점 순찰
+    if (target) {
+      const td = dist(u.x, u.y, target.x, target.y);
+      if (td > u.rng) {
+        let mult = 1;
+        if (u.type === "Bike" || u.type === "Car") mult = 1.08;
+        if (u.type === "Tank") mult = 0.95;
+        if (u.type === "Jet") mult = 1.15;
+        moveToward(u, target.x, target.y, dt, mult);
+      }
+    } else if (d > 2.5) {
+      moveToward(u, dest.x, dest.y, dt, 1);
+    }
   }
 }
 
@@ -823,13 +835,11 @@ function attack(u, target) {
   target.hp -= damage;
   u.flash = 0.1;
 
-  // Sound Synth
   if (u.type === "Tank") sfxCannon();
   else if (u.type === "Bazooka") sfxRocket();
   else if (u.type === "Swordsman") {}
   else sfxRifle();
 
-  // Flying projectile
   const d = dist(u.x, u.y, target.x, target.y);
   const pSpeed = u.type === "Tank" ? 22 : u.type === "Bazooka" ? 14 : 28;
   projectiles.push({
@@ -1220,7 +1230,6 @@ function drawUnit(u) {
   X.shadowBlur = 0;
   X.restore();
 
-  // HP Bar
   const ratio = Math.max(0, u.hp / u.maxHp);
   X.fillStyle = "rgba(0,0,0,.75)";
   X.fillRect(x - 9, y - 13, 18, 3);
@@ -1318,7 +1327,6 @@ function renderMinimap() {
     MX.beginPath(); MX.arc(directive.x * sx, directive.y * sy, 5, 0, Math.PI * 2); MX.stroke();
   }
 
-  // Camera Viewfinder
   const [vx1, vy1] = s2w(0, 0);
   const [vx2, vy2] = s2w(innerWidth, innerHeight);
   MX.strokeStyle = "rgba(255,255,255,0.4)";
