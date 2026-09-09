@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 6.2 // COMMAND OVERRIDE</title>
+<title>FRONTIER FLUX 7.5 // CLASS SELECT</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -21,8 +21,9 @@ canvas#game{display:block;width:100%;height:100%}
 .badge{
   background:rgba(5,15,23,.88);
   border:1px solid #315663;border-radius:6px;
-  padding:5px 9px;font-size:11px;
-  box-shadow:0 2px 10px rgba(0,0,0,.35)
+  padding:5px 10px;font-size:11px;
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+  backdrop-filter:blur(4px)
 }
 .badge b{color:#fff}
 #directive-bar{
@@ -32,37 +33,33 @@ canvas#game{display:block;width:100%;height:100%}
   border:1px solid #5b9cad;border-radius:20px;
   padding:6px 16px;font-size:11px;color:#8be3ff;
   pointer-events:none;z-index:10;white-space:nowrap;
-  box-shadow:0 0 18px rgba(50,180,220,.12)
+  box-shadow:0 0 18px rgba(50,180,220,.15)
 }
 #panel{
-  position:fixed;left:50%;bottom:10px;
+  position:fixed;left:50%;bottom:12px;
   transform:translateX(-50%);
   background:rgba(5,14,22,.94);
   border:1px solid #315663;border-radius:10px;
-  padding:6px 10px;z-index:20;
-  display:flex;gap:6px;max-width:calc(100vw - 20px);
-  overflow-x:auto
+  padding:7px 14px;z-index:20;
+  display:flex;gap:10px;align-items:center;
+  box-shadow:0 10px 30px #000a
 }
-button.doc,button.clear{
+button.action{
   font-family:inherit;cursor:pointer;white-space:nowrap;
-  border-radius:6px;padding:7px 12px;
-  font-weight:700;font-size:11px
+  border-radius:6px;padding:8px 16px;
+  font-weight:700;font-size:11px;
+  background:#173846;color:#dff8ff;
+  border:1px solid #65cce6
 }
-button.doc{
-  background:#10232d;color:#cfe5ed;
-  border:1px solid #3a6270
-}
-button.doc.active{
-  background:#1d4c5c;border-color:#71e5ff;color:#fff;
-  box-shadow:0 0 10px rgba(98,228,255,.18)
-}
+button.action:hover{background:#234f64}
 button.clear{
   background:#3b1a1e;color:#ff9fa7;
-  border:1px solid #7a353c
+  border:1px solid #7a353c;padding:8px 14px;
+  border-radius:6px;font-weight:700;font-size:11px;cursor:pointer
 }
 #minimap{
-  position:fixed;right:10px;bottom:65px;
-  width:170px;height:108px;
+  position:fixed;right:10px;bottom:10px;
+  width:180px;height:108px;
   background:#03080d;border:1px solid #456273;
   border-radius:6px;z-index:10;pointer-events:none
 }
@@ -72,24 +69,61 @@ button.clear{
   opacity:0;transition:opacity .18s;
   background:rgba(2,9,14,.94);
   border:1px solid #426a78;border-radius:7px;
-  padding:7px 12px;font-size:11px;
+  padding:7px 14px;font-size:11px;
   color:#dff8ff;z-index:20;pointer-events:none
 }
+
+/* CLASS SELECTION MODAL */
+#select-modal{
+  position:fixed;inset:0;
+  background:radial-gradient(circle,#122733,#02060a 80%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:50;padding:16px
+}
+.select-box{
+  width:min(860px,96vw);max-height:92vh;overflow-y:auto;
+  background:rgba(6,16,24,0.96);border:1px solid #48788a;
+  border-radius:16px;padding:24px;box-shadow:0 0 60px rgba(0,0,0,0.9);
+  text-align:center
+}
+.select-box h1{margin:0 0 4px;font-size:26px;letter-spacing:2px}
+.select-box p.sub{color:#8fc0d1;font-size:12px;margin:0 0 16px}
+.class-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:10px;margin-bottom:18px
+}
+.class-card{
+  background:#0d1e28;border:1px solid #2d4f5e;
+  border-radius:10px;padding:12px;text-align:left;
+  cursor:pointer;transition:all .15s ease
+}
+.class-card:hover{background:#163445;border-color:#5ecce6}
+.class-card.active{background:#174357;border-color:#62e4ff;box-shadow:0 0 14px rgba(98,228,255,0.3)}
+.class-card h3{margin:0 0 4px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.class-card p{margin:0;font-size:11px;color:#a6c5d1;line-height:1.45}
+.class-card .stats{font-size:10px;color:#709ca8;margin-top:6px;padding-top:6px;border-top:1px solid #203945}
+.btn-start-game{
+  padding:12px 32px;font-size:15px;font-weight:bold;
+  background:#184252;color:#fff;border:1px solid #71e5ff;
+  border-radius:8px;cursor:pointer
+}
+.btn-start-game:hover{background:#235b70}
+
 #result{
   position:fixed;inset:0;
   display:none;align-items:center;justify-content:center;
-  background:rgba(0,4,8,.76);z-index:30
+  background:rgba(0,4,8,.8);z-index:30
 }
 .resultBox{
-  min-width:270px;text-align:center;
+  min-width:280px;text-align:center;
   background:rgba(5,15,23,.97);
   border:1px solid #5b9cad;border-radius:12px;
-  padding:24px;box-shadow:0 0 40px rgba(0,0,0,.7)
+  padding:26px;box-shadow:0 0 40px rgba(0,0,0,.7)
 }
 .resultBox h1{margin:0 0 10px;font-size:28px}
 .resultBox p{margin:0;color:#9bb4be;font-size:12px}
 .resultBox button{
-  margin-top:18px;padding:9px 20px;
+  margin-top:18px;padding:9px 22px;
   background:#173846;color:#dff8ff;
   border:1px solid #65cce6;border-radius:7px;
   font-weight:700;cursor:pointer
@@ -99,31 +133,72 @@ button.clear{
 <body>
 
 <canvas id="game"></canvas>
-<canvas id="minimap" width="170" height="108"></canvas>
+<canvas id="minimap" width="180" height="108"></canvas>
 
-<div id="top">
-  <div class="badge">ORE <b id="ore">300</b></div>
-  <div class="badge">SECTORS <b id="sector">0/6</b></div>
-  <div class="badge">ARMY <b id="army">0</b></div>
-  <div class="badge">TIME <b id="time">07:00</b></div>
+<!-- CLASS SELECTION START MODAL -->
+<div id="select-modal">
+  <div class="select-box">
+    <h1>FRONTIER FLUX // HEROIC ASCENSION</h1>
+    <p class="sub">플레이할 직업을 선택하십시오. 10마리가 결집하면 최대 5단계 신화 등급으로 합체 진화합니다.</p>
+    
+    <div class="class-grid" id="classGrid">
+      <div class="class-card active" onclick="pickClass('Mage')">
+        <h3 style="color:#38bdf8">마법사 (Mage) <span>광역 폭격</span></h3>
+        <p>푸른 비전 마법구를 투척하여 착탄 지점 주변의 적 부대에게 광역 스플래시 피해를 입힙니다.</p>
+        <div class="stats">사거리: 6.5 | 광역 반경: 2.5 | 진화 시: 마법구 크기 & 폭발력 극대화</div>
+      </div>
+      <div class="class-card" onclick="pickClass('Knight')">
+        <h3 style="color:#ef4444">기사 (Knight) <span>철벽 방어</span></h3>
+        <p>육중한 방패와 갑주로 전방의 공격을 흡수하며, 압도적인 체력으로 전선을 돌파합니다.</p>
+        <div class="stats">사거리: 1.8 | 방어력: 피해 35% 감소 | 진화 시: 거대 기사단 실드</div>
+      </div>
+      <div class="class-card" onclick="pickClass('Ranger')">
+        <h3 style="color:#22c55e">레인저 (Ranger) <span>초장거리 저격</span></h3>
+        <p>시야 밖에서 정밀 화살을 쏘아 접근하는 적을 사전에 무력화시키는 최장거리 공격수입니다.</p>
+        <div class="stats">사거리: 9.5 | 이동속도: 최상 | 진화 시: 관통 강궁 & 저격탄환</div>
+      </div>
+      <div class="class-card" onclick="pickClass('Summoner')">
+        <h3 style="color:#a855f7">서머너 (Summoner) <span>흡혈 흑마법</span></h3>
+        <p>암흑 마탄을 발사하여 피해를 입힌 만큼 체력을 즉각 흡수하여 끈질긴 생명력을 발휘합니다.</p>
+        <div class="stats">사거리: 6.0 | 체력 흡혈: 35% | 진화 시: 영혼 수탈 아우라</div>
+      </div>
+      <div class="class-card" onclick="pickClass('Barbarian')">
+        <h3 style="color:#f97316">바바리안 (Barbarian) <span>근접 분쇄</span></h3>
+        <p>방어구를 벗어던지고 양손 대형 도끼를 고속 난무하여 적 기지와 탱크를 일도양단합니다.</p>
+        <div class="stats">사거리: 1.8 | 공격력: 최상 | 진화 시: 대지 진동 참격 도끼</div>
+      </div>
+      <div class="class-card" onclick="pickClass('Gunner')">
+        <h3 style="color:#eab308">거너 (Gunner) <span>개틀링 연사</span></h3>
+        <p>3연장 회전 총열에서 쉴 틈 없이 예광탄을 쏟아부어 전방의 적 병력을 벌집으로 만듭니다.</p>
+        <div class="stats">사거리: 7.0 | 공격속도: 초당 3발 | 진화 시: 6연장 헤비 불칸</div>
+      </div>
+    </div>
+
+    <button class="btn-start-game" onclick="startGame()">출진 (START MISSION)</button>
+  </div>
 </div>
 
-<div id="directive-bar">원하는 위치를 탭하면 전군이 강제 진격합니다 (화면 드래그: 시점 이동)</div>
+<div id="top">
+  <div class="badge">MY CLASS: <b id="myClassTitle" style="color:#38bdf8">MAGE</b></div>
+  <div class="badge">ARMY <b id="army">0</b></div>
+  <div class="badge">BASES <b id="bases">1</b></div>
+  <div class="badge">ALIVE <b id="alive">6/6</b></div>
+  <div class="badge">TIME <b id="time">10:00</b></div>
+</div>
+
+<div id="directive-bar">원하는 지점을 탭하면 전군이 강제 진격합니다 (화면 드래그: 맵 이동)</div>
 <div id="toast"></div>
 
 <div id="panel">
-  <button class="doc active" id="b-all" onclick="setDoc('all')">전군 균형</button>
-  <button class="doc" id="b-armor" onclick="setDoc('armor')">기갑(탱크)</button>
-  <button class="doc" id="b-air" onclick="setDoc('air')">공군(전투기)</button>
-  <button class="doc" id="b-inf" onclick="setDoc('inf')">보병(바주카)</button>
-  <button class="clear" onclick="clearDir()">목표 해제</button>
+  <button class="action" onclick="focusBase()">본진 화면 이동</button>
+  <button class="clear" onclick="clearDir()">목표 해제 (자율 수비)</button>
 </div>
 
 <div id="result">
   <div class="resultBox">
     <h1 id="resultTitle">VICTORY</h1>
-    <p id="resultText">전장을 지배했습니다.</p>
-    <button onclick="restartGame()">다시 시작</button>
+    <p id="resultText">모든 적대 세력을 섬멸했습니다.</p>
+    <button onclick="location.reload()">다시 시작</button>
   </div>
 </div>
 
@@ -142,386 +217,451 @@ function initAudio() {
   if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
 }
 
-let noiseBuffer = null;
-function getNoiseBuffer() {
-  if (!audioCtx) return null;
-  if (!noiseBuffer) {
-    const bufferSize = audioCtx.sampleRate * 2;
-    noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const output = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-  }
-  return noiseBuffer;
-}
-
-function sfxCannon() {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const oscGain = audioCtx.createGain();
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(140, t);
-  osc.frequency.exponentialRampToValueAtTime(25, t + 0.35);
-  oscGain.gain.setValueAtTime(0.4, t);
-  oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
-  osc.connect(oscGain);
-  oscGain.connect(audioCtx.destination);
-  osc.start(t);
-  osc.stop(t + 0.36);
-
-  const nBuf = getNoiseBuffer();
-  if (nBuf) {
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = nBuf;
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(800, t);
-    filter.frequency.linearRampToValueAtTime(140, t + 0.3);
-    const nGain = audioCtx.createGain();
-    nGain.gain.setValueAtTime(0.35, t);
-    nGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-    noise.connect(filter);
-    filter.connect(nGain);
-    nGain.connect(audioCtx.destination);
-    noise.start(t);
-    noise.stop(t + 0.3);
-  }
-}
-
-function sfxExplosion(power = 1) {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime;
-  const duration = Math.min(1.2, 0.35 + power * 0.25);
-  const nBuf = getNoiseBuffer();
-  if (nBuf) {
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = nBuf;
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(550, t);
-    filter.frequency.linearRampToValueAtTime(70, t + duration);
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(Math.min(0.6, 0.22 * power), t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
-    noise.start(t);
-    noise.stop(t + duration);
-  }
-}
-
-function sfxRifle() {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime;
-  const nBuf = getNoiseBuffer();
-  if (nBuf) {
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = nBuf;
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.setValueAtTime(1800, t);
-    filter.Q.setValueAtTime(2.5, t);
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.18, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
-    noise.start(t);
-    noise.stop(t + 0.09);
-  }
-}
-
-function sfxRocket() {
+function sfxAttack(job) {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(110, t);
-  osc.frequency.exponentialRampToValueAtTime(450, t + 0.25);
-  gain.gain.setValueAtTime(0.25, t);
-  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+
+  if (job === "Mage") {
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(320, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 0.25);
+    gain.gain.setValueAtTime(0.2, t);
+  } else if (job === "Gunner") {
+    osc.type = "square";
+    osc.frequency.setValueAtTime(850, t);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.08);
+    gain.gain.setValueAtTime(0.12, t);
+  } else if (job === "Ranger") {
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(650, t);
+    gain.gain.setValueAtTime(0.15, t);
+  } else {
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(180, t);
+    gain.gain.setValueAtTime(0.15, t);
+  }
+
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
   osc.connect(gain);
   gain.connect(audioCtx.destination);
   osc.start(t);
-  osc.stop(t + 0.26);
+  osc.stop(t + 0.22);
 }
 
 function sfxMerge() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
-  const notes = [329.63, 440.00, 659.25];
-  notes.forEach((freq, idx) => {
+  [440, 554, 659, 880].forEach((freq, i) => {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, t + idx * 0.08);
-    gain.gain.setValueAtTime(0.01, t + idx * 0.08);
-    gain.gain.linearRampToValueAtTime(0.25, t + idx * 0.08 + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + idx * 0.08 + 0.35);
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(freq, t + i * 0.06);
+    gain.gain.setValueAtTime(0.01, t + i * 0.06);
+    gain.gain.linearRampToValueAtTime(0.2, t + i * 0.06 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + i * 0.06 + 0.3);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.start(t + idx * 0.08);
-    osc.stop(t + idx * 0.08 + 0.36);
+    osc.start(t + i * 0.06);
+    osc.stop(t + i * 0.06 + 0.32);
   });
 }
 
-function sfxPing() {
+function sfxBoom() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(880, t);
-  osc.frequency.exponentialRampToValueAtTime(440, t + 0.15);
-  gain.gain.setValueAtTime(0.2, t);
-  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(100, t);
+  osc.frequency.exponentialRampToValueAtTime(20, t + 0.4);
+  gain.gain.setValueAtTime(0.4, t);
+  gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
   osc.connect(gain);
   gain.connect(audioCtx.destination);
   osc.start(t);
-  osc.stop(t + 0.16);
+  osc.stop(t + 0.42);
 }
 
 /* =========================================================
-   CANVAS & DATA SETUP
+   CANVAS & 6 FACTIONS CONFIG
 ========================================================= */
 const C = document.getElementById("game");
 const X = C.getContext("2d");
 const MC = document.getElementById("minimap");
 const MX = MC.getContext("2d");
 
-const W = 140, H = 80;
+const W = 200, H = 120;
 let tile = 10;
-let camX = 25, camY = 40;
-
-let ore = 300, eOre = 300;
-let mission = 420;
-let doctrine = "all";
+let camX = 100, camY = 60;
+let mission = 600;
 let directive = null;
 let uid = 1;
 let gameOver = false;
+let gameStarted = false;
 
 const units = [];
 const structures = [];
 const sectors = [];
-const resources = [];
 const particles = [];
 const projectiles = [];
 const explosions = [];
 
-const SPEC = {
-  Worker:   { hp: 120, atk: 0,   spd: 2.2,  rng: 1.5, cost: 25 },
-  Swordsman:{ hp: 180, atk: 27,  spd: 2.55, rng: 2.2, cost: 45 },
-  Rifleman: { hp: 270, atk: 40,  spd: 2.35, rng: 5.5, cost: 65 },
-  Bazooka:  { hp: 520, atk: 105, spd: 1.9,  rng: 8.0, cost: 90 },
-  Bike:     { hp: 230, atk: 30,  spd: 3.5,  rng: 4.2, cost: 45 },
-  Car:      { hp: 470, atk: 60,  spd: 2.65, rng: 5.8, cost: 70 },
-  Tank:     { hp: 1150,atk: 150, spd: 1.65, rng: 8.5, cost: 110 },
-  Glider:   { hp: 180, atk: 30,  spd: 3.1,  rng: 4.8, cost: 45 },
-  Plane:    { hp: 360, atk: 68,  spd: 3.45, rng: 6.5, cost: 80 },
-  Jet:      { hp: 820, atk: 170, spd: 4.15, rng: 9.0, cost: 130 }
+let playerChoice = "Mage";
+
+const ALL_JOBS = ["Mage", "Knight", "Ranger", "Summoner", "Barbarian", "Gunner"];
+
+const FACTIONS = [
+  { id: 0, name: "PLAYER",   job: "Mage",      color: "#38bdf8", sub: "#bae6fd", x: 30,  y: 30 },
+  { id: 1, name: "RED",      job: "Knight",    color: "#ef4444", sub: "#fecaca", x: 100, y: 20 },
+  { id: 2, name: "GREEN",    job: "Ranger",    color: "#22c55e", sub: "#bbf7d0", x: 170, y: 30 },
+  { id: 3, name: "PURPLE",   job: "Summoner",  color: "#a855f7", sub: "#f3e8ff", x: 170, y: 90 },
+  { id: 4, name: "ORANGE",   job: "Barbarian", color: "#f97316", sub: "#ffedd5", x: 100, y: 100 },
+  { id: 5, name: "YELLOW",   job: "Gunner",    color: "#eab308", sub: "#fef08a", x: 30,  y: 90 }
+];
+
+const JOB_SPECS = {
+  Mage:      { hp: 130, atk: 28, spd: 2.2, rng: 6.5, cd: 0.9,  splash: 2.5 },
+  Knight:    { hp: 260, atk: 18, spd: 2.0, rng: 1.8, cd: 0.75, def: 0.35 },
+  Ranger:    { hp: 120, atk: 24, spd: 2.7, rng: 9.5, cd: 0.7,  snipe: true },
+  Summoner:  { hp: 150, atk: 22, spd: 2.3, rng: 6.0, cd: 0.8,  drain: 0.35 },
+  Barbarian: { hp: 210, atk: 40, spd: 2.5, rng: 1.8, cd: 0.65, rage: true },
+  Gunner:    { hp: 140, atk: 14, spd: 2.1, rng: 7.0, cd: 0.35, rapid: true }
 };
 
-const EVOLVE = {
-  Swordsman: "Rifleman",
-  Rifleman:  "Bazooka",
-  Bike:      "Car",
-  Car:       "Tank",
-  Glider:    "Plane",
-  Plane:     "Jet"
-};
+function pickClass(job) {
+  playerChoice = job;
+  document.querySelectorAll(".class-card").forEach(c => c.classList.remove("active"));
+  event.currentTarget.classList.add("active");
+}
 
-const doctrinePools = {
-  all:   ["Swordsman", "Swordsman", "Bike", "Glider", "Rifleman"],
-  armor: ["Bike", "Bike", "Car", "Car", "Tank"],
-  air:   ["Glider", "Glider", "Plane", "Plane", "Jet"],
-  inf:   ["Swordsman", "Swordsman", "Swordsman", "Rifleman", "Bazooka"]
-};
+function startGame() {
+  initAudio();
+  document.getElementById("select-modal").style.display = "none";
+
+  // 플레이어 직업 설정 및 AI 직업 중복 없이 분배
+  FACTIONS[0].job = playerChoice;
+  const remaining = ALL_JOBS.filter(j => j !== playerChoice);
+  for (let i = 1; i < 6; i++) {
+    FACTIONS[i].job = remaining[i - 1];
+  }
+
+  document.getElementById("myClassTitle").textContent = playerChoice.toUpperCase();
+  document.getElementById("myClassTitle").style.color = FACTIONS[0].color;
+
+  initWorld();
+  gameStarted = true;
+}
 
 function resize() {
   C.width = innerWidth;
   C.height = innerHeight;
-  tile = Math.max(6, Math.min(innerWidth / 92, innerHeight / 56));
+  tile = Math.max(5, Math.min(innerWidth / 110, innerHeight / 65));
 }
 addEventListener("resize", resize);
 resize();
 
-function w2s(wx, wy) {
-  return [
-    innerWidth / 2 + (wx - camX) * tile,
-    innerHeight / 2 + (wy - camY) * tile
-  ];
-}
-
-function s2w(sx, sy) {
-  return [
-    camX + (sx - innerWidth / 2) / tile,
-    camY + (sy - innerHeight / 2) / tile
-  ];
-}
-
-function dist(a, b, c, d) {
-  return Math.hypot(a - c, b - d);
-}
-
-function addUnit(type, x, y, team) {
-  const s = SPEC[type];
-  units.push({
-    id: uid++,
-    type,
-    team,
-    x, y,
-    hp: s.hp,
-    maxHp: s.hp,
-    atk: s.atk,
-    spd: s.spd,
-    rng: s.rng,
-    heading: team === 1 ? 0 : Math.PI,
-    cd: Math.random() * 0.4,
-    carry: 0,
-    target: null,
-    flash: 0
-  });
-}
-
-function init() {
-  units.length = 0;
-  structures.length = 0;
-  sectors.length = 0;
-  resources.length = 0;
-  particles.length = 0;
-  projectiles.length = 0;
-  explosions.length = 0;
-
-  ore = 300;
-  eOre = 300;
-  mission = 420;
-  directive = null;
-  uid = 1;
-  gameOver = false;
-  camX = 25; camY = 40;
-
-  document.getElementById("result").style.display = "none";
-
-  structures.push({ type: "CORE", x: 12, y: 40, team: 1, hp: 4500, maxHp: 4500 });
-  structures.push({ type: "CORE", x: 128, y: 40, team: 2, hp: 4500, maxHp: 4500 });
-
-  const data = [
-    ["ALPHA", 34, 19],
-    ["BETA", 34, 61],
-    ["GAMMA", 61, 19],
-    ["DELTA", 61, 61],
-    ["EPSILON", 96, 19],
-    ["ZETA", 96, 61]
-  ];
-
-  data.forEach(d => {
-    sectors.push({
-      name: d[0],
-      x: d[1],
-      y: d[2],
-      owner: 0,
-      prog: 0,
-      radius: 7,
-      pulse: Math.random() * 6
-    });
-
-    resources.push({
-      x: d[1],
-      y: d[2] - 6,
-      amt: 4000,
-      max: 4000
-    });
-  });
-
-  resources.push({ x: 19, y: 29, amt: 7000, max: 7000 });
-  resources.push({ x: 19, y: 51, amt: 7000, max: 7000 });
-  resources.push({ x: 121, y: 29, amt: 7000, max: 7000 });
-  resources.push({ x: 121, y: 51, amt: 7000, max: 7000 });
-
-  for (let i = 0; i < 4; i++) addUnit("Worker", 17, 36 + i * 2.5, 1);
-  addUnit("Swordsman", 21, 37, 1);
-  addUnit("Swordsman", 21, 43, 1);
-  addUnit("Bike", 24, 40, 1);
-
-  for (let i = 0; i < 4; i++) addUnit("Worker", 123, 36 + i * 2.5, 2);
-  addUnit("Swordsman", 119, 37, 2);
-  addUnit("Swordsman", 119, 43, 2);
-  addUnit("Bike", 116, 40, 2);
-}
-
-window.setDoc = function(d) {
-  initAudio();
-  doctrine = d;
-  document.querySelectorAll("button.doc").forEach(b => b.classList.remove("active"));
-  document.getElementById("b-" + d).classList.add("active");
-  toast(
-    d === "armor" ? "기갑 생산 비중 증가" :
-    d === "air" ? "공군 생산 비중 증가" :
-    d === "inf" ? "보병 생산 비중 증가" :
-    "전군 균형 생산"
-  );
-};
-
-window.clearDir = function() {
-  initAudio();
-  directive = null;
-  document.getElementById("directive-bar").textContent = "원하는 위치를 탭하면 전군이 강제 진격합니다 (화면 드래그: 시점 이동)";
-};
+const w2s = (wx, wy) => [innerWidth / 2 + (wx - camX) * tile, innerHeight / 2 + (wy - camY) * tile];
+const s2w = (sx, sy) => [camX + (sx - innerWidth / 2) / tile, camY + (sy - innerHeight / 2) / tile];
+const dist = (a, b, c, d) => Math.hypot(a - c, b - d);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => Math.random() * (b - a) + a;
 
 function toast(t) {
   const el = document.getElementById("toast");
   el.textContent = t;
   el.style.opacity = "1";
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.style.opacity = "0", 1300);
+  el._t = setTimeout(() => el.style.opacity = "0", 1400);
 }
 
-function nearestSector(wx, wy) {
-  let best = null, bd = Infinity;
-  for (const s of sectors) {
-    const d = dist(wx, wy, s.x, s.y);
-    if (d < bd) { bd = d; best = s; }
-  }
-  return best;
+function focusBase() {
+  const pBase = structures.find(s => s.team === 0 && s.type === "CORE");
+  if (pBase) { camX = pBase.x; camY = pBase.y; }
 }
 
-function handleTap(sx, sy) {
-  if (gameOver) return;
-  initAudio();
-
-  const [wx, wy] = s2w(sx, sy);
-  const s = nearestSector(wx, wy);
-
-  if (s && dist(wx, wy, s.x, s.y) < 9) {
-    directive = { x: s.x, y: s.y, sector: s.name };
-    document.getElementById("directive-bar").textContent = `지휘 목표: ${s.name} / 전군 강제 진격`;
-    toast(`${s.name} 점령 진격 명령!`);
-  } else {
-    directive = {
-      x: Math.max(5, Math.min(W - 5, wx)),
-      y: Math.max(5, Math.min(H - 5, wy)),
-      sector: null
-    };
-    document.getElementById("directive-bar").textContent = `지휘 목표: (${Math.round(directive.x)}, ${Math.round(directive.y)}) 강제 이동`;
-    toast("지정 좌표로 전군 진격!");
-  }
-
-  sfxPing();
+function clearDir() {
+  directive = null;
+  document.getElementById("directive-bar").textContent = "원하는 지점을 탭하면 전군이 강제 진격합니다 (화면 드래그: 맵 이동)";
+  toast("자율 수비 모드 복귀");
 }
 
 /* =========================================================
-   CAMERA & TAP HANDLING
+   WORLD INIT
 ========================================================= */
-let isDragging = false;
-let startX = 0, startY = 0;
-let dragDist = 0;
+function addUnit(team, x, y, tier = 1) {
+  const f = FACTIONS[team];
+  const s = JOB_SPECS[f.job];
+  const tMult = Math.pow(2.8, tier - 1);
+
+  units.push({
+    id: uid++,
+    team,
+    job: f.job,
+    tier,
+    x, y,
+    hp: s.hp * tMult,
+    maxHp: s.hp * tMult,
+    atk: s.atk * tMult,
+    spd: s.spd * (1 + (tier - 1) * 0.06),
+    rng: s.rng + (tier - 1) * 0.5,
+    heading: Math.random() * Math.PI * 2,
+    cd: Math.random() * 0.4
+  });
+}
+
+function initWorld() {
+  units.length = 0;
+  structures.length = 0;
+  sectors.length = 0;
+  particles.length = 0;
+  projectiles.length = 0;
+  explosions.length = 0;
+
+  mission = 600;
+  directive = null;
+  uid = 1;
+  gameOver = false;
+  document.getElementById("result").style.display = "none";
+
+  // 6개 본진 생성
+  FACTIONS.forEach(f => {
+    structures.push({
+      type: "CORE",
+      x: f.x, y: f.y,
+      team: f.id,
+      hp: 8000, maxHp: 8000
+    });
+    for (let i = 0; i < 5; i++) {
+      addUnit(f.id, f.x + rand(-3, 3), f.y + rand(-3, 3), 1);
+    }
+  });
+
+  // 12개 중립 점령 섹터
+  const secLocs = [
+    [65, 30], [135, 30], [100, 45],
+    [50, 60], [100, 60], [150, 60],
+    [65, 90], [135, 90], [100, 75],
+    [70, 45], [130, 45], [100, 105]
+  ];
+  secLocs.forEach((p, idx) => {
+    sectors.push({
+      id: idx + 1,
+      x: p[0], y: p[1],
+      owner: -1,
+      prog: 0,
+      radius: 8.5
+    });
+  });
+
+  focusBase();
+}
+
+/* =========================================================
+   PRODUCTION & 10-UNIT 5-TIER MERGE
+========================================================= */
+let prodClock = 0;
+
+function handleProduction(dt) {
+  // 기지당 1초에 1마리 생산 -> 10초에 10마리
+  prodClock += dt;
+  if (prodClock < 1.0) return;
+  prodClock = 0;
+
+  const bases = structures.filter(s => s.type === "CORE" || s.type === "OUTPOST");
+  for (const b of bases) {
+    addUnit(b.team, b.x + rand(-3.5, 3.5), b.y + rand(-3.5, 3.5), 1);
+  }
+}
+
+function handleAutoMerge() {
+  for (let team = 0; team < 6; team++) {
+    for (let tier = 1; tier <= 4; tier++) {
+      const match = units.filter(u => u.team === team && u.tier === tier && u.hp > 0);
+      if (match.length >= 10) {
+        for (let i = 0; i < match.length; i++) {
+          const uCenter = match[i];
+          const nearby = match.filter(o => o !== uCenter && dist(uCenter.x, uCenter.y, o.x, o.y) < 8.5);
+
+          if (nearby.length >= 9) {
+            const group = [uCenter, ...nearby.slice(0, 9)];
+            const avgX = group.reduce((acc, u) => acc + u.x, 0) / 10;
+            const avgY = group.reduce((acc, u) => acc + u.y, 0) / 10;
+
+            group.forEach(u => u.hp = 0);
+            addUnit(team, avgX, avgY, tier + 1);
+
+            if (team === 0) {
+              sfxMerge();
+              toast(`★ TIER ${tier + 1} ${FACTIONS[team].job.toUpperCase()} 진화 완료!`);
+            }
+
+            for (let k = 0; k < 30; k++) {
+              particles.push({
+                x: avgX, y: avgY,
+                vx: rand(-4.5, 4.5), vy: rand(-4.5, 4.5),
+                life: 0.65, maxLife: 0.65,
+                color: FACTIONS[team].color
+              });
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* =========================================================
+   SECTOR CAPTURE
+========================================================= */
+function handleSectors(dt) {
+  for (const s of sectors) {
+    const counts = [0, 0, 0, 0, 0, 0];
+    for (const u of units) {
+      if (u.hp > 0 && dist(u.x, u.y, s.x, s.y) < s.radius) counts[u.team]++;
+    }
+
+    let dominant = -1, maxC = 0, secondC = 0;
+    for (let i = 0; i < 6; i++) {
+      if (counts[i] > maxC) { secondC = maxC; maxC = counts[i]; dominant = i; }
+      else if (counts[i] > secondC) { secondC = counts[i]; }
+    }
+
+    if (dominant !== -1 && maxC > secondC) {
+      if (s.owner === dominant) {
+        s.prog = Math.min(100, s.prog + 24 * dt);
+      } else {
+        s.prog -= 28 * dt;
+        if (s.prog <= 0) {
+          s.owner = dominant;
+          s.prog = 1;
+          captureOutpost(s, dominant);
+        }
+      }
+    }
+  }
+}
+
+function captureOutpost(s, team) {
+  structures.filter(st => st.sectorId === s.id).forEach(st => st.hp = 0);
+  structures.push({
+    type: "OUTPOST",
+    sectorId: s.id,
+    x: s.x, y: s.y,
+    team,
+    hp: 4000, maxHp: 4000
+  });
+
+  if (team === 0) {
+    toast(`전초기지 점령 성공! 생산 기지 증설 완료`);
+    sfxMerge();
+  }
+}
+
+/* =========================================================
+   COMBAT & AI
+========================================================= */
+function updateUnits(dt) {
+  for (let i = units.length - 1; i >= 0; i--) {
+    const u = units[i];
+    if (u.hp <= 0) { units.splice(i, 1); continue; }
+
+    let target = null, minDist = u.rng + 5;
+    for (const other of units) {
+      if (other.team !== u.team && other.hp > 0) {
+        const d = dist(u.x, u.y, other.x, other.y);
+        if (d < minDist) { minDist = d; target = other; }
+      }
+    }
+
+    if (!target) {
+      const eBases = structures.filter(st => st.team !== u.team && st.hp > 0);
+      for (const eb of eBases) {
+        const d = dist(u.x, u.y, eb.x, eb.y);
+        if (d < u.rng + 6) { target = eb; break; }
+      }
+    }
+
+    if (target) {
+      const td = dist(u.x, u.y, target.x, target.y);
+      if (td <= u.rng) {
+        u.cd -= dt;
+        if (u.cd <= 0) {
+          executeAttack(u, target);
+          u.cd = JOB_SPECS[u.job].cd;
+        }
+      }
+    }
+
+    let destX = 100, destY = 60;
+    if (u.team === 0 && directive) {
+      destX = directive.x; destY = directive.y;
+    } else {
+      if (target) {
+        destX = target.x; destY = target.y;
+      } else {
+        const unowned = sectors.find(s => s.owner !== u.team);
+        if (unowned) { destX = unowned.x; destY = unowned.y; }
+      }
+    }
+
+    const d = dist(u.x, u.y, destX, destY);
+    if (d > 1.8) {
+      u.heading = Math.atan2(destY - u.y, destX - u.x);
+      u.x += Math.cos(u.heading) * u.spd * dt;
+      u.y += Math.sin(u.heading) * u.spd * dt;
+    }
+  }
+}
+
+function executeAttack(u, target) {
+  let dmg = u.atk;
+  const spec = JOB_SPECS[u.job];
+
+  if (target.job === "Knight") dmg *= (1 - (JOB_SPECS.Knight.def || 0.3));
+  target.hp -= dmg;
+
+  if (u.team === 0) sfxAttack(u.job);
+
+  if (spec.splash) {
+    for (const o of units) {
+      if (o.team !== u.team && o !== target && dist(target.x, target.y, o.x, o.y) < spec.splash) {
+        o.hp -= dmg * 0.5;
+      }
+    }
+    explosions.push({ x: target.x, y: target.y, r: spec.splash * tile * (1 + u.tier * 0.2), life: 0.25 });
+  }
+
+  if (spec.drain) {
+    u.hp = Math.min(u.maxHp, u.hp + dmg * spec.drain);
+  }
+
+  projectiles.push({
+    sx: u.x, sy: u.y,
+    tx: target.x, ty: target.y,
+    team: u.team,
+    tier: u.tier,
+    job: u.job,
+    life: 0.15
+  });
+
+  if (target.hp <= 0 && target.type === "CORE") {
+    sfxBoom();
+    toast(`${FACTIONS[target.team].name} 코어 함락!`);
+  }
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+let isDragging = false, startX = 0, startY = 0, dragDist = 0;
 
 document.getElementById("panel").addEventListener("pointerdown", e => e.stopPropagation());
 
 C.addEventListener("pointerdown", e => {
+  if (!gameStarted) return;
   initAudio();
   isDragging = true;
   dragDist = 0;
@@ -534,833 +674,297 @@ window.addEventListener("pointermove", e => {
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
   dragDist += Math.hypot(dx, dy);
-
-  camX = Math.max(15, Math.min(W - 15, camX - dx / tile));
-  camY = Math.max(15, Math.min(H - 15, camY - dy / tile));
+  camX = clamp(camX - dx / tile, 20, W - 20);
+  camY = clamp(camY - dy / tile, 20, H - 20);
   startX = e.clientX;
   startY = e.clientY;
 });
 
 window.addEventListener("pointerup", e => {
-  if (isDragging && dragDist < 15) {
-    handleTap(e.clientX, e.clientY);
+  if (isDragging && dragDist < 12) {
+    const [wx, wy] = s2w(e.clientX, e.clientY);
+    directive = { x: clamp(wx, 5, W - 5), y: clamp(wy, 5, H - 5) };
+    document.getElementById("directive-bar").textContent = `지휘 목표: (${Math.round(directive.x)}, ${Math.round(directive.y)}) 전군 총진격`;
+    toast("전군 목표 지점 진격!");
   }
   isDragging = false;
 });
 
 /* =========================================================
-   AUTO PRODUCTION & MERGE
+   DETAILED CLASS-SPECIFIC SPRITES
 ========================================================= */
-let prodT = 0;
-function chooseProduction() {
-  const pool = doctrinePools[doctrine];
-  return pool[Math.floor(Math.random() * pool.length)];
-}
+function drawUnitSprite(u) {
+  const [px, py] = w2s(u.x, u.y);
+  const f = FACTIONS[u.team];
+  const col = f.color;
+  const sub = f.sub;
+  const baseSize = 4.5 + (u.tier - 1) * 2.8;
 
-function autoProduce(dt) {
-  prodT += dt;
-  if (prodT < 3.6) return;
-  prodT = 0;
+  X.save();
+  X.translate(px, py);
+  X.rotate(u.heading);
 
-  const pBases = structures.filter(s => s.team === 1);
-  for (const b of pBases) {
-    const chosen = chooseProduction();
-    const cost = SPEC[chosen].cost;
-
-    if (ore >= cost) {
-      ore -= cost;
-      const side = b.type === "CORE" ? 3.5 : 2.8;
-      addUnit(chosen, b.x + side, b.y + (Math.random() - 0.5) * 6, 1);
-      spawnText(b.x + 3, b.y - 4, chosen.toUpperCase(), 1);
-    }
+  // 1. 마법사: 로브 + 마법 지팡이 + 오브
+  if (u.job === "Mage") {
+    X.fillStyle = col;
+    X.beginPath();
+    X.moveTo(baseSize, 0);
+    X.lineTo(-baseSize, -baseSize * 0.9);
+    X.lineTo(-baseSize * 0.4, 0);
+    X.lineTo(-baseSize, baseSize * 0.9);
+    X.closePath();
+    X.fill();
+    // 스태프
+    X.strokeStyle = "#fff";
+    X.lineWidth = 1.5;
+    X.beginPath(); X.moveTo(0, -baseSize * 0.5); X.lineTo(baseSize * 1.5, -baseSize * 0.5); X.stroke();
+    // 마력 구체
+    X.fillStyle = sub;
+    X.beginPath(); X.arc(baseSize * 1.5, -baseSize * 0.5, baseSize * 0.4, 0, Math.PI * 2); X.fill();
+  }
+  // 2. 기사: 중갑 타워 실드 + 십자 검
+  else if (u.job === "Knight") {
+    // 실드 (전방 방어)
+    X.fillStyle = col;
+    X.fillRect(baseSize * 0.2, -baseSize * 0.9, baseSize * 0.6, baseSize * 1.8);
+    // 본체 투구
+    X.fillStyle = "#1e293b";
+    X.beginPath(); X.arc(-baseSize * 0.2, 0, baseSize * 0.7, 0, Math.PI * 2); X.fill();
+    // 소드
+    X.fillStyle = sub;
+    X.fillRect(-baseSize * 0.5, baseSize * 0.4, baseSize * 1.6, baseSize * 0.35);
+  }
+  // 3. 레인저: 후드 + 컴파운드 보우
+  else if (u.job === "Ranger") {
+    // 활 시위
+    X.strokeStyle = col;
+    X.lineWidth = 2;
+    X.beginPath();
+    X.arc(baseSize * 0.2, 0, baseSize * 1.2, -Math.PI * 0.4, Math.PI * 0.4);
+    X.stroke();
+    // 화살
+    X.strokeStyle = "#fff";
+    X.lineWidth = 1.5;
+    X.beginPath(); X.moveTo(-baseSize * 0.5, 0); X.lineTo(baseSize * 1.6, 0); X.stroke();
+    // 후드 본체
+    X.fillStyle = col;
+    X.beginPath(); X.arc(-baseSize * 0.3, 0, baseSize * 0.6, 0, Math.PI * 2); X.fill();
+  }
+  // 4. 서머너: 흑마도 뿔 + 부유 마도서
+  else if (u.job === "Summoner") {
+    X.fillStyle = col;
+    X.beginPath(); X.arc(0, 0, baseSize * 0.7, 0, Math.PI * 2); X.fill();
+    // 뿔
+    X.fillStyle = sub;
+    X.beginPath();
+    X.moveTo(-baseSize * 0.2, -baseSize * 0.6); X.lineTo(baseSize * 0.4, -baseSize * 1.3); X.lineTo(0, -baseSize * 0.4);
+    X.moveTo(-baseSize * 0.2, baseSize * 0.6); X.lineTo(baseSize * 0.4, baseSize * 1.3); X.lineTo(0, baseSize * 0.4);
+    X.fill();
+    // 마도서
+    X.fillStyle = "#e9d5ff";
+    X.fillRect(baseSize * 0.6, -baseSize * 0.4, baseSize * 0.7, baseSize * 0.8);
+  }
+  // 5. 바바리안: 양날 대형 배틀액스
+  else if (u.job === "Barbarian") {
+    // 근육질 몸체
+    X.fillStyle = col;
+    X.fillRect(-baseSize * 0.7, -baseSize * 0.6, baseSize * 1.3, baseSize * 1.2);
+    // 양날 도끼 자루
+    X.fillStyle = "#78350f";
+    X.fillRect(0, -baseSize * 1.4, baseSize * 0.3, baseSize * 2.8);
+    // 양날 도끼날
+    X.fillStyle = sub;
+    X.beginPath();
+    X.moveTo(baseSize * 0.3, -baseSize * 1.2); X.lineTo(baseSize * 1.2, -baseSize * 0.6); X.lineTo(baseSize * 0.3, 0);
+    X.moveTo(baseSize * 0.3, baseSize * 1.2); X.lineTo(baseSize * 1.2, baseSize * 0.6); X.lineTo(baseSize * 0.3, 0);
+    X.fill();
+  }
+  // 6. 거너: 중화기 회전 개틀링 배럴
+  else if (u.job === "Gunner") {
+    // 본체
+    X.fillStyle = "#0f172a";
+    X.beginPath(); X.arc(-baseSize * 0.3, 0, baseSize * 0.65, 0, Math.PI * 2); X.fill();
+    // 3연장 개틀링 배럴
+    X.fillStyle = col;
+    X.fillRect(baseSize * 0.1, -baseSize * 0.6, baseSize * 1.6, baseSize * 0.3);
+    X.fillRect(baseSize * 0.1, -baseSize * 0.15, baseSize * 1.8, baseSize * 0.3);
+    X.fillRect(baseSize * 0.1, baseSize * 0.3, baseSize * 1.6, baseSize * 0.3);
   }
 
-  const eBases = structures.filter(s => s.team === 2);
-  for (const b of eBases) {
-    let pool = ["Swordsman", "Swordsman", "Bike", "Rifleman"];
-    if (Math.random() < 0.25) pool.push("Tank");
-    if (Math.random() < 0.2) pool.push("Glider");
-
-    const chosen = pool[Math.floor(Math.random() * pool.length)];
-    const cost = SPEC[chosen].cost;
-
-    if (eOre >= cost) {
-      eOre -= cost;
-      addUnit(chosen, b.x - 3.5, b.y + (Math.random() - 0.5) * 6, 2);
-    }
+  // Tier 2~5 진화 아우라 및 외곽 링
+  if (u.tier >= 2) {
+    X.strokeStyle = u.tier >= 4 ? "#ffd700" : "#ffffff";
+    X.lineWidth = u.tier * 0.8;
+    X.beginPath();
+    X.arc(0, 0, baseSize * 1.4, 0, Math.PI * 2);
+    X.stroke();
   }
-}
-
-function autoMerge() {
-  const evos = [
-    "Swordsman", "Rifleman",
-    "Bike", "Car",
-    "Glider", "Plane"
-  ];
-
-  for (const team of [1, 2]) {
-    for (const type of evos) {
-      const list = units.filter(u => u.team === team && u.type === type && u.hp > 0);
-      if (list.length < 3) continue;
-
-      let done = false;
-      for (const u1 of list) {
-        if (done) break;
-        const near = list.filter(u => u !== u1 && dist(u1.x, u1.y, u.x, u.y) < 5.5);
-
-        if (near.length >= 2) {
-          const u2 = near[0];
-          const u3 = near[1];
-          const next = EVOLVE[type];
-          const mx = (u1.x + u2.x + u3.x) / 3;
-          const my = (u1.y + u2.y + u3.y) / 3;
-
-          u1.hp = 0; u2.hp = 0; u3.hp = 0;
-          addUnit(next, mx, my, team);
-
-          sfxMerge();
-          for (let i = 0; i < 20; i++) {
-            particles.push({
-              x: mx + (Math.random() - 0.5) * 2,
-              y: my + (Math.random() - 0.5) * 2,
-              vx: (Math.random() - 0.5) * 5,
-              vy: (Math.random() - 0.5) * 5,
-              life: 0.6 + Math.random() * 0.4,
-              max: 0.9,
-              size: 1.5 + Math.random() * 2,
-              kind: "merge",
-              team
-            });
-          }
-
-          spawnText(mx, my - 3, `${next.toUpperCase()} MERGED`, team);
-          done = true;
-        }
-      }
-    }
-  }
-}
-
-function resourceForWorker(u) {
-  let best = null, bd = Infinity;
-  for (const r of resources) {
-    if (r.amt <= 0) continue;
-    const d = dist(u.x, u.y, r.x, r.y);
-    if (d < bd) { bd = d; best = r; }
-  }
-  return best;
-}
-
-function nearestEnemy(u) {
-  let best = null;
-  let score = Infinity;
-
-  for (const e of units) {
-    if (e.team === u.team || e.hp <= 0) continue;
-    let d = dist(u.x, u.y, e.x, e.y);
-    let priority = 0;
-
-    if (u.type === "Bazooka" && ["Tank", "Car", "Bike"].includes(e.type)) priority = -8;
-    if (u.type === "Jet" && ["Glider", "Plane", "Jet"].includes(e.type)) priority = -10;
-    if (u.type === "Plane" && ["Tank", "Car"].includes(e.type)) priority = -5;
-    if (u.type === "Tank" && ["Bazooka", "Rifleman"].includes(e.type)) priority = -4;
-
-    const scoreNow = d + priority;
-    if (scoreNow < score) {
-      score = scoreNow;
-      best = e;
-    }
-  }
-  return best;
-}
-
-function nearestEnemyStructure(u) {
-  let best = null, bd = Infinity;
-  for (const st of structures) {
-    if (st.team === u.team || st.hp <= 0) continue;
-    const d = dist(u.x, u.y, st.x, st.y);
-    if (d < bd) { bd = d; best = st; }
-  }
-  return best;
-}
-
-function getDestination(u) {
-  if (u.team === 1) {
-    if (directive) return { x: directive.x, y: directive.y };
-    let contested = sectors
-      .filter(s => s.owner !== 1)
-      .sort((a, b) => dist(u.x, u.y, a.x, a.y) - dist(u.x, u.y, b.x, b.y))[0];
-    if (contested) return { x: contested.x, y: contested.y };
-    return { x: 128, y: 40 };
+  if (u.tier >= 4) {
+    // 신화 등급 회전 광배
+    X.strokeStyle = col;
+    X.lineWidth = 2;
+    X.beginPath();
+    X.arc(0, 0, baseSize * 1.8, 0, Math.PI * 2);
+    X.stroke();
   }
 
-  const neutral = sectors
-    .filter(s => s.owner !== 2)
-    .sort((a, b) => dist(u.x, u.y, a.x, a.y) - dist(u.x, u.y, b.x, b.y))[0];
-  if (neutral) return { x: neutral.x, y: neutral.y };
-  return { x: 12, y: 40 };
-}
+  X.restore();
 
-function separateUnits(u) {
-  let sx = 0, sy = 0, count = 0;
-  for (const o of units) {
-    if (o === u || o.hp <= 0 || o.team !== u.team) continue;
-    const d = dist(u.x, u.y, o.x, o.y);
-    if (d < 1.8 && d > 0.01) {
-      sx += (u.x - o.x) / d;
-      sy += (u.y - o.y) / d;
-      count++;
-    }
-  }
-  if (count) {
-    u.x += sx * 0.45;
-    u.y += sy * 0.45;
-  }
-}
-
-function updateWorker(u, dt) {
-  const bases = structures.filter(s => s.team === u.team);
-  let home = null, minHD = Infinity;
-  for (const b of bases) {
-    const d = dist(u.x, u.y, b.x, b.y);
-    if (d < minHD) { minHD = d; home = b; }
-  }
-  if (!home) return;
-
-  if (u.carry >= 20) {
-    const d = dist(u.x, u.y, home.x, home.y);
-    if (d > 2.2) {
-      moveToward(u, home.x, home.y, dt, 1);
-    } else {
-      if (u.team === 1) ore += u.carry;
-      else eOre += u.carry;
-      u.carry = 0;
-      for (let i = 0; i < 3; i++) {
-        particles.push({
-          x: home.x + (Math.random() - 0.5) * 2,
-          y: home.y + (Math.random() - 0.5) * 2,
-          vx: (Math.random() - 0.5),
-          vy: -Math.random() * 2,
-          life: 0.45, max: 0.45, size: 1.5, kind: "spark", team: u.team
-        });
-      }
-    }
-    return;
-  }
-
-  const res = resourceForWorker(u);
-  if (!res) return;
-  const d = dist(u.x, u.y, res.x, res.y);
-  if (d > 2) {
-    moveToward(u, res.x, res.y, dt, 1);
-  } else {
-    const amount = Math.min(12 * dt, 20 - u.carry, res.amt);
-    if (amount > 0) {
-      u.carry += amount;
-      res.amt -= amount;
-    }
-  }
-}
-
-function moveToward(u, x, y, dt, mult) {
-  const d = dist(u.x, u.y, x, y);
-  if (d < 0.05) return;
-  u.heading = Math.atan2(y - u.y, x - u.x);
-  const step = Math.min(d, u.spd * mult * dt);
-  u.x += Math.cos(u.heading) * step;
-  u.y += Math.sin(u.heading) * step;
-  u.x = Math.max(3, Math.min(W - 3, u.x));
-  u.y = Math.max(3, Math.min(H - 3, u.y));
+  // Floating HP Bar
+  const bw = 18 + (u.tier - 1) * 8;
+  X.fillStyle = "#000";
+  X.fillRect(px - bw / 2, py - baseSize - 7, bw, 3);
+  X.fillStyle = col;
+  X.fillRect(px - bw / 2, py - baseSize - 7, bw * Math.max(0, u.hp / u.maxHp), 3);
 }
 
 /* =========================================================
-   COMBAT AI (지휘 명령 우선 이동 + 이동간 사격)
+   RENDER PIPELINE
 ========================================================= */
-function updateCombatUnit(u, dt) {
-  separateUnits(u);
-  let target = nearestEnemy(u);
+function update(dt) {
+  if (gameOver || !gameStarted) return;
+  mission -= dt;
 
-  if (!target) {
-    const st = nearestEnemyStructure(u);
-    if (st && dist(u.x, u.y, st.x, st.y) < u.rng + 5) target = st;
-  }
+  handleProduction(dt);
+  handleAutoMerge();
+  handleSectors(dt);
+  updateUnits(dt);
 
-  // 1. 사거리 안의 적이 있으면 이동 중에도 발사
-  if (target) {
-    const td = dist(u.x, u.y, target.x, target.y);
-    if (td <= u.rng) {
-      u.cd -= dt;
-      if (u.cd <= 0) {
-        attack(u, target);
-        u.cd = u.type === "Tank" ? 0.8 : u.type === "Jet" ? 0.65 : u.type === "Bazooka" ? 1.15 : 0.85;
-      }
-    }
-  }
-
-  // 2. 이동 경로 판정 (플레이어 지휘 명령이 있으면 무조건 그곳으로 강제 진격)
-  const dest = getDestination(u);
-  const d = dist(u.x, u.y, dest.x, dest.y);
-
-  if (u.team === 1 && directive) {
-    // 플레이어가 목표를 찍은 경우: 목표 지점까지 멈추지 않고 진격
-    if (d > 1.8) {
-      moveToward(u, dest.x, dest.y, dt, 1.05);
-    }
-  } else {
-    // 자율 순찰 상태인 경우: 사거리 밖의 타겟 추격 또는 거점 순찰
-    if (target) {
-      const td = dist(u.x, u.y, target.x, target.y);
-      if (td > u.rng) {
-        let mult = 1;
-        if (u.type === "Bike" || u.type === "Car") mult = 1.08;
-        if (u.type === "Tank") mult = 0.95;
-        if (u.type === "Jet") mult = 1.15;
-        moveToward(u, target.x, target.y, dt, mult);
-      }
-    } else if (d > 2.5) {
-      moveToward(u, dest.x, dest.y, dt, 1);
-    }
-  }
-}
-
-function attack(u, target) {
-  if (!target || target.hp <= 0) return;
-  let damage = u.atk;
-
-  if (u.type === "Bazooka" && ["Tank", "Car", "Bike"].includes(target.type)) damage *= 1.65;
-  if (u.type === "Bazooka" && target.type === "CORE") damage *= 1.35;
-  if (u.type === "Jet" && ["Glider", "Plane", "Jet"].includes(target.type)) damage *= 1.6;
-  if (u.type === "Tank" && target.type === "Swordsman") damage *= 1.15;
-
-  target.hp -= damage;
-  u.flash = 0.1;
-
-  if (u.type === "Tank") sfxCannon();
-  else if (u.type === "Bazooka") sfxRocket();
-  else if (u.type === "Swordsman") {}
-  else sfxRifle();
-
-  const d = dist(u.x, u.y, target.x, target.y);
-  const pSpeed = u.type === "Tank" ? 22 : u.type === "Bazooka" ? 14 : 28;
-  projectiles.push({
-    x: u.x, y: u.y,
-    vx: ((target.x - u.x) / d) * pSpeed,
-    vy: ((target.y - u.y) / d) * pSpeed,
-    tx: target.x, ty: target.y,
-    life: d / pSpeed,
-    maxLife: d / pSpeed,
-    type: u.type
-  });
-
-  if (u.type === "Tank" || u.type === "Bazooka" || u.type === "Jet") {
-    explosions.push({
-      x: target.x, y: target.y, r: 0,
-      max: u.type === "Jet" ? 4.2 : 3,
-      life: 0.28, maxLife: 0.28
-    });
-  }
-
-  if (target.hp <= 0) {
-    sfxExplosion(target.type === "CORE" ? 3 : 1.5);
-    explosions.push({
-      x: target.x, y: target.y, r: 0,
-      max: u.type === "Tank" || u.type === "Jet" ? 5 : 2.8,
-      life: 0.5, maxLife: 0.5
-    });
-
-    for (let i = 0; i < 10; i++) {
-      particles.push({
-        x: target.x, y: target.y,
-        vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7,
-        life: 0.4 + Math.random() * 0.45, max: 1, size: 1 + Math.random() * 2,
-        kind: "debris", team: target.team
-      });
-    }
-  }
-}
-
-function updateUnits(dt) {
-  for (let i = units.length - 1; i >= 0; i--) {
-    const u = units[i];
-    if (u.hp <= 0) { units.splice(i, 1); continue; }
-    u.flash = Math.max(0, u.flash - dt);
-    if (u.type === "Worker") updateWorker(u, dt);
-    else updateCombatUnit(u, dt);
-  }
-}
-
-function updateSectors(dt) {
-  for (const s of sectors) {
-    s.pulse += dt;
-    let p = 0, e = 0;
-    for (const u of units) {
-      if (u.type === "Worker" || u.hp <= 0) continue;
-      if (dist(u.x, u.y, s.x, s.y) < s.radius) {
-        if (u.team === 1) p++;
-        else e++;
-      }
-    }
-
-    if (p > 0 && e === 0) {
-      s.prog = Math.min(100, s.prog + 20 * dt * (1 + Math.min(2, p) * 0.1));
-      if (s.prog >= 100 && s.owner !== 1) captureSector(s, 1);
-    } else if (e > 0 && p === 0) {
-      s.prog = Math.max(-100, s.prog - 20 * dt * (1 + Math.min(2, e) * 0.1));
-      if (s.prog <= -100 && s.owner !== 2) captureSector(s, 2);
-    } else if (p === 0 && e === 0) {
-      if (s.owner === 0) s.prog *= Math.max(0, 1 - 0.25 * dt);
-    } else {
-      s.prog *= Math.max(0, 1 - 0.45 * dt);
-    }
-
-    if (s.owner === 1) ore += 2.4 * dt;
-    if (s.owner === 2) eOre += 2.4 * dt;
-  }
-
-  ore += 2.1 * dt;
-  eOre += 2.1 * dt;
-}
-
-function captureSector(s, team) {
-  s.owner = team;
-  s.prog = team === 1 ? 100 : -100;
-  structures.filter(st => st.type === "OUTPOST" && st.x === s.x && st.y === s.y).forEach(st => st.hp = 0);
-
-  structures.push({
-    type: "OUTPOST",
-    x: s.x, y: s.y,
-    team, hp: 2200, maxHp: 2200
-  });
-
-  for (let i = 0; i < 3; i++) {
-    addUnit("Worker", s.x + (i - 1) * 1.6, s.y + 2.5, team);
-  }
-
-  sfxMerge();
-  for (let i = 0; i < 30; i++) {
-    particles.push({
-      x: s.x + (Math.random() - 0.5) * 5,
-      y: s.y + (Math.random() - 0.5) * 5,
-      vx: (Math.random() - 0.5) * 3,
-      vy: (Math.random() - 0.5) * 3,
-      life: 0.7 + Math.random() * 0.5,
-      max: 1.2, size: 1 + Math.random() * 2,
-      kind: "capture", team
-    });
-  }
-
-  if (team === 1) toast(`${s.name} 확보!`);
-}
-
-function updateEffects(dt) {
   for (let i = projectiles.length - 1; i >= 0; i--) {
-    const pr = projectiles[i];
-    pr.life -= dt;
-    pr.x += pr.vx * dt;
-    pr.y += pr.vy * dt;
-    if (pr.life <= 0) projectiles.splice(i, 1);
-  }
-
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.life -= dt;
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.vx *= 0.96;
-    p.vy *= 0.96;
-    if (p.kind === "smoke") p.size += dt * 2;
-    if (p.life <= 0) particles.splice(i, 1);
+    projectiles[i].life -= dt;
+    if (projectiles[i].life <= 0) projectiles.splice(i, 1);
   }
 
   for (let i = explosions.length - 1; i >= 0; i--) {
-    const e = explosions[i];
-    e.life -= dt;
-    e.r += (e.max / e.maxLife) * dt;
-    if (e.life <= 0) explosions.splice(i, 1);
+    explosions[i].life -= dt;
+    if (explosions[i].life <= 0) explosions.splice(i, 1);
   }
-}
-
-function update(dt) {
-  if (gameOver) return;
-  mission -= dt;
-
-  autoProduce(dt);
-  autoMerge();
-  updateSectors(dt);
-  updateUnits(dt);
-  updateEffects(dt);
 
   for (let i = structures.length - 1; i >= 0; i--) {
-    const st = structures[i];
-    if (st.hp <= 0) {
-      if (st.type === "CORE") {
-        finishGame(st.team === 2);
+    if (structures[i].hp <= 0) {
+      if (structures[i].type === "CORE" && structures[i].team === 0) {
+        gameOver = true;
+        document.getElementById("resultTitle").textContent = "DEFEAT";
+        document.getElementById("result").style.display = "flex";
         return;
       }
       structures.splice(i, 1);
     }
   }
 
-  if (mission <= 0) {
-    const owned = sectors.filter(s => s.owner === 1).length;
-    finishGame(owned >= 3);
+  const remainingCores = structures.filter(st => st.type === "CORE" && st.team !== 0);
+  if (remainingCores.length === 0) {
+    gameOver = true;
+    document.getElementById("resultTitle").textContent = "VICTORY";
+    document.getElementById("result").style.display = "flex";
     return;
   }
 
-  document.getElementById("ore").textContent = Math.floor(ore);
-  document.getElementById("sector").textContent = `${sectors.filter(s => s.owner === 1).length}/6`;
-  document.getElementById("army").textContent = units.filter(u => u.team === 1 && u.type !== "Worker").length;
+  document.getElementById("army").textContent = units.filter(u => u.team === 0).length;
+  document.getElementById("bases").textContent = structures.filter(s => s.team === 0).length;
+  const aliveCores = structures.filter(st => st.type === "CORE").length;
+  document.getElementById("alive").textContent = `${aliveCores}/6`;
   const m = Math.floor(Math.max(0, mission) / 60);
   const s = Math.floor(Math.max(0, mission) % 60);
   document.getElementById("time").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function finishGame(win) {
-  gameOver = true;
-  const title = document.getElementById("resultTitle");
-  const text = document.getElementById("resultText");
-  title.textContent = win ? "VICTORY" : "DEFEAT";
-  title.style.color = win ? "#62e4ff" : "#ff6570";
-  text.textContent = win ? "적 코어를 파괴하거나 전장의 우세를 확보했습니다." : "전장을 장악하지 못했습니다.";
-  document.getElementById("result").style.display = "flex";
-}
-
-window.restartGame = function() {
-  init();
-};
-
-function spawnText(x, y, text, team) {
-  particles.push({
-    x, y, vx: 0, vy: -0.5,
-    life: 0.9, max: 0.9, size: 1,
-    kind: "text", text, team
-  });
-}
-
-/* =========================================================
-   RENDER PIPELINE
-========================================================= */
-function drawBackground() {
-  X.fillStyle = "#04090e";
+function render() {
+  X.clearRect(0, 0, innerWidth, innerHeight);
+  X.fillStyle = "#02060a";
   X.fillRect(0, 0, innerWidth, innerHeight);
 
-  X.strokeStyle = "rgba(45,82,103,.14)";
-  X.lineWidth = 1;
-
-  for (let x = 0; x <= W; x += 5) {
+  // Background Grid
+  X.strokeStyle = "rgba(40,70,90,0.12)";
+  for (let x = 0; x < W; x += 10) {
     const [sx] = w2s(x, 0);
     X.beginPath(); X.moveTo(sx, 0); X.lineTo(sx, innerHeight); X.stroke();
   }
-  for (let y = 0; y <= H; y += 5) {
+  for (let y = 0; y < H; y += 10) {
     const [, sy] = w2s(0, y);
     X.beginPath(); X.moveTo(0, sy); X.lineTo(innerWidth, sy); X.stroke();
   }
-}
 
-function drawResources() {
-  for (const r of resources) {
-    if (r.amt <= 0) continue;
-    const [x, y] = w2s(r.x, r.y);
-    const glow = 6 + Math.sin(performance.now() / 400 + r.x) * 1.5;
-
-    X.save();
-    X.translate(x, y);
-    X.globalAlpha = 0.18;
-    X.fillStyle = "#d4af37";
-    X.beginPath(); X.arc(0, 0, glow * 2, 0, Math.PI * 2); X.fill();
-
-    X.globalAlpha = 1;
-    X.fillStyle = "#c99f28";
-    X.beginPath();
-    X.moveTo(-7, 3); X.lineTo(-3, -6); X.lineTo(2, -8); X.lineTo(8, 0); X.lineTo(4, 7); X.lineTo(-4, 7);
-    X.closePath(); X.fill();
-    X.restore();
-  }
-}
-
-function drawSectors() {
+  // Sectors
   for (const s of sectors) {
-    const [x, y] = w2s(s.x, s.y);
-    let color = "#637985";
-    if (s.owner === 1) color = "#62e4ff";
-    if (s.owner === 2) color = "#ff6570";
-
-    X.save();
-    X.globalAlpha = 0.07;
-    X.fillStyle = color;
-    X.beginPath(); X.arc(x, y, 7 * tile, 0, Math.PI * 2); X.fill();
-
-    X.globalAlpha = 0.35;
-    X.strokeStyle = color;
-    X.lineWidth = 1.5;
-    X.beginPath(); X.arc(x, y, 7 * tile + Math.sin(s.pulse) * 2, 0, Math.PI * 2); X.stroke();
-
-    X.globalAlpha = 1;
-    X.strokeStyle = color;
-    X.lineWidth = 2;
-    X.beginPath(); X.arc(x, y, 3 * tile, 0, Math.PI * 2); X.stroke();
-
-    X.fillStyle = "#dcebf0";
-    X.font = "bold 10px system-ui";
-    X.textAlign = "center";
-    X.fillText(s.name, x, y - 7 * tile - 6);
-
-    const progress = Math.abs(s.prog) / 100;
-    if (progress > 0) {
-      X.strokeStyle = s.prog >= 0 ? "#62e4ff" : "#ff6570";
-      X.lineWidth = 3;
-      X.beginPath();
-      X.arc(x, y, 3 * tile + 5, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress);
-      X.stroke();
-    }
-    X.restore();
+    const [sx, sy] = w2s(s.x, s.y);
+    const col = s.owner >= 0 ? FACTIONS[s.owner].color : "#4b5563";
+    X.fillStyle = s.owner >= 0 ? `${col}15` : "rgba(255,255,255,0.03)";
+    X.beginPath(); X.arc(sx, sy, s.radius * tile, 0, Math.PI * 2); X.fill();
+    X.strokeStyle = col; X.lineWidth = 1.5; X.stroke();
   }
-}
 
-function drawStructures() {
+  // Structures
   for (const st of structures) {
-    const [x, y] = w2s(st.x, st.y);
-    const player = st.team === 1;
-    const base = player ? "#24a9d0" : "#d83a4a";
-    const dark = player ? "#0d394a" : "#48151b";
+    const [bx, by] = w2s(st.x, st.y);
+    const f = FACTIONS[st.team];
+    const sz = st.type === "CORE" ? 22 : 14;
 
-    X.save();
-    X.translate(x, y);
+    X.fillStyle = f.color;
+    X.fillRect(bx - sz, by - sz, sz * 2, sz * 2);
+    X.strokeStyle = "#fff"; X.lineWidth = 1.5;
+    X.strokeRect(bx - sz, by - sz, sz * 2, sz * 2);
 
-    if (st.type === "CORE") {
-      X.shadowBlur = 18; X.shadowColor = base;
-      X.fillStyle = dark;
-      X.beginPath();
-      X.moveTo(-24, 16); X.lineTo(-20, -14); X.lineTo(-10, -23); X.lineTo(10, -23); X.lineTo(20, -14); X.lineTo(24, 16);
-      X.closePath(); X.fill();
-
-      X.shadowBlur = 0;
-      X.strokeStyle = base; X.lineWidth = 2; X.stroke();
-
-      X.fillStyle = base;
-      X.beginPath(); X.moveTo(0, -17); X.lineTo(11, 0); X.lineTo(0, 17); X.lineTo(-11, 0); X.closePath(); X.fill();
-
-      X.fillStyle = base; X.fillRect(-29, 21, 58, 4);
-      X.fillStyle = "#52e588"; X.fillRect(-29, 21, 58 * Math.max(0, st.hp / st.maxHp), 4);
-    } else {
-      X.shadowBlur = 10; X.shadowColor = base;
-      X.fillStyle = dark;
-      X.beginPath();
-      X.moveTo(-15, 12); X.lineTo(-15, -8); X.lineTo(-7, -15); X.lineTo(7, -15); X.lineTo(15, -8); X.lineTo(15, 12);
-      X.closePath(); X.fill();
-
-      X.shadowBlur = 0;
-      X.strokeStyle = base; X.lineWidth = 2; X.stroke();
-      X.fillStyle = base; X.fillRect(-3, -10, 6, 20);
-
-      X.fillStyle = "#000"; X.fillRect(-15, 16, 30, 3);
-      X.fillStyle = "#52e588"; X.fillRect(-15, 16, 30 * Math.max(0, st.hp / st.maxHp), 3);
-    }
-    X.restore();
-  }
-}
-
-function unitScale() {
-  return Math.max(0.72, Math.min(1.35, tile / 9));
-}
-
-function drawUnit(u) {
-  const [x, y] = w2s(u.x, u.y);
-  const sc = unitScale();
-  const p = u.team === 1;
-  const main = p ? "#55d9ff" : "#ff5868";
-  const light = p ? "#baf3ff" : "#ffc0c5";
-  const dark = p ? "#0d3445" : "#45131a";
-
-  X.save();
-  X.translate(x, y);
-  X.rotate(u.heading);
-  X.scale(sc, sc);
-
-  X.shadowBlur = 5; X.shadowColor = main;
-
-  if (u.type === "Worker") {
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 1.5;
-    X.fillRect(-6, -6, 12, 12); X.strokeRect(-6, -6, 12, 12);
-    X.fillStyle = main; X.fillRect(-3, -9, 6, 3);
-    X.fillStyle = "#ffd75a"; X.fillRect(3, -2, 5, 4);
-  } else if (u.type === "Swordsman") {
-    X.fillStyle = dark; X.beginPath();
-    X.moveTo(-7, 6); X.lineTo(-4, -7); X.lineTo(3, -9); X.lineTo(7, -2); X.lineTo(4, 7); X.closePath(); X.fill();
-    X.strokeStyle = main; X.lineWidth = 1.5; X.stroke();
-    X.strokeStyle = "#e8f5ff"; X.lineWidth = 2; X.beginPath(); X.moveTo(4, -1); X.lineTo(13, -10); X.stroke();
-  } else if (u.type === "Rifleman") {
-    X.fillStyle = dark; X.beginPath();
-    X.moveTo(-7, 7); X.lineTo(-5, -7); X.lineTo(2, -9); X.lineTo(7, -2); X.lineTo(6, 7); X.closePath(); X.fill();
-    X.strokeStyle = main; X.lineWidth = 1.5; X.stroke();
-    X.strokeStyle = "#d9eef5"; X.lineWidth = 2; X.beginPath(); X.moveTo(1, 0); X.lineTo(16, 0); X.stroke();
-  } else if (u.type === "Bazooka") {
-    X.fillStyle = dark; X.beginPath();
-    X.moveTo(-8, 8); X.lineTo(-7, -7); X.lineTo(0, -10); X.lineTo(7, -5); X.lineTo(7, 8); X.closePath(); X.fill();
-    X.strokeStyle = main; X.lineWidth = 2; X.stroke();
-    X.fillStyle = "#202c31"; X.fillRect(-1, -3, 20, 5);
-  } else if (u.type === "Bike") {
-    X.strokeStyle = dark; X.lineWidth = 4;
-    X.beginPath(); X.arc(-6, 5, 5, 0, Math.PI * 2); X.stroke();
-    X.beginPath(); X.arc(7, 5, 5, 0, Math.PI * 2); X.stroke();
-    X.strokeStyle = main; X.lineWidth = 2;
-    X.beginPath(); X.moveTo(-6, 5); X.lineTo(0, -4); X.lineTo(7, 5); X.stroke();
-  } else if (u.type === "Car") {
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 2;
-    X.beginPath(); X.roundRect(-12, -7, 24, 14, 3); X.fill(); X.stroke();
-    X.fillStyle = light; X.fillRect(3, -4, 6, 3);
-  } else if (u.type === "Tank") {
-    X.fillStyle = "#050b0f"; X.fillRect(-14, -9, 28, 6); X.fillRect(-14, 3, 28, 6);
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 2;
-    X.fillRect(-10, -7, 20, 14); X.strokeRect(-10, -7, 20, 14);
-    X.fillStyle = main; X.beginPath(); X.arc(0, 0, 6, 0, Math.PI * 2); X.fill();
-    X.fillStyle = dark; X.fillRect(2, -3, 15, 6);
-  } else if (u.type === "Glider") {
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 1.5;
-    X.beginPath(); X.moveTo(13, 0); X.lineTo(-5, -8); X.lineTo(-2, -2); X.lineTo(-11, -5); X.lineTo(-7, 0); X.lineTo(-11, 5); X.lineTo(-2, 2); X.lineTo(-5, 8); X.closePath(); X.fill(); X.stroke();
-  } else if (u.type === "Plane") {
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 1.5;
-    X.beginPath(); X.moveTo(15, 0); X.lineTo(-7, -5); X.lineTo(-4, -1); X.lineTo(-14, -8); X.lineTo(-10, 0); X.lineTo(-14, 8); X.lineTo(-4, 1); X.lineTo(-7, 5); X.closePath(); X.fill(); X.stroke();
-  } else if (u.type === "Jet") {
-    X.fillStyle = dark; X.strokeStyle = main; X.lineWidth = 2;
-    X.beginPath(); X.moveTo(19, 0); X.lineTo(-7, -5); X.lineTo(-3, -1); X.lineTo(-16, -10); X.lineTo(-11, 0); X.lineTo(-16, 10); X.lineTo(-3, 1); X.lineTo(-7, 5); X.closePath(); X.fill(); X.stroke();
-    X.fillStyle = "#ffb347"; X.fillRect(-14, -2, 5, 4);
+    X.fillStyle = "#000"; X.fillRect(bx - sz, by + sz + 3, sz * 2, 4);
+    X.fillStyle = f.color; X.fillRect(bx - sz, by + sz + 3, sz * 2 * (st.hp / st.maxHp), 4);
   }
 
-  X.shadowBlur = 0;
-  X.restore();
+  // Units
+  for (const u of units) drawUnitSprite(u);
 
-  const ratio = Math.max(0, u.hp / u.maxHp);
-  X.fillStyle = "rgba(0,0,0,.75)";
-  X.fillRect(x - 9, y - 13, 18, 3);
-  X.fillStyle = p ? "#52e588" : "#ff5466";
-  X.fillRect(x - 9, y - 13, 18 * ratio, 3);
-}
-
-function drawUnits() {
-  const sorted = [...units].sort((a, b) => a.y - b.y);
-  for (const u of sorted) drawUnit(u);
-}
-
-function drawProjectiles() {
+  // Projectiles
   for (const p of projectiles) {
-    const [x, y] = w2s(p.x, p.y);
-    X.save();
-    if (p.type === "Tank") {
-      X.fillStyle = "#ffffff";
-      X.beginPath(); X.arc(x, y, 3.5, 0, Math.PI * 2); X.fill();
-    } else if (p.type === "Bazooka") {
-      X.fillStyle = "#ff8844";
-      X.fillRect(x - 3, y - 3, 6, 6);
-    } else {
-      X.fillStyle = "#e9fbff";
-      X.beginPath(); X.arc(x, y, 2, 0, Math.PI * 2); X.fill();
-    }
-    X.restore();
-  }
-}
-
-function drawExplosions() {
-  for (const e of explosions) {
-    const [x, y] = w2s(e.x, e.y);
-    const a = Math.max(0, e.life / e.maxLife);
-    X.save();
-    X.globalAlpha = a;
-    X.strokeStyle = "#ffd36a";
-    X.lineWidth = 2;
-    X.beginPath(); X.arc(x, y, e.r * tile, 0, Math.PI * 2); X.stroke();
-    X.restore();
-  }
-}
-
-function drawParticles() {
-  for (const p of particles) {
-    const [x, y] = w2s(p.x, p.y);
-    const a = Math.max(0, p.life / p.max);
-
-    if (p.kind === "text") {
-      X.save();
-      X.globalAlpha = a;
-      X.fillStyle = p.team === 1 ? "#8beaff" : "#ff8791";
-      X.font = "bold 10px system-ui";
-      X.textAlign = "center";
-      X.fillText(p.text, x, y);
-      X.restore();
-      continue;
-    }
-
-    X.save();
-    X.globalAlpha = a;
-    X.fillStyle = p.kind === "merge" ? "#71e5ff" : p.kind === "capture" ? (p.team === 1 ? "#62e4ff" : "#ff6570") : p.kind === "spark" ? "#ffe27a" : "#b7d1d9";
-    X.fillRect(x - p.size / 2, y - p.size / 2, p.size, p.size);
-    X.restore();
-  }
-}
-
-function renderMinimap() {
-  MX.clearRect(0, 0, 170, 108);
-  MX.fillStyle = "#04090e";
-  MX.fillRect(0, 0, 170, 108);
-
-  const sx = 170 / W;
-  const sy = 108 / H;
-
-  for (const s of sectors) {
-    MX.fillStyle = s.owner === 1 ? "rgba(98,228,255,.5)" : s.owner === 2 ? "rgba(255,101,112,.5)" : "rgba(255,255,255,.12)";
-    MX.beginPath(); MX.arc(s.x * sx, s.y * sy, 6, 0, Math.PI * 2); MX.fill();
+    const [sx, sy] = w2s(p.sx, p.sy);
+    const [tx, ty] = w2s(p.tx, p.ty);
+    X.strokeStyle = FACTIONS[p.team].color;
+    X.lineWidth = 1.5 + (p.tier || 1) * 0.8;
+    X.beginPath(); X.moveTo(sx, sy); X.lineTo(tx, ty); X.stroke();
   }
 
-  for (const st of structures) {
-    MX.fillStyle = st.team === 1 ? "#62e4ff" : "#ff6570";
-    MX.fillRect(st.x * sx - 3, st.y * sy - 3, 6, 6);
+  // Explosions
+  for (const exp of explosions) {
+    const [ex, ey] = w2s(exp.x, exp.y);
+    X.strokeStyle = "#38bdf8"; X.lineWidth = 2;
+    X.beginPath(); X.arc(ex, ey, exp.r, 0, Math.PI * 2); X.stroke();
   }
 
-  for (const u of units) {
-    MX.fillStyle = u.team === 1 ? "#a3edff" : "#ff9ea6";
-    const size = u.type === "Tank" || u.type === "Jet" ? 2.5 : 1.7;
-    MX.fillRect(u.x * sx - size / 2, u.y * sy - size / 2, size, size);
-  }
-
+  // Directive Marker
   if (directive) {
-    MX.strokeStyle = "#fff";
-    MX.lineWidth = 1;
-    MX.beginPath(); MX.arc(directive.x * sx, directive.y * sy, 5, 0, Math.PI * 2); MX.stroke();
-  }
-
-  const [vx1, vy1] = s2w(0, 0);
-  const [vx2, vy2] = s2w(innerWidth, innerHeight);
-  MX.strokeStyle = "rgba(255,255,255,0.4)";
-  MX.strokeRect(vx1 * sx, vy1 * sy, (vx2 - vx1) * sx, (vy2 - vy1) * sy);
-}
-
-function render() {
-  drawBackground();
-  drawResources();
-  drawSectors();
-  drawStructures();
-  drawExplosions();
-  drawParticles();
-  drawUnits();
-  drawProjectiles();
-
-  if (directive) {
-    const [x, y] = w2s(directive.x, directive.y);
-    X.save();
-    X.strokeStyle = "#62e4ff"; X.lineWidth = 2;
-    X.beginPath(); X.arc(x, y, 12, 0, Math.PI * 2); X.stroke();
-    X.beginPath();
-    X.moveTo(x - 18, y); X.lineTo(x + 18, y);
-    X.moveTo(x, y - 18); X.lineTo(x, y + 18);
-    X.stroke();
-    X.restore();
+    const [dx, dy] = w2s(directive.x, directive.y);
+    X.strokeStyle = "#38bdf8"; X.lineWidth = 2;
+    X.beginPath(); X.arc(dx, dy, 14, 0, Math.PI * 2); X.stroke();
   }
 
   renderMinimap();
 }
 
-/* =========================================================
-   LOOP
-========================================================= */
+function renderMinimap() {
+  MX.clearRect(0, 0, 180, 108);
+  MX.fillStyle = "#03080d"; MX.fillRect(0, 0, 180, 108);
+  const mx = 180 / W, my = 108 / H;
+
+  for (const s of sectors) {
+    MX.fillStyle = s.owner >= 0 ? `${FACTIONS[s.owner].color}66` : "rgba(255,255,255,0.1)";
+    MX.beginPath(); MX.arc(s.x * mx, s.y * my, 7 * mx, 0, Math.PI * 2); MX.fill();
+  }
+
+  for (const st of structures) {
+    MX.fillStyle = FACTIONS[st.team].color;
+    const sz = st.type === "CORE" ? 6 : 4;
+    MX.fillRect(st.x * mx - sz / 2, st.y * my - sz / 2, sz, sz);
+  }
+
+  for (const u of units) {
+    MX.fillStyle = FACTIONS[u.team].color;
+    MX.fillRect(u.x * mx - 1, u.y * my - 1, 2, 2);
+  }
+
+  const [vx1, vy1] = s2w(0, 0);
+  const [vx2, vy2] = s2w(innerWidth, innerHeight);
+  MX.strokeStyle = "rgba(255,255,255,0.4)";
+  MX.strokeRect(vx1 * mx, vy1 * my, (vx2 - vx1) * mx, (vy2 - vy1) * my);
+}
+
 let last = performance.now();
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
@@ -1370,7 +974,6 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
-init();
 requestAnimationFrame(loop);
 </script>
 </body>
