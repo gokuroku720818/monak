@@ -3,1200 +3,499 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 5.3 // FIX COMPLETE</title>
+<title>FRONTIER FLUX 5.4</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03070b;color:#dff8ff;font-family:system-ui,Segoe UI,sans-serif;user-select:none}
-canvas#game{display:block;width:100%;height:100%;cursor:crosshair}
-#top{position:fixed;left:10px;right:10px;top:9px;display:flex;gap:7px;flex-wrap:wrap;z-index:5;pointer-events:none}
-.badge{background:#07131ddd;border:1px solid #315663;border-radius:7px;padding:6px 11px;font-size:11px;box-shadow:0 4px 18px #0008;backdrop-filter:blur(4px)}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03070b;color:#dff8ff;font-family:system-ui,sans-serif;user-select:none}
+canvas#game{display:block;width:100%;height:100%}
+#top{position:fixed;left:10px;right:10px;top:9px;display:flex;gap:6px;flex-wrap:wrap;z-index:10;pointer-events:none}
+.badge{background:rgba(7,19,29,0.85);border:1px solid #315663;border-radius:6px;padding:5px 9px;font-size:11px}
 .badge b{color:#fff}
-#directive-bar{position:fixed;left:50%;top:65px;transform:translateX(-50%);background:rgba(6,20,29,0.9);border:1px solid #5b9cad;border-radius:20px;padding:7px 18px;font-size:12px;color:#8be3ff;letter-spacing:1px;pointer-events:none;z-index:10;box-shadow:0 4px 15px rgba(0,0,0,0.6)}
-#panel{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:#061018eb;border:1px solid #315663;border-radius:12px;padding:8px 14px;z-index:6;box-shadow:0 10px 30px #000a;display:flex;gap:8px;align-items:center}
-button.doctrine{background:#10232d;color:#cfe5ed;border:1px solid #3a6270;border-radius:7px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .15s}
-button.doctrine span{font-size:10px;color:#7ca0b3;font-weight:normal}
-button.doctrine:hover{background:#19404d}
-button.doctrine.active{background:#1d4c5c;border-color:#71e5ff;color:#fff;box-shadow:0 0 12px rgba(113,229,255,0.35)}
-button.action{background:#2b161a;color:#ff9fa7;border:1px solid #6b353c;border-radius:7px;padding:8px 12px;font-weight:700;font-size:11px;cursor:pointer}
-button.action:hover{background:#421e24}
-#minimap-wrap{position:fixed;right:12px;bottom:12px;width:220px;height:135px;background:#03080d;border:1px solid #456273;border-radius:8px;z-index:6;overflow:hidden;box-shadow:0 8px 25px #000a}
-canvas#minimap{width:100%;height:100%;display:block;image-rendering:pixelated}
-#side{position:fixed;left:12px;bottom:12px;width:210px;background:#061018e8;border:1px solid #315663;border-radius:10px;padding:9px;z-index:6;font-size:11px;line-height:1.5}
-#side hr{border:0;border-top:1px solid #28424c;margin:6px 0}
-#menu{position:fixed;inset:0;background:radial-gradient(circle,#15313d,#03070a 72%);display:flex;align-items:center;justify-content:center;z-index:30}
-.card{width:min(640px,92vw);background:#061018f5;border:1px solid #4c8190;border-radius:18px;padding:32px;box-shadow:0 30px 100px #000}
-h1{font-size:38px;letter-spacing:4px;margin:0}
-h2{font-size:13px;color:#70ddf8;letter-spacing:2px;margin:4px 0 16px}
-.card p{color:#b8cbd2;line-height:1.7;font-size:13px}
-.start{font-size:16px;padding:12px 26px;background:#183847;color:#fff;border:1px solid #87c7df;border-radius:8px;cursor:pointer;font-weight:bold}
-.start:hover{background:#234f64}
+#directive-bar{position:fixed;left:50%;top:58px;transform:translateX(-50%);background:rgba(6,20,29,0.9);border:1px solid #5b9cad;border-radius:20px;padding:6px 16px;font-size:11px;color:#8be3ff;pointer-events:none;z-index:10;white-space:nowrap}
+#panel{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(6,16,24,0.92);border:1px solid #315663;border-radius:10px;padding:6px 10px;z-index:10;display:flex;gap:6px;max-width:calc(100vw - 20px);overflow-x:auto}
+button.doc{background:#10232d;color:#cfe5ed;border:1px solid #3a6270;border-radius:6px;padding:7px 12px;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap}
+button.doc.active{background:#1d4c5c;border-color:#71e5ff;color:#fff}
+button.clear{background:#3b1a1e;color:#ff9fa7;border:1px solid #7a353c;border-radius:6px;padding:7px 10px;font-size:11px;cursor:pointer;white-space:nowrap}
+#minimap{position:fixed;right:10px;bottom:65px;width:150px;height:95px;background:#03080d;border:1px solid #456273;border-radius:6px;z-index:10;pointer-events:none}
 </style>
 </head>
 <body>
 
 <canvas id="game"></canvas>
+<canvas id="minimap" width="150" height="95"></canvas>
 
 <div id="top">
-<div class="badge"><b>FRONTIER FLUX</b> // 5.3</div>
-<div class="badge">ORE <b id="ore">300</b></div>
-<div class="badge">SECTORS <b id="sector">0</b>/6</div>
-<div class="badge">ARMY <b id="army">0</b> (무제한)</div>
-<div class="badge">RELIC <b id="relic">NEUTRAL</b></div>
-<div class="badge">TIME <b id="time">07:00</b></div>
+  <div class="badge">ORE <b id="ore">300</b></div>
+  <div class="badge">SECTORS <b id="sector">0/6</b></div>
+  <div class="badge">ARMY <b id="army">0</b></div>
+  <div class="badge">TIME <b id="time">07:00</b></div>
 </div>
 
-<div id="directive-bar">DIRECTIVE: AUTONOMOUS PATROL & SECURE SECTORS</div>
+<div id="directive-bar">화면을 탭(클릭)하면 전군이 해당 거점으로 총진격합니다</div>
 
 <div id="panel">
-<button class="doctrine active" id="doc-all" onclick="setDoctrine('all')">전군 균형 생산<span>보병 + 기갑 + 공중</span></button>
-<button class="doctrine" id="doc-armor" onclick="setDoctrine('armor')">기갑 돌격<span>오토바이 ➔ 탱크</span></button>
-<button class="doctrine" id="doc-air" onclick="setDoctrine('air')">공중 공습<span>글라이더 ➔ 전투기</span></button>
-<button class="doctrine" id="doc-inf" onclick="setDoctrine('inf')">보병 군단<span>검사 ➔ 바주카포</span></button>
-<button class="action" onclick="clearDirective()">목표 비콘 해제<span>자율 순찰 복귀</span></button>
-</div>
-
-<div id="side">
-<b>AUTONOMOUS DOCTRINE</b>
-<div>• 생산 경향성을 선택하면 기지에서 <b>자동 스폰</b>됩니다.</div>
-<div>• <b>우클릭 한 번</b>으로 전군이 해당 거점 점령/적 기지로 총진격합니다.</div>
-<hr>
-<b>AUTOMATIC MERGE</b>
-<div>동일 유닛 3기 결집 시 상위 티어로 <b>자동 진화</b>합니다.</div>
-</div>
-
-<div id="minimap-wrap">
-<canvas id="minimap" width="220" height="135"></canvas>
-</div>
-
-<div id="menu">
-<div class="card">
-<h1>FRONTIER FLUX</h1>
-<h2>AUTONOMOUS DOMINATION // 5.3 STABLE</h2>
-<p>
-유닛을 일일이 클릭해서 뽑거나 조작할 필요가 없는 대국적 관전 RTS.<br><br>
-1. <b>생산 경향성:</b> 하단 버튼으로 군단(기갑/공군/보병/균형)을 선택하면 기지에서 자동으로 병력이 출격합니다.<br>
-2. <b>전군 땅따먹기 지휘:</b> 전장 원하는 곳이나 거점(Sector)을 <b>마우스 우클릭</b>하면 전 아군 부대가 그곳으로 진격합니다.<br>
-3. <b>거점 전진 기지화:</b> 섹터를 점령하면 방어 포탑과 전속 일꾼 4기가 자동 배치되어 자원을 캡니다.<br>
-4. <b>자동 3단 합체:</b> 같은 병력 3기가 모이면 자동으로 상위 유닛(바주카/탱크/전투기)으로 진화합니다.
-</p>
-<button class="start" id="start">START MISSION</button>
-</div>
+  <button class="doc active" id="b-all" onclick="setDoc('all')">전군 균형</button>
+  <button class="doc" id="b-armor" onclick="setDoc('armor')">기갑(탱크)</button>
+  <button class="doc" id="b-air" onclick="setDoc('air')">공군(전투기)</button>
+  <button class="doc" id="b-inf" onclick="setDoc('inf')">보병(바주카)</button>
+  <button class="clear" onclick="clearDir()">목표 해제</button>
 </div>
 
 <script>
 "use strict";
 
-/* =========================================================
-   SYNTHESIZER AUDIO ENGINE
-========================================================= */
-let audioCtx = null;
-function initAudio() {
-    if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) audioCtx = new AudioContextClass();
-    }
-    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-}
+const C = document.getElementById("game");
+const X = C.getContext("2d");
+const MC = document.getElementById("minimap");
+const MX = MC.getContext("2d");
 
-let noiseBuffer = null;
-function getNoiseBuffer() {
-    if (!audioCtx) return null;
-    if (!noiseBuffer) {
-        const bufferSize = audioCtx.sampleRate * 2;
-        noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-    }
-    return noiseBuffer;
-}
-
-function sfxCannon() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const oscGain = audioCtx.createGain();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(150, t);
-    osc.frequency.exponentialRampToValueAtTime(25, t + 0.35);
-    oscGain.gain.setValueAtTime(0.4, t);
-    oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
-    osc.connect(oscGain);
-    oscGain.connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + 0.36);
-
-    const nBuf = getNoiseBuffer();
-    if (nBuf) {
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = nBuf;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(800, t);
-        filter.frequency.linearRampToValueAtTime(140, t + 0.3);
-        const nGain = audioCtx.createGain();
-        nGain.gain.setValueAtTime(0.35, t);
-        nGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-        noise.connect(filter);
-        filter.connect(nGain);
-        nGain.connect(audioCtx.destination);
-        noise.start(t);
-        noise.stop(t + 0.3);
-    }
-}
-
-function sfxExplosion(power = 1) {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const duration = Math.min(1.2, 0.35 + power * 0.25);
-    const nBuf = getNoiseBuffer();
-    if (nBuf) {
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = nBuf;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(550, t);
-        filter.frequency.linearRampToValueAtTime(70, t + duration);
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(Math.min(0.6, 0.22 * power), t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        noise.start(t);
-        noise.stop(t + duration);
-    }
-}
-
-function sfxRifle() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const nBuf = getNoiseBuffer();
-    if (nBuf) {
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = nBuf;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(1800, t);
-        filter.Q.setValueAtTime(2.5, t);
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.18, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        noise.start(t);
-        noise.stop(t + 0.09);
-    }
-}
-
-function sfxRocket() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(110, t);
-    osc.frequency.exponentialRampToValueAtTime(450, t + 0.25);
-    gain.gain.setValueAtTime(0.25, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + 0.26);
-}
-
-function sfxMerge() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const notes = [329.63, 440.00, 659.25];
-    notes.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, t + idx * 0.08);
-        gain.gain.setValueAtTime(0.01, t + idx * 0.08);
-        gain.gain.linearRampToValueAtTime(0.25, t + idx * 0.08 + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + idx * 0.08 + 0.35);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(t + idx * 0.08);
-        osc.stop(t + idx * 0.08 + 0.36);
-    });
-}
-
-function sfxPing() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, t);
-    osc.frequency.exponentialRampToValueAtTime(440, t + 0.15);
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(t);
-    osc.stop(t + 0.16);
-}
-
-/* =========================================================
-   CANVAS & CORE SETUP (160x90)
-========================================================= */
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-const mmCanvas = document.getElementById("minimap");
-const mmCtx = mmCanvas.getContext("2d");
-
-const W = 160, H = 90;
+const W = 140, H = 80;
 let tile = 10;
-let DPR = 1;
-
-let camera = { x: 30, y: 45, zoom: 1 }; // 플레이어 본진 중심으로 초기 카메라 설정
-let running = false;
-let paused = false;
-let lastTime = 0;
+let camX = 25, camY = 40;
+let ore = 300, eOre = 300;
 let mission = 420;
-
-let ore = 300;
-let enemyOre = 300;
-let prodDoctrine = "all";
+let doctrine = "all";
 let directive = null;
-let shakeAmount = 0;
-
 let uid = 1;
+
 const units = [];
 const structures = [];
 const sectors = [];
 const resources = [];
-const projectiles = [];
-const shockwaves = [];
-const mergeBeams = [];
-const floatTexts = [];
 const particles = [];
+const projectiles = [];
 
 const SPEC = {
-    Worker:   { cost: 30,  hp: 120, atk: 0,  rng: 1.5, spd: 2.3, branch: "worker" },
-    Swordsman:{ cost: 35,  hp: 170, atk: 24, rng: 2.2, spd: 2.6, branch: "inf" },
-    Rifleman: { cost: 90,  hp: 260, atk: 38, rng: 5.5, spd: 2.4, branch: "inf" },
-    Bazooka:  { cost: 240, hp: 500, atk: 98, rng: 7.5, spd: 2.0, branch: "inf" },
-
-    Bike:     { cost: 55,  hp: 230, atk: 28, rng: 4.5, spd: 3.2, branch: "armor" },
-    Car:      { cost: 140, hp: 440, atk: 56, rng: 6.0, spd: 2.6, branch: "armor" },
-    Tank:     { cost: 380, hp: 1100,atk: 145,rng: 8.5, spd: 1.6, branch: "armor" },
-
-    Glider:   { cost: 50,  hp: 170, atk: 26, rng: 4.5, spd: 3.0, branch: "air" },
-    Plane:    { cost: 130, hp: 340, atk: 62, rng: 6.5, spd: 3.4, branch: "air" },
-    Jet:      { cost: 350, hp: 800, atk: 160,rng: 9.0, spd: 4.0, branch: "air" }
+  Worker:   { hp: 120, atk: 0,   spd: 2.2, rng: 1.5 },
+  Swordsman:{ hp: 160, atk: 25,  spd: 2.5, rng: 2.0 },
+  Rifleman: { hp: 260, atk: 38,  spd: 2.3, rng: 5.0 },
+  Bazooka:  { hp: 500, atk: 95,  spd: 1.9, rng: 7.5 },
+  Bike:     { hp: 220, atk: 28,  spd: 3.2, rng: 4.0 },
+  Car:      { hp: 440, atk: 55,  spd: 2.5, rng: 5.5 },
+  Tank:     { hp: 1100,atk: 140, spd: 1.6, rng: 8.0 },
+  Glider:   { hp: 170, atk: 26,  spd: 3.0, rng: 4.5 },
+  Plane:    { hp: 340, atk: 60,  spd: 3.3, rng: 6.0 },
+  Jet:      { hp: 800, atk: 155, spd: 4.0, rng: 8.5 }
 };
 
 const EVOLVE = {
-    Swordsman: "Rifleman",
-    Rifleman:  "Bazooka",
-    Bike:      "Car",
-    Car:       "Tank",
-    Glider:    "Plane",
-    Plane:     "Jet"
+  Swordsman: "Rifleman", Rifleman: "Bazooka",
+  Bike: "Car", Car: "Tank",
+  Glider: "Plane", Plane: "Jet"
 };
 
 function resize() {
-    DPR = devicePixelRatio || 1;
-    canvas.width = innerWidth * DPR;
-    canvas.height = innerHeight * DPR;
-    canvas.style.width = innerWidth + "px";
-    canvas.style.height = innerHeight + "px";
-    tile = Math.max(7, Math.min(innerWidth / W, innerHeight / H)) * camera.zoom;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  C.width = innerWidth;
+  C.height = innerHeight;
+  tile = Math.max(6, Math.min(innerWidth / 90, innerHeight / 55));
 }
 addEventListener("resize", resize);
+resize();
 
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-const rand = (a, b) => Math.random() * (b - a) + a;
+const w2s = (wx, wy) => [innerWidth / 2 + (wx - camX) * tile, innerHeight / 2 + (wy - camY) * tile];
+const s2w = (sx, sy) => [camX + (sx - innerWidth / 2) / tile, camY + (sy - innerHeight / 2) / tile];
 
-function lerpAngle(a, b, t) {
-    let diff = (b - a) % (Math.PI * 2);
-    if (diff < -Math.PI) diff += Math.PI * 2;
-    if (diff > Math.PI) diff -= Math.PI * 2;
-    return a + diff * t;
+function addUnit(type, x, y, team) {
+  const s = SPEC[type];
+  units.push({
+    id: uid++, type, team, x, y,
+    hp: s.hp, maxHp: s.hp, atk: s.atk, spd: s.spd, rng: s.rng,
+    heading: team === 1 ? 0 : Math.PI, cd: 0, carry: 0
+  });
 }
 
-function screenToWorld(x, y) {
-    return {
-        x: camera.x + (x - innerWidth / 2) / tile,
-        y: camera.y + (y - innerHeight / 2) / tile
-    };
+function init() {
+  units.length = 0;
+  structures.length = 0;
+  sectors.length = 0;
+  resources.length = 0;
+  particles.length = 0;
+  projectiles.length = 0;
+
+  // 기지 배치
+  structures.push({ type: "CORE", x: 14, y: 40, team: 1, hp: 4000, maxHp: 4000 });
+  structures.push({ type: "CORE", x: 126, y: 40, team: 2, hp: 4000, maxHp: 4000 });
+
+  // 거점 섹터 6개
+  const sData = [
+    ["ALPHA", 40, 20], ["BETA", 40, 60],
+    ["GAMMA", 70, 20], ["DELTA", 70, 60],
+    ["EPSILON", 100, 20], ["ZETA", 100, 60]
+  ];
+  sData.forEach(d => {
+    sectors.push({ name: d[0], x: d[1], y: d[2], owner: 0, prog: 0 });
+    resources.push({ x: d[1], y: d[2] - 6, amt: 4000 });
+  });
+
+  // 본진 자원
+  resources.push({ x: 20, y: 30, amt: 6000 });
+  resources.push({ x: 20, y: 50, amt: 6000 });
+  resources.push({ x: 120, y: 30, amt: 6000 });
+  resources.push({ x: 120, y: 50, amt: 6000 });
+
+  // 초기 유닛
+  for (let i = 0; i < 4; i++) addUnit("Worker", 18, 36 + i * 2.5, 1);
+  addUnit("Swordsman", 22, 38, 1);
+  addUnit("Swordsman", 22, 42, 1);
+  addUnit("Bike", 25, 40, 1);
+
+  for (let i = 0; i < 4; i++) addUnit("Worker", 122, 36 + i * 2.5, 2);
+  addUnit("Swordsman", 118, 38, 2);
+  addUnit("Swordsman", 118, 42, 2);
+  addUnit("Bike", 115, 40, 2);
 }
 
-function worldToScreen(x, y) {
-    return [
-        innerWidth / 2 + (x - camera.x) * tile,
-        innerHeight / 2 + (y - camera.y) * tile
-    ];
-}
-
-/* =========================================================
-   ENTITIES & INIT
-========================================================= */
-function addUnit(type, x, y, team, home = null) {
-    const s = SPEC[type];
-    const u = {
-        kind: "unit",
-        id: uid++,
-        type,
-        team,
-        x, y,
-        hp: s.hp,
-        maxHp: s.hp,
-        atk: s.atk,
-        rng: s.rng,
-        spd: s.spd,
-        branch: s.branch,
-        cd: 0,
-        carry: 0,
-        target: null,
-        home,
-        heading: team === 1 ? 0 : Math.PI,
-        targetHeading: team === 1 ? 0 : Math.PI
-    };
-    units.push(u);
-    return u;
-}
-
-function addStructure(type, x, y, team = 0, sector = null) {
-    let hp = type === "CORE" ? 5000 : type === "OUTPOST" ? 2200 : 800;
-    const s = {
-        kind: "structure",
-        type,
-        x, y,
-        team,
-        hp,
-        maxHp: hp,
-        sector
-    };
-    structures.push(s);
-    return s;
-}
-
-function reset() {
-    units.length = 0;
-    structures.length = 0;
-    sectors.length = 0;
-    resources.length = 0;
-    projectiles.length = 0;
-    effects.length = 0;
-    shockwaves.length = 0;
-    mergeBeams.length = 0;
-    floatTexts.length = 0;
-    particles.length = 0;
-
-    mission = 420;
-    ore = 300;
-    enemyOre = 300;
-    uid = 1;
-    directive = null;
-    camera = { x: 30, y: 45, zoom: 1 }; // 플레이어 본진 화면으로 시작
-
-    // 1. Cores & Relic (반드시 먼저 추가)
-    addStructure("CORE", 12, 45, 1);
-    addStructure("CORE", 148, 45, 2);
-    addStructure("RELIC", 80, 45, 0);
-
-    // 2. 6 Strategic Outpost Sectors
-    const sectorData = [
-        ["ALPHA", 43, 24, 43, 14],
-        ["BETA",  43, 66, 43, 76],
-        ["GAMMA", 80, 20, 80, 10],
-        ["DELTA", 80, 70, 80, 80],
-        ["EPSILON",117, 24, 117, 14],
-        ["ZETA",  117, 66, 117, 76]
-    ];
-
-    sectorData.forEach(d => {
-        sectors.push({
-            name: d[0],
-            x: d[1],
-            y: d[2],
-            owner: 0,
-            progress: 0,
-            hasBase: false,
-            resX: d[3],
-            resY: d[4]
-        });
-        resources.push({ x: d[3], y: d[4], amount: 5000 });
-    });
-
-    // 3. Base Resources
-    resources.push({ x: 20, y: 34, amount: 6000 });
-    resources.push({ x: 20, y: 56, amount: 6000 });
-    resources.push({ x: 140, y: 34, amount: 6000 });
-    resources.push({ x: 140, y: 56, amount: 6000 });
-
-    // 4. Initial Units Spawns
-    const pCore = structures[0];
-    for (let i = 0; i < 5; i++) addUnit("Worker", pCore.x + 4, pCore.y + (i - 2) * 2, 1, pCore);
-    addUnit("Swordsman", 22, 43, 1);
-    addUnit("Swordsman", 22, 47, 1);
-    addUnit("Bike", 25, 45, 1);
-
-    const eCore = structures[1];
-    for (let i = 0; i < 5; i++) addUnit("Worker", eCore.x - 4, eCore.y + (i - 2) * 2, 2, eCore);
-    addUnit("Swordsman", 138, 43, 2);
-    addUnit("Bike", 135, 45, 2);
-    addUnit("Glider", 136, 48, 2);
-}
-
-/* =========================================================
-   COMMANDER ACTIONS & DIRECTIVES
-========================================================= */
-window.setDoctrine = function(mode) {
-    prodDoctrine = mode;
-    document.querySelectorAll(".doctrine").forEach(b => b.classList.remove("active"));
-    document.getElementById("doc-" + mode).classList.add("active");
+window.setDoc = function(d) {
+  doctrine = d;
+  document.querySelectorAll("button.doc").forEach(b => b.classList.remove("active"));
+  document.getElementById("b-" + d).classList.add("active");
 };
 
-window.clearDirective = function() {
-    directive = null;
-    document.getElementById("directive-bar").textContent = "DIRECTIVE: AUTONOMOUS PATROL & SECURE SECTORS";
+window.clearDir = function() {
+  directive = null;
+  document.getElementById("directive-bar").textContent = "화면을 탭(클릭)하면 전군이 해당 거점으로 총진격합니다";
 };
 
-// 우클릭: 전군 총진격 비콘 지정
-canvas.addEventListener("contextmenu", e => {
-    e.preventDefault();
-    if (!running || paused) return;
-    const p = screenToWorld(e.clientX, e.clientY);
-    directive = { x: clamp(p.x, 6, W - 6), y: clamp(p.y, 6, H - 6) };
+// 탭/클릭 시 전군 진격 비콘 지정
+function handleTap(sx, sy) {
+  const [wx, wy] = s2w(sx, sy);
+  directive = { x: Math.max(5, Math.min(W - 5, wx)), y: Math.max(5, Math.min(H - 5, wy)) };
+  document.getElementById("directive-bar").textContent = `지휘 목표: (${Math.round(directive.x)}, ${Math.round(directive.y)}) 전군 총공세`;
+}
 
-    const targetRelic = distance(directive, { x: 80, y: 45 }) < 6;
-    const targetEnemyCore = distance(directive, { x: 148, y: 45 }) < 7;
-    const targetSector = sectors.find(s => distance(directive, s) < 6);
-
-    let label = `DIRECTIVE: ALL-OUT MARCH TO (${Math.round(directive.x)}, ${Math.round(directive.y)})`;
-    if (targetEnemyCore) label = "DIRECTIVE: ALL FORCES ASSAULT ON VOID CORE!";
-    else if (targetRelic) label = "DIRECTIVE: CAPTURE & DEFEND CENTRAL RELIC!";
-    else if (targetSector) label = `DIRECTIVE: OCCUPY & SECURE SECTOR [${targetSector.name}]`;
-
-    document.getElementById("directive-bar").textContent = label;
-    sfxPing();
-    shockwaves.push({ x: directive.x, y: directive.y, r: 0.5, maxR: 6.0, life: 0.5, maxLife: 0.5, color: "#60cbf0" });
+C.addEventListener("pointerdown", e => {
+  if (e.clientY > innerHeight - 70) return; // 하단 패널 클릭 제외
+  handleTap(e.clientX, e.clientY);
 });
 
-/* =========================================================
-   VFX & WEAPONS
-========================================================= */
-function spawnExplosion(x, y, power = 1) {
-    shakeAmount = Math.min(12, shakeAmount + power * 2.8);
-    sfxExplosion(power);
+// 자동 생산
+let prodT = 0;
+function autoProduce(dt) {
+  prodT += dt;
+  if (prodT < 3.8) return;
+  prodT = 0;
 
-    shockwaves.push({
-        x, y,
-        r: 0.4,
-        maxR: power * 2.6,
-        life: 0.4,
-        maxLife: 0.4,
-        color: power > 2 ? "#ffd768" : "#ff7b88"
-    });
+  const pBases = structures.filter(s => s.team === 1);
+  for (const b of pBases) {
+    let pool = ["Swordsman", "Bike", "Glider"];
+    if (doctrine === "armor") pool = ["Bike", "Bike", "Car"];
+    if (doctrine === "air") pool = ["Glider", "Glider", "Plane"];
+    if (doctrine === "inf") pool = ["Swordsman", "Swordsman", "Rifleman"];
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    if (ore >= 45) { ore -= 45; addUnit(chosen, b.x + 3.5, b.y + (Math.random() - 0.5) * 4, 1); }
+  }
 
-    const count = Math.floor(power * 14);
-    for (let i = 0; i < count; i++) {
-        const angle = rand(0, Math.PI * 2);
-        const speed = rand(2, 7) * power * 0.7;
-        particles.push({
-            x, y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: rand(0.3, 0.6),
-            maxLife: 0.6,
-            size: rand(2.5, 5.5) * power * 0.6,
-            color: i % 3 === 0 ? "#ffffff" : (i % 2 === 0 ? "#ff9a3c" : "#e63946")
-        });
-    }
+  const eBases = structures.filter(s => s.team === 2);
+  for (const b of eBases) {
+    if (eOre >= 45) { eOre -= 45; addUnit("Swordsman", b.x - 3.5, b.y + (Math.random() - 0.5) * 4, 2); }
+  }
 }
 
-function fireWeapon(u, target) {
-    const isP = u.team === 1;
-    const dx = target.x - u.x;
-    const dy = target.y - u.y;
-    const d = Math.hypot(dx, dy) || 1;
-
-    if (u.type === "Swordsman") {
-        target.hp -= u.atk;
-        for (let i = 0; i < 6; i++) {
-            const a = u.heading + rand(-0.7, 0.7);
-            particles.push({ x: u.x + Math.cos(a) * 0.8, y: u.y + Math.sin(a) * 0.8, vx: Math.cos(a) * 3, vy: Math.sin(a) * 3, life: 0.2, maxLife: 0.2, size: 2, color: isP ? "#9ce7ff" : "#ffaab0" });
+// 자동 3기 합체 머지
+function autoMerge() {
+  const evos = ["Swordsman", "Rifleman", "Bike", "Car", "Glider", "Plane"];
+  for (const team of [1, 2]) {
+    for (const type of evos) {
+      const match = units.filter(u => u.team === team && u.type === type && u.hp > 0);
+      if (match.length >= 3) {
+        for (let i = 0; i < match.length; i++) {
+          const u1 = match[i];
+          const near = match.filter(o => o !== u1 && Math.hypot(u1.x - o.x, u1.y - o.y) < 9);
+          if (near.length >= 2) {
+            const u2 = near[0], u3 = near[1];
+            const next = EVOLVE[type];
+            const mx = (u1.x + u2.x + u3.x) / 3, my = (u1.y + u2.y + u3.y) / 3;
+            u1.hp = 0; u2.hp = 0; u3.hp = 0;
+            addUnit(next, mx, my, team);
+            break;
+          }
         }
-    } else if (u.type === "Bazooka") {
-        sfxRocket();
-        projectiles.push({ type: "rocket", x: u.x, y: u.y, vx: (dx / d) * 11, vy: (dy / d) * 11, tx: target.x, ty: target.y, damage: u.atk, team: u.team, isP, life: d / 11 });
-    } else if (u.type === "Tank") {
-        sfxCannon();
-        spawnExplosion(u.x + Math.cos(u.heading) * 1.5, u.y + Math.sin(u.heading) * 1.5, 0.6);
-        projectiles.push({ type: "tank_shell", x: u.x, y: u.y, vx: (dx / d) * 17, vy: (dy / d) * 17, tx: target.x, ty: target.y, damage: u.atk, team: u.team, isP, life: d / 17 });
-    } else if (u.type === "Jet") {
-        sfxRifle();
-        projectiles.push({ type: "plasma", x: u.x, y: u.y, vx: (dx / d) * 15, vy: (dy / d) * 15, tx: target.x, ty: target.y, damage: u.atk, team: u.team, isP, life: d / 15 });
-    } else {
-        sfxRifle();
-        projectiles.push({ type: "bullet", x: u.x, y: u.y, vx: (dx / d) * 14, vy: (dy / d) * 14, tx: target.x, ty: target.y, damage: u.atk, team: u.team, isP, life: d / 14 });
+      }
     }
+  }
 }
 
-/* =========================================================
-   AUTONOMOUS MARCHING & COMBAT AI
-========================================================= */
-function updateAI(u, dt) {
-    u.heading = lerpAngle(u.heading, u.targetHeading, 0.15);
+// 섹터 점령
+function updateSectors(dt) {
+  for (const s of sectors) {
+    let p = 0, e = 0;
+    for (const u of units) {
+      if (u.type !== "Worker" && Math.hypot(u.x - s.x, u.y - s.y) < 7) {
+        if (u.team === 1) p++;
+        if (u.team === 2) e++;
+      }
+    }
+    if (p > e && p > 0) {
+      s.prog = Math.min(100, s.prog + 18 * dt);
+      if (s.prog >= 100 && s.owner !== 1) {
+        s.owner = 1;
+        structures.push({ type: "OUTPOST", x: s.x, y: s.y, team: 1, hp: 2000, maxHp: 2000 });
+        for (let i = 0; i < 3; i++) addUnit("Worker", s.x + i - 1, s.y + 2, 1);
+      }
+    } else if (e > p && e > 0) {
+      s.prog = Math.max(-100, s.prog - 18 * dt);
+      if (s.prog <= -100 && s.owner !== 2) {
+        s.owner = 2;
+        structures.push({ type: "OUTPOST", x: s.x, y: s.y, team: 2, hp: 2000, maxHp: 2000 });
+        for (let i = 0; i < 3; i++) addUnit("Worker", s.x + i - 1, s.y + 2, 2);
+      }
+    }
+    if (s.owner === 1) ore += 2.0 * dt;
+    if (s.owner === 2) eOre += 2.0 * dt;
+  }
+  ore += 2.5 * dt;
+  eOre += 2.5 * dt;
+}
 
-    const moveToward = (tx, ty, arriveDist = 1.2) => {
-        const d = Math.hypot(tx - u.x, ty - u.y);
-        if (d > arriveDist) {
-            u.targetHeading = Math.atan2(ty - u.y, tx - u.x);
-            u.x += Math.cos(u.heading) * u.spd * dt;
-            u.y += Math.sin(u.heading) * u.spd * dt;
+// 유닛 전투 및 이동 AI
+function updateUnits(dt) {
+  for (let i = units.length - 1; i >= 0; i--) {
+    const u = units[i];
+    if (u.hp <= 0) { units.splice(i, 1); continue; }
 
-            for (const other of units) {
-                if (other !== u) {
-                    const od = distance(u, other);
-                    if (od < 1.3 && od > 0.01) {
-                        const push = (1.3 - od) * 1.6 * dt;
-                        u.x += ((u.x - other.x) / od) * push;
-                        u.y += ((u.y - other.y) / od) * push;
-                    }
-                }
-            }
-            return false;
-        }
-        return true;
-    };
-
-    // 1. WORKER
+    // 일꾼 채취 로직
     if (u.type === "Worker") {
-        let base = u.home;
-        if (!base || base.hp <= 0) {
-            base = structures.find(s => s.team === u.team);
-            u.home = base;
+      const myBases = structures.filter(s => s.team === u.team);
+      const home = myBases[0];
+      if (u.carry >= 20) {
+        if (home) {
+          const hd = Math.hypot(home.x - u.x, home.y - u.y);
+          if (hd > 2) { u.x += ((home.x - u.x) / hd) * u.spd * dt; u.y += ((home.y - u.y) / hd) * u.spd * dt; }
+          else { if (u.team === 1) ore += u.carry; else eOre += u.carry; u.carry = 0; }
         }
-
-        if (u.carry >= 25) {
-            if (base && moveToward(base.x, base.y, 3.0)) {
-                if (u.team === 1) ore += u.carry;
-                else enemyOre += u.carry;
-                u.carry = 0;
-                u.harvestNode = null;
-            }
-        } else {
-            if (!u.harvestNode || u.harvestNode.amount <= 0) {
-                let best = null, bd = 999;
-                for (const res of resources) {
-                    const d = distance(u, res);
-                    if (d < bd && res.amount > 0) { bd = d; best = res; }
-                }
-                u.harvestNode = best;
-            }
-            if (u.harvestNode && moveToward(u.harvestNode.x, u.harvestNode.y, 1.4)) {
-                const harvestRate = Math.min(u.harvestNode.amount, 16 * dt);
-                u.harvestNode.amount -= harvestRate;
-                u.carry += harvestRate;
-            }
+      } else {
+        const res = resources[0];
+        if (res) {
+          const rd = Math.hypot(res.x - u.x, res.y - u.y);
+          if (rd > 2) { u.x += ((res.x - u.x) / rd) * u.spd * dt; u.y += ((res.y - u.y) / rd) * u.spd * dt; }
+          else { u.carry += 10 * dt; }
         }
-        return;
+      }
+      continue;
     }
 
-    // 2. COMBAT TARGETING
-    let nearestThreat = null, minThreatDist = u.rng + 3.5;
+    // 전투 유닛 적 탐색
+    let target = null, minDist = u.rng + 4;
     for (const enemy of units) {
-        if (enemy.team !== u.team) {
-            const d = distance(u, enemy);
-            if (d < minThreatDist) { minThreatDist = d; nearestThreat = enemy; }
-        }
+      if (enemy.team !== u.team && enemy.hp > 0) {
+        const d = Math.hypot(enemy.x - u.x, enemy.y - u.y);
+        if (d < minDist) { minDist = d; target = enemy; }
+      }
     }
 
-    if (nearestThreat) {
-        u.targetHeading = Math.atan2(nearestThreat.y - u.y, nearestThreat.x - u.x);
-        if (minThreatDist > u.rng) {
-            moveToward(nearestThreat.x, nearestThreat.y, u.rng * 0.85);
-        } else {
-            u.cd -= dt;
-            if (u.cd <= 0) {
-                fireWeapon(u, nearestThreat);
-                u.cd = u.type === "Tank" ? 1.3 : (u.type === "Bazooka" || u.type === "Jet" ? 1.2 : 0.85);
-            }
-        }
-        return;
+    // 적 기지 공격
+    if (!target) {
+      const eBases = structures.filter(s => s.team !== u.team);
+      for (const eb of eBases) {
+        const d = Math.hypot(eb.x - u.x, eb.y - u.y);
+        if (d < u.rng + 3) { target = eb; break; }
+      }
     }
 
-    // Base Siege
-    const hostileBases = structures.filter(s => s.team !== u.team);
-    let nearestHostileBase = null, baseDist = 999;
-    for (const hb of hostileBases) {
-        const d = distance(u, hb);
-        if (d < baseDist) { baseDist = d; nearestHostileBase = hb; }
-    }
-
-    if (nearestHostileBase && baseDist < u.rng + 3.0) {
-        u.targetHeading = Math.atan2(nearestHostileBase.y - u.y, nearestHostileBase.x - u.x);
+    // 공격 실행
+    if (target) {
+      const td = Math.hypot(target.x - u.x, target.y - u.y);
+      u.heading = Math.atan2(target.y - u.y, target.x - u.x);
+      if (td > u.rng) {
+        u.x += Math.cos(u.heading) * u.spd * dt;
+        u.y += Math.sin(u.heading) * u.spd * dt;
+      } else {
         u.cd -= dt;
         if (u.cd <= 0) {
-            fireWeapon(u, nearestHostileBase);
-            u.cd = 1.0;
+          target.hp -= u.atk;
+          u.cd = 0.9;
+          projectiles.push({ sx: u.x, sy: u.y, tx: target.x, ty: target.y, life: 0.15 });
         }
-        return;
+      }
+      continue;
     }
 
-    // 3. MARCHING: 전군 핑 또는 자율 전선 확장
-    if (u.team === 1) {
-        if (directive) {
-            moveToward(directive.x, directive.y, 4.0);
-        } else {
-            const targetSector = sectors.find(s => s.owner !== 1);
-            if (targetSector) moveToward(targetSector.x, targetSector.y, 4.5);
-            else moveToward(80, 45, 5.0);
-        }
-    } else {
-        const enemyTargetSec = sectors.find(s => s.owner !== 2);
-        if (enemyTargetSec && rand(0, 1) < 0.6) {
-            moveToward(enemyTargetSec.x, enemyTargetSec.y, 4.5);
-        } else {
-            const pCore = structures.find(s => s.type === "CORE" && s.team === 1);
-            if (units.filter(e => e.team === 2 && e.type !== "Worker").length >= 10 && pCore) {
-                moveToward(pCore.x, pCore.y, 5.0);
-            } else {
-                moveToward(80, 45, 5.0);
-            }
-        }
+    // 전진 이동 (지휘 핑 또는 자동 전선 확장)
+    let destX = u.team === 1 ? 126 : 14;
+    let destY = 40;
+    if (u.team === 1 && directive) { destX = directive.x; destY = directive.y; }
+    else {
+      const sec = sectors.find(s => s.owner !== u.team);
+      if (sec) { destX = sec.x; destY = sec.y; }
     }
+
+    const dd = Math.hypot(destX - u.x, destY - u.y);
+    if (dd > 3) {
+      u.heading = Math.atan2(destY - u.y, destX - u.x);
+      u.x += Math.cos(u.heading) * u.spd * dt;
+      u.y += Math.sin(u.heading) * u.spd * dt;
+    }
+  }
 }
 
-/* =========================================================
-   AUTOMATIC 3-UNIT MERGE SYSTEM
-========================================================= */
-function checkAutoMerge() {
-    const teams = [1, 2];
-    const evolvable = ["Swordsman", "Rifleman", "Bike", "Car", "Glider", "Plane"];
-
-    for (const team of teams) {
-        for (const type of evolvable) {
-            const matchGroup = units.filter(u => u.team === team && u.type === type && u.hp > 0);
-            if (matchGroup.length >= 3) {
-                for (let i = 0; i < matchGroup.length; i++) {
-                    const u1 = matchGroup[i];
-                    const nearby = matchGroup.filter(other => other !== u1 && distance(u1, other) < 9.0);
-
-                    if (nearby.length >= 2) {
-                        const u2 = nearby[0], u3 = nearby[1];
-                        const nextType = EVOLVE[type];
-                        if (!nextType) continue;
-
-                        const midX = (u1.x + u2.x + u3.x) / 3;
-                        const midY = (u1.y + u2.y + u3.y) / 3;
-
-                        mergeBeams.push({ x1: u1.x, y1: u1.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
-                        mergeBeams.push({ x1: u2.x, y1: u2.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
-                        mergeBeams.push({ x1: u3.x, y1: u3.y, x2: midX, y2: midY, life: 0.45, maxLife: 0.45, team });
-
-                        u1.hp = 0; u2.hp = 0; u3.hp = 0;
-                        addUnit(nextType, midX, midY, team);
-
-                        shockwaves.push({ x: midX, y: midY, r: 0.5, maxR: 5.5, life: 0.55, maxLife: 0.55, color: "#ffe177" });
-                        floatTexts.push({ text: `★ ${nextType.toUpperCase()} EVOLVED!`, x: midX, y: midY - 1.2, life: 1.0, maxLife: 1.0, color: team === 1 ? "#ffe177" : "#ff7b88" });
-
-                        sfxMerge();
-                        shakeAmount = Math.min(10, shakeAmount + 4.5);
-                        for (let k = 0; k < 28; k++) {
-                            const ang = rand(0, Math.PI * 2), spd = rand(3, 8);
-                            particles.push({ x: midX, y: midY, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, life: rand(0.4, 0.7), maxLife: 0.7, size: 3, color: k % 2 === 0 ? "#ffd700" : "#ffffff" });
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/* =========================================================
-   SECTOR DOMINATION & OUTPOST DEPLOYMENT
-========================================================= */
-function updateSectors(dt) {
-    for (const s of sectors) {
-        let p = 0, e = 0;
-        for (const u of units) {
-            if (u.type !== "Worker" && distance(u, s) < 8.0) {
-                if (u.team === 1) p++;
-                if (u.team === 2) e++;
-            }
-        }
-
-        if (p > e && p > 0) {
-            s.progress = Math.min(100, s.progress + 16 * dt);
-            if (s.progress >= 100 && s.owner !== 1) captureSector(s, 1);
-        } else if (e > p && e > 0) {
-            s.progress = Math.max(-100, s.progress - 16 * dt);
-            if (s.progress <= -100 && s.owner !== 2) captureSector(s, 2);
-        }
-
-        if (s.owner === 1) ore += 2.2 * dt;
-        if (s.owner === 2) enemyOre += 2.2 * dt;
-    }
-
-    const relic = structures.find(st => st.type === "RELIC");
-    let pr = 0, er = 0;
-    for (const u of units) {
-        if (distance(u, relic) < 6) {
-            if (u.team === 1) pr++;
-            if (u.team === 2) er++;
-        }
-    }
-    if (pr > er && pr > 0) { relic.team = 1; ore += 4.5 * dt; }
-    else if (er > pr && er > 0) { relic.team = 2; enemyOre += 4.5 * dt; }
-
-    ore += 3.0 * dt;
-    enemyOre += 3.0 * dt;
-}
-
-function captureSector(sector, newOwner) {
-    sector.owner = newOwner;
-    const oldBaseIdx = structures.findIndex(st => st.sector === sector);
-    if (oldBaseIdx >= 0) structures.splice(oldBaseIdx, 1);
-
-    const outpost = addStructure("OUTPOST", sector.x, sector.y, newOwner, sector);
-    sector.hasBase = true;
-
-    sfxMerge();
-    shakeAmount = Math.min(8, shakeAmount + 3.0);
-    shockwaves.push({ x: sector.x, y: sector.y, r: 1.0, maxR: 8.0, life: 0.6, maxLife: 0.6, color: newOwner === 1 ? "#60cbf0" : "#ff5d6c" });
-    floatTexts.push({ text: `⚡ SECTOR [${sector.name}] SECURED!`, x: sector.x, y: sector.y - 3, life: 1.5, maxLife: 1.5, color: newOwner === 1 ? "#60cbf0" : "#ff5d6c" });
-
-    // 4전속 일꾼 자동 전개
-    for (let i = 0; i < 4; i++) {
-        addUnit("Worker", sector.x + rand(-2, 2), sector.y + rand(-2, 2), newOwner, outpost);
-    }
-}
-
-/* =========================================================
-   AUTOMATIC PRODUCTION SYSTEM (DOCTRINE BASED)
-========================================================= */
-let prodTimer = 0;
-function handleAutoProduction(dt) {
-    prodTimer += dt;
-    if (prodTimer < 3.8) return;
-    prodTimer = 0;
-
-    // 1. PLAYER FORWARD BASES
-    const pBases = structures.filter(s => s.team === 1 && (s.type === "CORE" || s.type === "OUTPOST"));
-    for (const base of pBases) {
-        let pool = [];
-        if (prodDoctrine === "armor") pool = ["Bike", "Bike", "Car"];
-        else if (prodDoctrine === "air") pool = ["Glider", "Glider", "Plane"];
-        else if (prodDoctrine === "inf") pool = ["Swordsman", "Swordsman", "Rifleman"];
-        else pool = ["Swordsman", "Bike", "Glider"];
-
-        const chosen = pool[Math.floor(rand(0, pool.length))];
-        const cost = SPEC[chosen].cost;
-        if (ore >= cost) {
-            ore -= cost;
-            addUnit(chosen, base.x + 3.5, base.y + rand(-3, 3), 1, base);
-        }
-    }
-
-    // 2. ENEMY BASES
-    const eBases = structures.filter(s => s.team === 2 && (s.type === "CORE" || s.type === "OUTPOST"));
-    for (const base of eBases) {
-        const pool = ["Swordsman", "Bike", "Glider"];
-        const chosen = pool[Math.floor(rand(0, pool.length))];
-        const cost = SPEC[chosen].cost;
-        if (enemyOre >= cost) {
-            enemyOre -= cost;
-            addUnit(chosen, base.x - 3.5, base.y + rand(-3, 3), 2, base);
-        }
-    }
-}
-
-/* =========================================================
-   ENGINE UPDATE & LOOP
-========================================================= */
 function update(dt) {
-    if (paused || !running) return;
+  mission -= dt;
+  autoProduce(dt);
+  autoMerge();
+  updateSectors(dt);
+  updateUnits(dt);
 
-    mission -= dt;
-    if (mission <= 0) {
-        endGame(sectors.filter(s => s.owner === 1).length > sectors.filter(s => s.owner === 2).length ? "VICTORY BY DOMINATION" : "DEFEAT");
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    projectiles[i].life -= dt;
+    if (projectiles[i].life <= 0) projectiles.splice(i, 1);
+  }
+
+  // 기지 파괴 확인
+  for (let i = structures.length - 1; i >= 0; i--) {
+    if (structures[i].hp <= 0) {
+      if (structures[i].type === "CORE") {
+        alert(structures[i].team === 1 ? "패배: 아군 본진이 파괴되었습니다." : "승리: 적 코어를 섬멸했습니다!");
+        init();
         return;
+      }
+      structures.splice(i, 1);
     }
+  }
 
-    if (shakeAmount > 0) shakeAmount = Math.max(0, shakeAmount - dt * 24);
-
-    handleAutoProduction(dt);
-    updateSectors(dt);
-
-    // Units update
-    for (let i = units.length - 1; i >= 0; i--) {
-        const u = units[i];
-        if (u.hp <= 0) { units.splice(i, 1); continue; }
-        updateAI(u, dt);
-    }
-
-    checkAutoMerge();
-
-    // Projectiles
-    for (let i = projectiles.length - 1; i >= 0; i--) {
-        const p = projectiles[i];
-        p.life -= dt;
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-
-        if (p.type === "rocket" && Math.random() < 0.6) {
-            particles.push({ x: p.x, y: p.y, vx: rand(-0.8, 0.8), vy: rand(-0.8, 0.8), life: 0.35, maxLife: 0.35, size: 3, color: "rgba(180, 195, 205, 0.7)" });
-        }
-
-        if (p.life <= 0) {
-            if (p.type === "tank_shell") spawnExplosion(p.tx, p.ty, 1.8);
-            else if (p.type === "rocket") spawnExplosion(p.tx, p.ty, 1.5);
-            else spawnExplosion(p.tx, p.ty, 0.4);
-
-            for (const u of units) {
-                if (u.team !== p.team && distance(p, u) < 1.6) u.hp -= p.damage;
-            }
-
-            const hostileBases = structures.filter(s => s.team !== p.team);
-            for (const hb of hostileBases) {
-                if (distance(p, hb) < 3.5) hb.hp -= p.damage;
-            }
-            projectiles.splice(i, 1);
-        }
-    }
-
-    // Shockwaves & Beams
-    for (let i = shockwaves.length - 1; i >= 0; i--) {
-        const sw = shockwaves[i];
-        sw.life -= dt;
-        sw.r += ((sw.maxR - sw.r) / (sw.life + 0.1)) * dt;
-        if (sw.life <= 0) shockwaves.splice(i, 1);
-    }
-    for (let i = mergeBeams.length - 1; i >= 0; i--) {
-        const mb = mergeBeams[i];
-        mb.life -= dt;
-        if (mb.life <= 0) mergeBeams.splice(i, 1);
-    }
-    for (let i = floatTexts.length - 1; i >= 0; i--) {
-        const ft = floatTexts[i];
-        ft.life -= dt;
-        ft.y -= dt * 1.5;
-        if (ft.life <= 0) floatTexts.splice(i, 1);
-    }
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.life -= dt;
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        if (p.life <= 0) particles.splice(i, 1);
-    }
-
-    // Destroyed bases
-    for (let i = structures.length - 1; i >= 0; i--) {
-        const s = structures[i];
-        if (s.hp <= 0) {
-            spawnExplosion(s.x, s.y, 3.0);
-            if (s.type === "OUTPOST" && s.sector) {
-                s.sector.owner = 0; s.sector.hasBase = false; s.sector.progress = 0;
-            }
-            if (s.type === "CORE") {
-                endGame(s.team === 1 ? "DEFEAT! FRONTIER CORE LOST" : "VICTORY! VOID CORE DESTROYED");
-                return;
-            }
-            structures.splice(i, 1);
-        }
-    }
-
-    updateUI();
+  // HUD 업데이트
+  document.getElementById("ore").textContent = Math.floor(ore);
+  document.getElementById("sector").textContent = `${sectors.filter(s => s.owner === 1).length}/6`;
+  document.getElementById("army").textContent = units.filter(u => u.team === 1 && u.type !== "Worker").length;
+  const m = Math.floor(Math.max(0, mission) / 60);
+  const s = Math.floor(Math.max(0, mission) % 60);
+  document.getElementById("time").textContent = `0${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
-function updateUI() {
-    document.getElementById("ore").textContent = Math.floor(ore);
-    document.getElementById("sector").textContent = sectors.filter(s => s.owner === 1).length;
-    document.getElementById("army").textContent = units.filter(u => u.team === 1 && u.type !== "Worker").length;
-    const relic = structures.find(s => s.type === "RELIC");
-    if (relic) {
-        const rText = document.getElementById("relic");
-        rText.textContent = relic.team === 1 ? "FRONTIER" : relic.team === 2 ? "VOID" : "NEUTRAL";
-        rText.style.color = relic.team === 1 ? "#62e4ff" : relic.team === 2 ? "#ff6570" : "#d7c16d";
-    }
+// 렌더링
+function render() {
+  X.clearRect(0, 0, innerWidth, innerHeight);
+  X.fillStyle = "#04090e";
+  X.fillRect(0, 0, innerWidth, innerHeight);
 
-    const t = Math.max(0, Math.ceil(mission));
-    document.getElementById("time").textContent = `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
-}
+  // 그리드
+  X.strokeStyle = "rgba(40,70,90,0.15)";
+  for (let x = 0; x < W; x += 10) {
+    const [sx] = w2s(x, 0);
+    X.beginPath(); X.moveTo(sx, 0); X.lineTo(sx, innerHeight); X.stroke();
+  }
+  for (let y = 0; y < H; y += 10) {
+    const [, sy] = w2s(0, y);
+    X.beginPath(); X.moveTo(0, sy); X.lineTo(innerWidth, sy); X.stroke();
+  }
 
-function endGame(text) {
-    running = false;
-    alert(text);
-    reset();
-    running = true;
-}
+  // 자원
+  for (const r of resources) {
+    const [rx, ry] = w2s(r.x, r.y);
+    X.fillStyle = "#d4af37";
+    X.beginPath(); X.arc(rx, ry, 6, 0, Math.PI * 2); X.fill();
+  }
 
-/* =========================================================
-   DETAILED SPRITE DRAWING
-========================================================= */
-function drawUnitSprite(u) {
-    const [px, py] = worldToScreen(u.x, u.y);
+  // 거점 섹터
+  for (const s of sectors) {
+    const [sx, sy] = w2s(s.x, s.y);
+    X.fillStyle = s.owner === 1 ? "rgba(98,228,255,0.12)" : s.owner === 2 ? "rgba(255,101,112,0.12)" : "rgba(255,255,255,0.05)";
+    X.beginPath(); X.arc(sx, sy, 7 * tile, 0, Math.PI * 2); X.fill();
+    X.strokeStyle = s.owner === 1 ? "#62e4ff" : s.owner === 2 ? "#ff6570" : "#5a7280";
+    X.stroke();
+    X.fillStyle = "#dcebf0"; X.font = "bold 11px sans-serif"; X.textAlign = "center";
+    X.fillText(s.name, sx, sy - 8);
+  }
+
+  // 기지 건물
+  for (const st of structures) {
+    const [bx, by] = w2s(st.x, st.y);
+    const sz = st.type === "CORE" ? 22 : 14;
+    X.fillStyle = st.team === 1 ? "#1b9ec4" : "#c42a38";
+    X.fillRect(bx - sz, by - sz, sz * 2, sz * 2);
+    X.strokeStyle = "#fff"; X.strokeRect(bx - sz, by - sz, sz * 2, sz * 2);
+    // HP
+    X.fillStyle = "#000"; X.fillRect(bx - sz, by + sz + 3, sz * 2, 4);
+    X.fillStyle = st.team === 1 ? "#52e588" : "#ff5466";
+    X.fillRect(bx - sz, by + sz + 3, sz * 2 * (st.hp / st.maxHp), 4);
+  }
+
+  // 유닛
+  for (const u of units) {
+    const [ux, uy] = w2s(u.x, u.y);
     const isP = u.team === 1;
-    const mainCol = isP ? "#50bce2" : "#e65965";
-    const subCol = isP ? "#9ce7ff" : "#ffaab0";
-    const darkCol = isP ? "#112935" : "#381318";
 
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.rotate(u.heading);
+    X.save();
+    X.translate(ux, uy);
+    X.rotate(u.heading);
 
-    if (u.type === "Worker") {
-        ctx.fillStyle = mainCol; ctx.fillRect(-7, -7, 14, 14);
-        ctx.fillStyle = darkCol; ctx.fillRect(-4, -4, 8, 8);
-        ctx.fillStyle = u.carry > 0 ? "#ffd768" : "#2f4652"; ctx.fillRect(-10, -5, 3, 10);
-        ctx.fillStyle = "#dcebf0"; ctx.beginPath(); ctx.moveTo(7, -5); ctx.lineTo(13, -1); ctx.lineTo(7, 3); ctx.fill();
-    } else if (u.type === "Swordsman") {
-        ctx.fillStyle = darkCol; ctx.beginPath(); ctx.arc(-2, 0, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = mainCol; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#ffffff"; ctx.fillRect(3, -2, 12, 3);
-    } else if (u.type === "Rifleman") {
-        ctx.fillStyle = darkCol; ctx.beginPath(); ctx.arc(-2, 0, 7, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = mainCol; ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#0c151c"; ctx.fillRect(3, 2, 14, 3);
-    } else if (u.type === "Bazooka") {
-        ctx.fillStyle = darkCol; ctx.beginPath(); ctx.arc(-2, 0, 8, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = mainCol; ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#1e2e38"; ctx.fillRect(-5, -6, 20, 5);
-        ctx.fillStyle = "#e07238"; ctx.fillRect(15, -5, 3, 3);
-    } else if (u.type === "Bike") {
-        ctx.fillStyle = "#060b0f"; ctx.fillRect(-10, -2, 5, 4); ctx.fillRect(7, -2, 5, 4);
-        ctx.fillStyle = mainCol; ctx.fillRect(-5, -3, 12, 6);
-    } else if (u.type === "Car") {
-        ctx.fillStyle = "#060b0f"; ctx.fillRect(-10, -8, 5, 3); ctx.fillRect(-10, 5, 5, 3); ctx.fillRect(5, -8, 5, 3); ctx.fillRect(5, 5, 5, 3);
-        ctx.fillStyle = mainCol; ctx.fillRect(-10, -6, 20, 12);
-        ctx.fillStyle = darkCol; ctx.beginPath(); ctx.arc(-1, 0, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#0a131a"; ctx.fillRect(1, -2, 12, 4);
-    } else if (u.type === "Tank") {
-        ctx.fillStyle = "#070d12"; ctx.fillRect(-18, -13, 36, 7); ctx.fillRect(-18, 6, 36, 7);
-        ctx.fillStyle = mainCol; ctx.beginPath();
-        ctx.moveTo(-14, -8); ctx.lineTo(13, -8); ctx.lineTo(17, -5); ctx.lineTo(17, 5); ctx.lineTo(13, 8); ctx.lineTo(-14, 8); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = darkCol; ctx.fillRect(-8, -6, 14, 12);
-        ctx.fillStyle = subCol; ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#081017"; ctx.fillRect(4, -3, 22, 6);
-        ctx.fillStyle = "#5c8299"; ctx.fillRect(22, -4, 4, 8);
-    } else if (u.type === "Glider") {
-        ctx.fillStyle = mainCol; ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(-8, -12); ctx.lineTo(-3, 0); ctx.lineTo(-8, 12); ctx.closePath(); ctx.fill();
-    } else if (u.type === "Plane") {
-        ctx.fillStyle = mainCol; ctx.fillRect(-12, -3, 24, 6);
-        ctx.fillStyle = subCol; ctx.fillRect(-3, -15, 6, 30);
-        ctx.fillRect(-12, -6, 3, 12);
+    if (u.type === "Tank") {
+      X.fillStyle = isP ? "#153342" : "#381318";
+      X.fillRect(-12, -9, 24, 5); X.fillRect(-12, 4, 24, 5);
+      X.fillStyle = isP ? "#50bce2" : "#e65965";
+      X.fillRect(-8, -6, 16, 12);
+      X.fillRect(2, -2, 14, 4);
     } else if (u.type === "Jet") {
-        ctx.fillStyle = mainCol; ctx.beginPath();
-        ctx.moveTo(18, 0); ctx.lineTo(-12, -15); ctx.lineTo(-6, -3); ctx.lineTo(-14, 0); ctx.lineTo(-6, 3); ctx.lineTo(-12, 15); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "#ff6a38"; ctx.fillRect(-14, -2, 3, 4);
+      X.fillStyle = isP ? "#50bce2" : "#e65965";
+      X.beginPath();
+      X.moveTo(12, 0); X.lineTo(-8, -10); X.lineTo(-4, 0); X.lineTo(-8, 10);
+      X.closePath(); X.fill();
+    } else if (u.type === "Worker") {
+      X.fillStyle = isP ? "#50bce2" : "#e65965";
+      X.fillRect(-5, -5, 10, 10);
+      X.fillStyle = "#ffd700";
+      X.fillRect(3, -2, 4, 4);
+    } else {
+      // 일반 보병/차량
+      X.fillStyle = isP ? "#62e4ff" : "#ff6570";
+      X.beginPath(); X.arc(0, 0, 6, 0, Math.PI * 2); X.fill();
+      X.fillStyle = "#fff"; X.fillRect(2, -1, 6, 2);
     }
-    ctx.restore();
+    X.restore();
 
     // HP Bar
-    const bw = 20;
-    ctx.fillStyle = "#071018"; ctx.fillRect(px - bw / 2, py - tile - 6, bw, 3);
-    ctx.fillStyle = isP ? "#76ff9b" : "#ff6570"; ctx.fillRect(px - bw / 2, py - tile - 6, bw * Math.max(0, u.hp / u.maxHp), 3);
-}
+    X.fillStyle = "#000"; X.fillRect(ux - 8, uy - 11, 16, 2.5);
+    X.fillStyle = isP ? "#52e588" : "#ff5466";
+    X.fillRect(ux - 8, uy - 11, 16 * (u.hp / u.maxHp), 2.5);
+  }
 
-/* =========================================================
-   RENDER PIPELINE
-========================================================= */
-function render() {
-    ctx.save();
-    if (shakeAmount > 0) {
-        ctx.translate((rand(0, 1) - 0.5) * shakeAmount, (rand(0, 1) - 0.5) * shakeAmount);
-    }
+  // 투사체
+  X.strokeStyle = "#fff"; X.lineWidth = 1.5;
+  for (const pr of projectiles) {
+    const [p1x, p1y] = w2s(pr.sx, pr.sy);
+    const [p2x, p2y] = w2s(pr.tx, pr.ty);
+    X.beginPath(); X.moveTo(p1x, p1y); X.lineTo(p2x, p2y); X.stroke();
+  }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#03070b"; ctx.fillRect(0, 0, innerWidth, innerHeight);
+  // 지휘 비콘 표시
+  if (directive) {
+    const [dx, dy] = w2s(directive.x, directive.y);
+    X.strokeStyle = "#62e4ff"; X.lineWidth = 2;
+    X.beginPath(); X.arc(dx, dy, 12, 0, Math.PI * 2); X.stroke();
+  }
 
-    // Background Grid
-    ctx.strokeStyle = "rgba(43,72,90,0.12)";
-    for (let x = 0; x < W; x += 5) {
-        const [sx] = worldToScreen(x, 0);
-        ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, innerHeight); ctx.stroke();
-    }
-    for (let y = 0; y < H; y += 5) {
-        const [, sy] = worldToScreen(0, y);
-        ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(innerWidth, sy); ctx.stroke();
-    }
-
-    // Resources
-    for (const r of resources) {
-        if (r.amount <= 0) continue;
-        const [x, y] = worldToScreen(r.x, r.y);
-        ctx.fillStyle = "#ffd45b"; ctx.beginPath(); ctx.arc(x, y, Math.max(4, tile * 0.6), 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#060f14"; ctx.font = "bold 8px system-ui"; ctx.textAlign = "center"; ctx.fillText("ORE", x, y + 2.5);
-    }
-
-    // Sectors
-    for (const s of sectors) {
-        const [x, y] = worldToScreen(s.x, s.y);
-        ctx.beginPath(); ctx.arc(x, y, tile * 8, 0, Math.PI * 2);
-        ctx.fillStyle = s.owner === 1 ? "rgba(98, 228, 255, 0.08)" : s.owner === 2 ? "rgba(255, 101, 112, 0.08)" : "rgba(255, 255, 255, 0.04)";
-        ctx.fill();
-        ctx.strokeStyle = s.owner === 1 ? "rgba(98, 228, 255, 0.4)" : s.owner === 2 ? "rgba(255, 101, 112, 0.4)" : "rgba(100, 130, 145, 0.25)";
-        ctx.lineWidth = 1.5; ctx.stroke();
-
-        ctx.fillStyle = "#d7e9ee"; ctx.font = "bold 11px system-ui"; ctx.textAlign = "center";
-        ctx.fillText(`SECTOR ${s.name}`, x, y - tile * 8.2);
-
-        if (Math.abs(s.progress) > 0 && s.progress !== 100 && s.progress !== -100) {
-            ctx.fillStyle = "#111"; ctx.fillRect(x - tile * 4, y + tile * 6, tile * 8, 3);
-            ctx.fillStyle = s.progress > 0 ? "#62e4ff" : "#ff6570";
-            ctx.fillRect(x - tile * 4, y + tile * 6, tile * 8 * (Math.abs(s.progress) / 100), 3);
-        }
-    }
-
-    // Structures
-    for (const s of structures) {
-        const [x, y] = worldToScreen(s.x, s.y);
-        const r = s.type === "CORE" ? tile * 2.5 : tile * 1.6;
-        ctx.fillStyle = s.team === 1 ? "#1dbdd9" : s.team === 2 ? "#e54f5d" : "#d9b94e";
-        ctx.fillRect(x - r, y - r, r * 2, r * 2);
-        ctx.strokeStyle = "#ffffff66"; ctx.strokeRect(x - r, y - r, r * 2, r * 2);
-
-        ctx.fillStyle = "#071018"; ctx.fillRect(x - r, y + r + 4, r * 2, 4);
-        ctx.fillStyle = "#76ff9b"; ctx.fillRect(x - r, y + r + 4, r * 2 * (s.hp / s.maxHp), 4);
-        ctx.fillStyle = "#fff"; ctx.font = "bold 9px system-ui"; ctx.textAlign = "center"; ctx.fillText(s.type, x, y - r - 4);
-    }
-
-    // Directive Marker
-    if (directive) {
-        const [dx, dy] = worldToScreen(directive.x, directive.y);
-        ctx.strokeStyle = "#60cbf0"; ctx.lineWidth = 2; ctx.beginPath();
-        ctx.arc(dx, dy, 18 + Math.sin(Date.now() * 0.007) * 5, 0, Math.PI * 2); ctx.stroke();
-        ctx.fillStyle = "#60cbf0"; ctx.beginPath();
-        ctx.moveTo(dx, dy); ctx.lineTo(dx + 9, dy - 14); ctx.lineTo(dx - 9, dy - 14); ctx.fill();
-    }
-
-    // Beams & Units & Projectiles
-    for (const mb of mergeBeams) {
-        const [x1, y1] = worldToScreen(mb.x1, mb.y1);
-        const [x2, y2] = worldToScreen(mb.x2, mb.y2);
-        const alpha = mb.life / mb.maxLife;
-        ctx.strokeStyle = mb.team === 1 ? `rgba(255, 225, 119, ${alpha})` : `rgba(255, 123, 136, ${alpha})`;
-        ctx.lineWidth = 4 * alpha; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-    }
-
-    for (const u of units) drawUnitSprite(u);
-
-    for (const pr of projectiles) {
-        const [x, y] = worldToScreen(pr.x, pr.y);
-        if (pr.type === "tank_shell") {
-            ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = "#ffb703"; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fill();
-        } else if (pr.type === "rocket") {
-            ctx.fillStyle = "#ff6a38"; ctx.fillRect(x - 3, y - 3, 6, 6);
-        } else {
-            ctx.fillStyle = pr.isP ? "#8fe3ff" : "#ff9fa7"; ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
-        }
-    }
-
-    for (const sw of shockwaves) {
-        const [x, y] = worldToScreen(sw.x, sw.y);
-        ctx.strokeStyle = sw.color; ctx.globalAlpha = sw.life / sw.maxLife; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(x, y, sw.r * tile, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1.0;
-    }
-
-    for (const pt of particles) {
-        const [x, y] = worldToScreen(pt.x, pt.y);
-        ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life / pt.maxLife;
-        ctx.beginPath(); ctx.arc(x, y, pt.size, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1.0;
-    }
-
-    for (const ft of floatTexts) {
-        const [x, y] = worldToScreen(ft.x, ft.y);
-        ctx.fillStyle = ft.color; ctx.globalAlpha = ft.life / ft.maxLife;
-        ctx.font = "bold 13px system-ui"; ctx.textAlign = "center"; ctx.fillText(ft.text, x, y); ctx.globalAlpha = 1.0; ctx.textAlign = "left";
-    }
-
-    ctx.restore();
-    renderMinimap();
+  renderMinimap();
 }
 
 function renderMinimap() {
-    mmCtx.clearRect(0, 0, mmCanvas.width, mmCanvas.height);
-    const mx = mmCanvas.width / W, my = mmCanvas.height / H;
-    mmCtx.fillStyle = "#03080d"; mmCtx.fillRect(0, 0, mmCanvas.width, mmCanvas.height);
+  MX.clearRect(0, 0, 150, 95);
+  MX.fillStyle = "#04090e"; MX.fillRect(0, 0, 150, 95);
+  const mx = 150 / W, my = 95 / H;
 
-    for (const s of sectors) {
-        mmCtx.fillStyle = s.owner === 1 ? "rgba(98, 228, 255, 0.4)" : s.owner === 2 ? "rgba(255, 101, 112, 0.4)" : "rgba(255, 255, 255, 0.1)";
-        mmCtx.beginPath(); mmCtx.arc(s.x * mx, s.y * my, 8 * mx, 0, Math.PI * 2); mmCtx.fill();
-    }
-
-    for (const st of structures) {
-        mmCtx.fillStyle = st.team === 1 ? "#62e4ff" : st.team === 2 ? "#ff6570" : "#d7c16d";
-        const sz = st.type === "CORE" ? 6 : 4;
-        mmCtx.fillRect(st.x * mx - sz / 2, st.y * my - sz / 2, sz, sz);
-    }
-
-    for (const u of units) {
-        mmCtx.fillStyle = u.team === 1 ? "#9ce7ff" : "#ffaab0";
-        mmCtx.fillRect(u.x * mx - 1, u.y * my - 1, 2, 2);
-    }
-
-    if (directive) {
-        mmCtx.strokeStyle = "#fff"; mmCtx.strokeRect(directive.x * mx - 2, directive.y * my - 2, 4, 4);
-    }
-
-    const [vx1, vy1] = [screenToWorld(0, 0).x, screenToWorld(0, 0).y];
-    const [vx2, vy2] = [screenToWorld(innerWidth, innerHeight).x, screenToWorld(innerWidth, innerHeight).y];
-    mmCtx.strokeStyle = "#ffffff88"; mmCtx.lineWidth = 1;
-    mmCtx.strokeRect(vx1 * mx, vy1 * my, (vx2 - vx1) * mx, (vy2 - vy1) * my);
+  for (const s of sectors) {
+    MX.fillStyle = s.owner === 1 ? "rgba(98,228,255,0.4)" : s.owner === 2 ? "rgba(255,101,112,0.4)" : "rgba(255,255,255,0.1)";
+    MX.beginPath(); MX.arc(s.x * mx, s.y * my, 6 * mx, 0, Math.PI * 2); MX.fill();
+  }
+  for (const st of structures) {
+    MX.fillStyle = st.team === 1 ? "#62e4ff" : "#ff6570";
+    MX.fillRect(st.x * mx - 2, st.y * my - 2, 4, 4);
+  }
+  for (const u of units) {
+    MX.fillStyle = u.team === 1 ? "#a3edff" : "#ff9ea6";
+    MX.fillRect(u.x * mx - 1, u.y * my - 1, 2, 2);
+  }
 }
 
-/* =========================================================
-   CAMERA & CONTROLS
-========================================================= */
-addEventListener("wheel", e => {
-    const before = screenToWorld(e.clientX, e.clientY);
-    camera.zoom = clamp(camera.zoom * (e.deltaY < 0 ? 1.1 : 0.9), 0.65, 2.0);
-    resize();
-    const after = screenToWorld(e.clientX, e.clientY);
-    camera.x += before.x - after.x;
-    camera.y += before.y - after.y;
-}, { passive: true });
-
-const keys = {};
-addEventListener("keydown", e => {
-    keys[e.key.toLowerCase()] = true;
-    if (e.code === "Space") paused = !paused;
-    if (e.key.toLowerCase() === "r") { reset(); running = true; }
-});
-addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
-
-function cameraUpdate(dt) {
-    const speed = 40 / camera.zoom;
-    if (keys.w) camera.y -= speed * dt;
-    if (keys.s) camera.y += speed * dt;
-    if (keys.a) camera.x -= speed * dt;
-    if (keys.d) camera.x += speed * dt;
-    camera.x = clamp(camera.x, 0, W);
-    camera.y = clamp(camera.y, 0, H);
+// 루프 (시작 메뉴 없이 즉시 실행)
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
 }
 
-function loop(time) {
-    const dt = Math.min(0.05, (time - lastTime) / 1000 || 0);
-    lastTime = time;
-    cameraUpdate(dt);
-    if (running && !paused) update(dt);
-    render();
-    requestAnimationFrame(loop);
-}
-
-document.getElementById("start").onclick = () => {
-    initAudio();
-    document.getElementById("menu").style.display = "none";
-    reset();
-    running = true;
-    paused = false;
-};
-
-resize();
-reset(); // 초기 데이터 즉시 로드
+init();
 requestAnimationFrame(loop);
 </script>
 </body>
