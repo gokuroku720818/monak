@@ -62,7 +62,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   pointer-events:none;z-index:45;opacity:0;transition:opacity .2s;
 }
 
-/* ARCADE SELECTOR HUB (2종 깔끔 정돈) */
+/* HUB MODAL */
 #hubModal{
   position:fixed;inset:0;z-index:30;
   display:flex;align-items:center;justify-content:center;
@@ -134,7 +134,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 }
 .menu-btns button:hover,.btn-res:hover{background:#123b54;border-color:#65dbfc}
 
-/* HUNTER HUD & SKILLS */
+/* HUNTER HUD & DYNAMIC SKILL BAR */
 #arcadeHUD{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:30;display:none;width:min(880px,96vw);padding:10px 14px;border:1px solid #ffffff1a;border-radius:16px;background:linear-gradient(180deg,#07111ceb,#02050de8);box-shadow:0 10px 40px #000b,0 0 35px #7b3cff14;backdrop-filter:blur(10px);pointer-events:none}
 #arcadeHUD .row{display:flex;align-items:center;gap:9px;justify-content:center;flex-wrap:wrap;font-weight:900;letter-spacing:.04em;font-size:11px}
 .stat{padding:5px 8px;border-radius:8px;background:#ffffff07;border:1px solid #ffffff10}
@@ -143,12 +143,12 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4deaff,#78ff9b)}
 .xpbar i{background:linear-gradient(90deg,#b66cff,#ffd76a)!important}
 
-#arcadeSkills{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:31;display:none;gap:12px;pointer-events:auto}
-.arcSkill{width:86px;height:68px;border:1px solid #ffffff24;border-radius:14px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008}
-.arcSkill b{display:block;font-size:18px}
-.arcSkill span{display:block;font-size:10px;color:#63efff;margin:2px 0}
-.arcSkill small{font-size:9px;color:#91b7c4}
-.arcSkill.cd{opacity:.4;filter:saturate(.45)}
+#arcadeSkills{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:31;display:none;gap:8px;pointer-events:auto;max-width:96vw;overflow-x:auto;padding-bottom:4px}
+.arcSkill{min-width:68px;height:58px;padding:4px 6px;border:1px solid #ffffff24;border-radius:12px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008;text-align:center}
+.arcSkill b{display:block;font-size:15px;color:#fff}
+.arcSkill span{display:block;font-size:9px;color:#63efff;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arcSkill small{font-size:8px;color:#91b7c4}
+.arcSkill.cd{opacity:.35;filter:saturate(.4)}
 
 #arcadeEvo{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#01040acb;backdrop-filter:blur(7px)}
 #arcadeEvo .box{width:min(740px,94vw);padding:24px;border:1px solid #ffffff22;border-radius:20px;background:linear-gradient(180deg,#091521f7,#03070df7);text-align:center}
@@ -162,7 +162,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   .game-grid{grid-template-columns:1fr}
   #classes,#hunterClasses{grid-template-columns:repeat(2,1fr)}
   .bar{width:140px!important}
-  .arcSkill{width:70px;height:60px}
+  .arcSkill{min-width:54px;height:50px}
   .evoCards{grid-template-columns:1fr}
 }
 </style>
@@ -192,7 +192,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
 <div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10기, 3~5단계는 2기씩 고속 합체!</div>
 
-<!-- 1. 아케이드 허브 (2종 체제) -->
+<!-- 1. 아케이드 허브 -->
 <div id="hubModal">
   <div class="hubBox">
     <h1>FRONTIER ARCADE</h1>
@@ -206,13 +206,13 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
       <div class="game-card" onclick="selectGameMode('HUNTER')">
         <span class="tag" style="background:#3b164f;color:#e18aff">MODE 2</span>
         <h3>프론티어 헌터 (생존 사냥)</h3>
-        <p>6대 영웅을 직접 조작하는 생존 로그라이크! 방향키 이동과 순간이동(Q), 플라즈마 폭발(W), 관통 하이퍼 레이저(E)로 적 웨이브와 보스를 토벌하세요.</p>
+        <p>직업별 특화 스킬! 바바리안의 3초 지속 휠윈드, 마법사의 메테오, 거너의 유탄 폭격 등 5레벨마다 새로운 스킬이 순차 해금됩니다.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 2. 직업 선택 모달 (모드 1용) -->
+<!-- 2. 모드 1 직업 선택 -->
 <div id="classModal">
   <div id="card">
     <h1>CHOOSE YOUR CLASS</h1>
@@ -225,11 +225,11 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<!-- 3. 영웅 선택 모달 (모드 2 헌터용) -->
+<!-- 3. 모드 2 영웅 선택 -->
 <div id="hunterClassModal">
   <div id="hunterCard">
     <h1>SELECT YOUR HERO</h1>
-    <p>사냥에 출격할 영웅을 선택하십시오 · 캐릭터마다 고유한 비주얼과 탄막 스타일을 지닙니다</p>
+    <p>사냥에 출격할 영웅을 선택하십시오 · 직업마다 완전히 다른 전투 스타일을 지닙니다</p>
     <div id="hunterClasses"></div>
     <div class="modal-actions">
       <button id="hunterStart" onclick="confirmHunterDeploy()">HUNT START</button>
@@ -263,38 +263,22 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<!-- 헌터 모드 전용 HUD & 스킬 버튼 -->
+<!-- 헌터 전용 HUD & 동적 스킬 바 -->
 <div id="arcadeHUD">
   <div class="row">
     <span class="stat cyan" id="aHeroName">MAGE</span>
     <span class="stat gold">LEVEL <b id="aLevel">1</b></span>
     <span class="stat">KILLS <b id="aKills">0</b></span>
     <span class="stat pink">SCORE <b id="aScore">0</b></span>
-    <span class="stat">ZONE <b id="aZone">1/5</b></span>
+    <span class="stat">ZONE <b id="aZone">1/4</b></span>
   </div>
   <div class="row" style="margin-top:6px">
-    <span class="stat">XP <span class="bar xpbar"><i id="aXp"></i></span> <b id="aXpText">0 / 100</b></span>
+    <span class="stat">XP <span class="bar xpbar"><i id="aXp"></i></span> <b id="aXpText">0 / 80</b></span>
     <span class="stat">HP <span class="bar"><i id="aHp"></i></span> <b id="aHpText">260 / 260</b></span>
   </div>
 </div>
 
-<div id="arcadeSkills">
-  <button class="arcSkill" id="btnSkillQ" onclick="hunterUseSkill('q')">
-    <b>Q</b>
-    <span>순간이동</span>
-    <small id="cdQ">READY</small>
-  </button>
-  <button class="arcSkill" id="btnSkillW" onclick="hunterUseSkill('w')">
-    <b>W</b>
-    <span>플라즈마 폭발</span>
-    <small id="cdW">READY</small>
-  </button>
-  <button class="arcSkill" id="btnSkillE" onclick="hunterUseSkill('e')">
-    <b>E</b>
-    <span>하이퍼 레이저</span>
-    <small id="cdE">READY</small>
-  </button>
-</div>
+<div id="arcadeSkills"></div>
 
 <div id="arcadeEvo">
   <div class="box">
@@ -327,26 +311,75 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-let activeGameMode = "DOMINATION"; // "DOMINATION" | "HUNTER"
+let activeGameMode = "DOMINATION";
 let running = false;
 let isPaused = false;
 
-// 모드 1 공평 스탯 (시원한 이동속도 76)
+/* =========================================================
+   WEB AUDIO API 사운드 신디사이저
+========================================================= */
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function sfxHit() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+  osc.type = 'triangle'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.08);
+  g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+}
+function sfxLaser() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+  osc.type = 'sawtooth'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.25);
+  g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+}
+function sfxBoom() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+  osc.type = 'square'; osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.4);
+  g.gain.setValueAtTime(0.35, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+  osc.connect(g); g.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+}
+function sfxLevelUp() {
+  if (!audioCtx) return;
+  [440, 554, 659, 880].forEach((freq, i) => {
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.07);
+    g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.07);
+    g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.07 + 0.15);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime + i * 0.07);
+    osc.stop(audioCtx.currentTime + i * 0.07 + 0.15);
+  });
+}
+
 const BASE_STATS = { hp: 130, dmg: 20, rng: 80, spd: 76, rate: 1.0 };
 
 const JOBS = {
-  Mage:      { icon: "✦", name: "MAGE",      color: "#38bdf8", desc: "비전 룬 & 궤도 오브" },
-  Knight:    { icon: "♜", name: "KNIGHT",    color: "#818cf8", desc: "역장 실드 & 광검" },
-  Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "에어로 활 & 레이저" },
-  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#c084fc", desc: "공전 수정 & 부유 마도서" },
-  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 도끼" },
-  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 개틀링 & 탄띠" }
+  Mage:      { icon: "✦", name: "MAGE",      color: "#38bdf8", desc: "비전 룬 & 궤도 마력" },
+  Knight:    { icon: "♜", name: "KNIGHT",    color: "#818cf8", desc: "성스러운 방패 & 광검" },
+  Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "정밀 롱보우 & 관통탄" },
+  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#c084fc", desc: "공전 수정 & 암흑 주술" },
+  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 배틀액스" },
+  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 개틀링 & 중화기" }
 };
 
 const FACTION_COLORS = ["#38bdf8", "#f43f5e", "#10b981", "#a855f7", "#f97316", "#eab308"];
 const MERGE_REQ = { 1: 10, 2: 2, 3: 2, 4: 2 };
 
-// 5대 챕터별 테마 환경
 const CHAPTERS = [
   { num: 1, name: "CHAPTER 1: GRASSLAND (초원)", theme: "GRASS", bg: "#06170d", grid: "#123b20", enemies: 1, spawnMod: 1.5, hpMod: 1.6 },
   { num: 2, name: "CHAPTER 2: DESERT (사막)", theme: "DESERT", bg: "#1a1205", grid: "#3a2c0c", enemies: 2, spawnMod: 1.2, hpMod: 1.3 },
@@ -359,7 +392,6 @@ let curChapterIdx = 0;
 let selectedJob = "Mage";
 let hunterSelectedJob = "Mage";
 
-// 모드 1 클래스 선택지
 const classesDiv = document.getElementById("classes");
 for (const [key, j] of Object.entries(JOBS)) {
   const b = document.createElement("div");
@@ -374,7 +406,6 @@ for (const [key, j] of Object.entries(JOBS)) {
   classesDiv.appendChild(b);
 }
 
-// 모드 2 영웅 선택지
 const hunterClassesDiv = document.getElementById("hunterClasses");
 for (const [key, j] of Object.entries(JOBS)) {
   const b = document.createElement("div");
@@ -411,6 +442,7 @@ function openHub() {
 }
 
 function selectGameMode(mode) {
+  initAudio();
   activeGameMode = mode;
   document.getElementById("hubModal").style.display = "none";
 
@@ -454,7 +486,7 @@ let lastPointer = { x: 0, y: 0 };
 let dragMoved = false;
 
 /* =========================================================
-   게임 1: 프론티어 플럭스 (땅따먹기 점령전)
+   게임 1: 프론티어 플럭스 (기존 로직 보존)
 ========================================================= */
 function startNewDomination() {
   document.getElementById("classModal").style.display = "none";
@@ -485,13 +517,7 @@ function startChapter(idx) {
     factions.push({ id: i, job: jobs[i], color: FACTION_COLORS[i], kills: 0 });
   }
 
-  bases = [];
-  units = [];
-  projectiles = [];
-  particles = [];
-  explosions = [];
-  stars = [];
-
+  bases = []; units = []; projectiles = []; particles = []; explosions = []; stars = [];
   initThemeParticles(chap.theme);
 
   const coreSpots = [
@@ -530,10 +556,8 @@ function startChapter(idx) {
   }
 
   const pBase = bases[0];
-  camera.x = pBase.x;
-  camera.y = pBase.y;
+  camera.x = pBase.x; camera.y = pBase.y;
   camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.55, 1.1);
-
   updateHUD();
 }
 
@@ -542,16 +566,104 @@ function initThemeParticles(theme) {
   for (let i = 0; i < 260; i++) {
     stars.push({
       x: rand(0, WORLD.w), y: rand(0, WORLD.h),
-      r: rand(0.5, 2.0),
-      a: rand(0.2, 0.9),
-      p: rand(0, TAU)
+      r: rand(0.5, 2.0), a: rand(0.2, 0.9), p: rand(0, TAU)
     });
   }
 }
 
 /* =========================================================
-   게임 2: 프론티어 헌터 (방향키 이동 + Q/W/E 직관 스킬셋)
+   게임 2: 프론티어 헌터 (스킬 고유화 + 강한 자석 + 회전/지속기)
 ========================================================= */
+const SKILL_KEYS = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
+
+// 직업별 완전히 차별화된 12종 스킬 정의
+const CLASS_SKILLS = {
+  Mage: [
+    { key: 'q', name: '비전 점멸', cd: 3.2, type: 'blink' },
+    { key: 'w', name: '메테오 낙하', cd: 4.8, type: 'mage_meteor' },
+    { key: 'e', name: '디스인티그레이트', cd: 3.8, type: 'mage_laser' },
+    { key: 'r', name: '비전 폭풍', cd: 9.0, type: 'storm' },
+    { key: 'a', name: '프로스트 노바', cd: 5.0, type: 'freeze' },
+    { key: 's', name: '체인 라이트닝', cd: 4.2, type: 'chain' },
+    { key: 'd', name: '마력 보호막', cd: 12.0, type: 'shield' },
+    { key: 'f', name: '블랙홀 왜곡', cd: 10.0, type: 'blackhole' },
+    { key: 'z', name: '비전 오브', cd: 6.0, type: 'orb' },
+    { key: 'x', name: '마력 충격파', cd: 5.5, type: 'wave' },
+    { key: 'c', name: '차원 폭풍', cd: 14.0, type: 'storm' },
+    { key: 'v', name: '초월적 비전핵', cd: 18.0, type: 'nuke' }
+  ],
+  Knight: [
+    { key: 'q', name: '방패 돌격', cd: 3.5, type: 'knight_charge' },
+    { key: 'w', name: '성스러운 성역', cd: 6.0, type: 'knight_sanctuary' },
+    { key: 'e', name: '빛의 검기 참격', cd: 3.2, type: 'knight_slash' },
+    { key: 'r', name: '천벌의 방패', cd: 8.5, type: 'meteor' },
+    { key: 'a', name: '성역 결계', cd: 10.0, type: 'shield' },
+    { key: 's', name: '심판의 벼락', cd: 4.8, type: 'chain' },
+    { key: 'd', name: '용기의 함성', cd: 8.0, type: 'freeze' },
+    { key: 'f', name: '거대 회전참', cd: 6.0, type: 'wave' },
+    { key: 'z', name: '정의의 일격', cd: 5.0, type: 'orb' },
+    { key: 'x', name: '철벽 방진', cd: 11.0, type: 'blackhole' },
+    { key: 'c', name: '성검 강림', cd: 15.0, type: 'storm' },
+    { key: 'v', name: '불멸의 기사도', cd: 20.0, type: 'nuke' }
+  ],
+  Ranger: [
+    { key: 'q', name: '바람의 질주', cd: 2.8, type: 'ranger_dash' },
+    { key: 'w', name: '화살비 폭격', cd: 5.2, type: 'ranger_rain' },
+    { key: 'e', name: '관통 저격시위', cd: 3.0, type: 'ranger_snipe' },
+    { key: 'r', name: '폭풍 궤도 사격', cd: 8.0, type: 'meteor' },
+    { key: 'a', name: '얼음 화살', cd: 4.5, type: 'freeze' },
+    { key: 's', name: '도탄 쐐기', cd: 3.8, type: 'chain' },
+    { key: 'd', name: '위장 은신', cd: 9.0, type: 'shield' },
+    { key: 'f', name: '태풍 화살', cd: 7.0, type: 'wave' },
+    { key: 'z', name: '독가스 화살', cd: 5.2, type: 'orb' },
+    { key: 'x', name: '집속 사격', cd: 6.0, type: 'blackhole' },
+    { key: 'c', name: '바람의 폭풍', cd: 13.0, type: 'storm' },
+    { key: 'v', name: '일격필살 저격', cd: 16.0, type: 'nuke' }
+  ],
+  Summoner: [
+    { key: 'q', name: '차원 왜곡', cd: 3.4, type: 'blink' },
+    { key: 'w', name: '심연의 블랙홀', cd: 6.5, type: 'summoner_vortex' },
+    { key: 'e', name: '사령 관통파동', cd: 3.4, type: 'summoner_wave' },
+    { key: 'r', name: '고대수호신 강림', cd: 9.5, type: 'meteor' },
+    { key: 'a', name: '영혼 결빙', cd: 5.0, type: 'freeze' },
+    { key: 's', name: '영혼 사슬', cd: 4.2, type: 'chain' },
+    { key: 'd', name: '흡혈 룬', cd: 9.0, type: 'shield' },
+    { key: 'f', name: '사령 파동', cd: 6.5, type: 'wave' },
+    { key: 'z', name: '공전 구체', cd: 5.5, type: 'orb' },
+    { key: 'x', name: '심연 소용돌이', cd: 8.5, type: 'blackhole' },
+    { key: 'c', name: '황천의 폭풍', cd: 14.0, type: 'storm' },
+    { key: 'v', name: '종말의 소환진', cd: 19.0, type: 'nuke' }
+  ],
+  Barbarian: [
+    { key: 'q', name: '도약 강타', cd: 3.2, type: 'barb_leap' },
+    { key: 'w', name: '3초 휠윈드', cd: 5.5, type: 'barb_whirlwind' },
+    { key: 'e', name: '도끼 분쇄파', cd: 3.0, type: 'barb_slam' },
+    { key: 'r', name: '대지 분쇄', cd: 8.0, type: 'meteor' },
+    { key: 'a', name: '광폭 포효', cd: 6.0, type: 'freeze' },
+    { key: 's', name: '도끼 튕기기', cd: 4.0, type: 'chain' },
+    { key: 'd', name: '피의 갑주', cd: 9.0, type: 'shield' },
+    { key: 'f', name: '충격 파쇄', cd: 5.5, type: 'wave' },
+    { key: 'z', name: '분노 폭발', cd: 5.0, type: 'orb' },
+    { key: 'x', name: '지진 소용돌이', cd: 7.5, type: 'blackhole' },
+    { key: 'c', name: '광전사의 분노', cd: 12.0, type: 'storm' },
+    { key: 'v', name: '천지개벽 참격', cd: 17.0, type: 'nuke' }
+  ],
+  Gunner: [
+    { key: 'q', name: '전술 텀블링', cd: 2.8, type: 'gunner_tumble' },
+    { key: 'w', name: '집속 유탄 폭격', cd: 4.8, type: 'gunner_cluster' },
+    { key: 'e', name: '초고속 레일건', cd: 3.2, type: 'gunner_railgun' },
+    { key: 'r', name: '궤도 융단폭격', cd: 9.0, type: 'meteor' },
+    { key: 'a', name: '냉동 유탄', cd: 4.8, type: 'freeze' },
+    { key: 's', name: '도탄 연사', cd: 3.6, type: 'chain' },
+    { key: 'd', name: '전자기 방벽', cd: 10.0, type: 'shield' },
+    { key: 'f', name: '초토화 일제사격', cd: 6.0, type: 'wave' },
+    { key: 'z', name: '추적 미사일', cd: 5.0, type: 'orb' },
+    { key: 'x', name: '중력 지뢰', cd: 8.0, type: 'blackhole' },
+    { key: 'c', name: '폭격 레이저포', cd: 13.0, type: 'storm' },
+    { key: 'v', name: '핵탄두 투하', cd: 20.0, type: 'nuke' }
+  ]
+};
+
 const hunter = {
   active: false,
   hero: null,
@@ -562,8 +674,7 @@ const hunter = {
   kills: 0,
   score: 0,
   elapsed: 0,
-  zone: 0,
-  q: 0, w: 0, e: 0,
+  cooldowns: {},
   invuln: 0,
   shake: 0,
   pendingLevel: false,
@@ -571,14 +682,17 @@ const hunter = {
   key: {},
   enemies: [],
   gems: [],
-  beams: [],     // E스킬 하이퍼 빔 레이저 이펙트
-  novas: [],     // W스킬 광역 노바 이펙트
+  chests: [],
+  beams: [],
+  novas: [],
+  zones: [], // 바닥 지속 장판 (성역, 화살비, 휠윈드)
   texts: [],
   spawnTimer: 0,
   bossTimer: 45,
   bossIndex: 0,
   boss: null,
-  upgrades: { damage: 1, speed: 1, aoe: 1, cd: 1 }
+  upgrades: { damage: 1, speed: 1, aoe: 1, cd: 1 },
+  whirlwindTimer: 0 // 바바리안 휠윈드 타이머
 };
 
 const HUNTER_BOSS_NAMES = ["GROVE BEHEMOTH", "DUNE COLOSSUS", "INFERNAL LORD", "VOID REAPER"];
@@ -593,20 +707,22 @@ function startHunterGame(job) {
   hunter.kills = 0;
   hunter.score = 0;
   hunter.elapsed = 0;
-  hunter.zone = 0;
-  hunter.q = 0; hunter.w = 0; hunter.e = 0;
+  hunter.cooldowns = {};
   hunter.invuln = 0;
   hunter.shake = 0;
   hunter.pendingLevel = false;
   hunter.enemies = [];
   hunter.gems = [];
+  hunter.chests = [];
   hunter.beams = [];
   hunter.novas = [];
+  hunter.zones = [];
   hunter.texts = [];
   hunter.spawnTimer = 0;
   hunter.bossTimer = 40;
   hunter.bossIndex = 0;
   hunter.boss = null;
+  hunter.whirlwindTimer = 0;
   hunter.upgrades = { damage: 1, speed: 1, aoe: 1, cd: 1 };
   hunter.key = {};
 
@@ -619,33 +735,59 @@ function startHunterGame(job) {
   initThemeParticles("INFERNO");
 
   document.getElementById("title").textContent = "FRONTIER HUNTER";
-  document.getElementById("sub").textContent = "생존 사냥 & 보스 토벌전";
-  document.getElementById("guide").textContent = "키보드 방향키(↑↓←→) 이동 · Q 순간이동 · W 광역폭발 · E 관통레이저";
+  document.getElementById("sub").textContent = "생존 사냥 · 특화 스킬 개편";
+  document.getElementById("guide").textContent = "방향키 이동 · Q, W, E 기본 장착 (직업별 고유 모션) · 5Lv마다 추가 해금!";
 
   document.getElementById("arcadeHUD").style.display = "block";
   document.getElementById("arcadeSkills").style.display = "flex";
 
-  // 영웅 생성
+  // 회복 상자 / 자석 구슬만 필드에 배치 (TNT 완전 삭제)
+  for (let i = 0; i < 8; i++) spawnChest();
+
   hunter.hero = {
-    id: 9999,
-    team: 0,
-    job: job,
-    x: 1300, y: 750,
-    vx: 0, vy: 0,
-    hp: 260, maxHp: 260,
-    tier: 3,
-    spd: 160,
-    angle: 0, anim: 0, hit: 0, dead: false,
-    attackCd: 0
+    id: 9999, team: 0, job: job,
+    x: 1300, y: 750, vx: 0, vy: 0,
+    hp: 260, maxHp: 260, tier: 3, spd: 170,
+    angle: 0, anim: 0, hit: 0, dead: false, attackCd: 0
   };
 
-  camera.x = 1300; camera.y = 750;
-  camera.zoom = 0.85; // 쾌적한 시야각
+  camera.x = 1300; camera.y = 750; camera.zoom = 0.85;
 
+  buildDynamicSkillBar();
   running = true;
   isPaused = false;
   updateHunterHUD();
-  hunterFloat(`${JOBS[job].name} 출격!`, 1300, 700, JOBS[job].color, 2.0);
+  hunterFloat(`${JOBS[job].name} 출격! (Q, W, E 특화 스킬 장착)`, 1300, 700, JOBS[job].color, 2.0);
+}
+
+function getUnlockedSkillCount() {
+  return clamp(3 + Math.floor(hunter.level / 5), 3, SKILL_KEYS.length);
+}
+
+function buildDynamicSkillBar() {
+  const container = document.getElementById("arcadeSkills");
+  container.innerHTML = "";
+  const skills = CLASS_SKILLS[hunter.job];
+  const count = getUnlockedSkillCount();
+
+  for (let i = 0; i < count; i++) {
+    const s = skills[i];
+    const btn = document.createElement("button");
+    btn.className = "arcSkill";
+    btn.id = `btnSkill_${s.key}`;
+    btn.onclick = () => hunterUseSkill(s.key);
+    btn.innerHTML = `<b>${s.key.toUpperCase()}</b><span>${s.name}</span><small id="cdTxt_${s.key}">READY</small>`;
+    container.appendChild(btn);
+  }
+}
+
+function spawnChest() {
+  hunter.chests.push({
+    x: rand(150, WORLD.w - 150),
+    y: rand(150, WORLD.h - 150),
+    type: Math.random() < 0.4 ? 'magnet' : 'heal',
+    r: 18, dead: false
+  });
 }
 
 function hunterFloat(txt, x, y, color = "#fff", life = 1.0) {
@@ -665,16 +807,12 @@ function hunterSpawnMob() {
   const spd = isElite ? 90 : 110;
 
   hunter.enemies.push({
-    id: uid++,
-    x, y, vx: 0, vy: 0,
+    id: uid++, x, y, vx: 0, vy: 0,
     hp: hpBase, maxHp: hpBase,
-    dmg: isElite ? 18 : 8,
-    spd,
+    dmg: isElite ? 18 : 8, spd,
     r: isElite ? 22 : 14,
     color: isElite ? "#fb923c" : "#f43f5e",
-    isElite,
-    dead: false,
-    hit: 0
+    isElite, dead: false, hit: 0
   });
 }
 
@@ -685,23 +823,16 @@ function hunterSpawnBoss() {
   const bHp = 2200 * (1 + hunter.bossIndex * 0.6);
 
   hunter.boss = {
-    id: uid++,
-    name: bName,
+    id: uid++, name: bName,
     x: clamp(h.x + rand(-300, 300), 200, WORLD.w - 200),
     y: clamp(h.y - 450, 200, WORLD.h - 200),
-    hp: bHp, maxHp: bHp,
-    dmg: 28,
-    spd: 75,
-    r: 45,
-    color: "#a855f7",
-    isBoss: true,
-    dead: false,
-    hit: 0,
-    skillCd: 3.0
+    hp: bHp, maxHp: bHp, dmg: 28, spd: 75, r: 45,
+    color: "#a855f7", isBoss: true, dead: false, hit: 0
   };
 
   hunter.enemies.push(hunter.boss);
-  hunterFloat(`⚠ BOSS WARNING: ${bName}!`, h.x, h.y - 120, "#ff0055", 3.0);
+  hunterFloat(`⚠ BOSS: ${bName}!`, h.x, h.y - 120, "#ff0055", 3.0);
+  sfxBoom();
   hunter.shake = 20;
 }
 
@@ -711,15 +842,12 @@ function hunterKillMob(e) {
   hunter.kills++;
   hunter.score += e.isBoss ? 5000 : (e.isElite ? 200 : 50);
 
-  // 경험치 보석 드랍
   const gemCount = e.isBoss ? 20 : (e.isElite ? 4 : 1);
   const xpVal = e.isBoss ? 40 : (e.isElite ? 15 : 6);
   for (let i = 0; i < gemCount; i++) {
     hunter.gems.push({
-      x: e.x + rand(-20, 20),
-      y: e.y + rand(-20, 20),
-      val: xpVal,
-      life: 40
+      x: e.x + rand(-20, 20), y: e.y + rand(-20, 20),
+      val: xpVal, life: 40
     });
   }
 
@@ -727,7 +855,8 @@ function hunterKillMob(e) {
     hunter.boss = null;
     hunter.bossIndex++;
     hunter.bossTimer = 50;
-    hunterFloat("★ 보스 토벌 완료! 대량의 경험치 획득!", e.x, e.y, "#ffd700", 2.5);
+    hunterFloat("★ 보스 토벌 완료!", e.x, e.y, "#ffd700", 2.5);
+    sfxBoom();
     hunter.shake = 25;
     if (hunter.bossIndex >= HUNTER_BOSS_NAMES.length) {
       hunterWin();
@@ -742,8 +871,19 @@ function hunterGainXP(val) {
   if (hunter.xp >= hunter.nextXp) {
     hunter.xp -= hunter.nextXp;
     hunter.level++;
-    hunter.nextXp = Math.floor(hunter.nextXp * 1.35 + 20);
+    hunter.nextXp = Math.floor(hunter.nextXp * 1.3 + 25);
     hunter.pendingLevel = true;
+    sfxLevelUp();
+
+    if (hunter.level % 5 === 0) {
+      buildDynamicSkillBar();
+      const count = getUnlockedSkillCount();
+      const newSkill = CLASS_SKILLS[hunter.job][count - 1];
+      if (newSkill) {
+        toast(`✨ 새로운 스킬 [${newSkill.key.toUpperCase()} - ${newSkill.name}] 해금!`);
+      }
+    }
+
     showHunterEvo();
   }
 }
@@ -752,15 +892,13 @@ function showHunterEvo() {
   const cards = document.getElementById("evoCards");
   cards.innerHTML = "";
   const opts = [
-    { type: "damage", name: "플라즈마 과충전", desc: "모든 공격 및 스킬 피해량 +25%" },
-    { type: "speed", name: "중력 가속 엔진", desc: "영웅 이동속도 +18%" },
-    { type: "aoe", name: "광역 공명 증폭", desc: "W폭발 반경 및 E레이저 두께 +30%" },
-    { type: "cd", name: "크로노 부스터", desc: "모든 스킬 쿨다운 15% 단축" }
+    { type: "damage", name: "공격력 증폭", desc: "모든 평타 및 스킬 피해량 +25%" },
+    { type: "speed", name: "기동력 가속", desc: "영웅 이동속도 +18%" },
+    { type: "aoe", name: "범위 증폭", desc: "스킬 범위 및 관통 크기 +30%" },
+    { type: "cd", name: "쿨다운 가속", desc: "모든 스킬 쿨타임 15% 단축" }
   ];
 
-  // 랜덤 3개 선택
-  const shuffled = opts.sort(() => Math.random() - 0.5).slice(0, 3);
-  shuffled.forEach((o, i) => {
+  opts.sort(() => Math.random() - 0.5).slice(0, 3).forEach((o, i) => {
     const d = document.createElement("div");
     d.className = "evo";
     d.innerHTML = `<strong>[${i + 1}] ${o.name}</strong><span>${o.desc}</span>`;
@@ -775,100 +913,227 @@ function selectHunterEvo(type) {
   if (type === "damage") hunter.upgrades.damage += 0.25;
   if (type === "speed") {
     hunter.upgrades.speed += 0.18;
-    hunter.hero.spd = 160 * hunter.upgrades.speed;
+    hunter.hero.spd = 170 * hunter.upgrades.speed;
   }
   if (type === "aoe") hunter.upgrades.aoe += 0.3;
   if (type === "cd") hunter.upgrades.cd *= 0.85;
 
   hunter.pendingLevel = false;
   document.getElementById("arcadeEvo").style.display = "none";
-  hunterFloat("능력 진화 완료!", hunter.hero.x, hunter.hero.y - 60, "#ffd700", 1.2);
+  hunterFloat("능력 강화 완료!", hunter.hero.x, hunter.hero.y - 60, "#ffd700", 1.2);
   updateHunterHUD();
 }
 
 /* =========================================================
-   스킬 시스템 (Q: 점멸 / W: 플라즈마 노바 / E: 관통 레이저)
+   직업별 고유 스킬 엔진 (바바리안 휠윈드, 성역 장판 등)
 ========================================================= */
 function hunterUseSkill(key) {
   if (!hunter.active || isPaused || hunter.pendingLevel || !hunter.hero || hunter.hero.dead) return;
   const h = hunter.hero;
+  const skills = CLASS_SKILLS[hunter.job];
+  const count = getUnlockedSkillCount();
+  const skillIdx = SKILL_KEYS.indexOf(key);
 
-  // Q: 순간이동 (점멸 + 무적 + 잔상)
-  if (key === "q" && hunter.q <= 0) {
-    hunter.q = 3.5 * hunter.upgrades.cd;
-    const ang = h.angle;
-    const dist = 240;
-    
-    // 점멸 전 이펙트
-    burst(h.x, h.y, "#38bdf8", 15);
-    
-    h.x = clamp(h.x + Math.cos(ang) * dist, 40, WORLD.w - 40);
-    h.y = clamp(h.y + Math.sin(ang) * dist, 40, WORLD.h - 40);
-    hunter.invuln = 0.5; // 0.5초 무적
-    
-    // 점멸 후 이펙트
-    burst(h.x, h.y, "#fff", 20);
-    hunterFloat("Q · 점멸!", h.x, h.y - 40, "#38bdf8", 0.8);
-    hunter.shake = 6;
+  if (skillIdx < 0 || skillIdx >= count) return;
+  const sInfo = skills[skillIdx];
+  if (!sInfo) return;
+
+  const curCd = hunter.cooldowns[key] || 0;
+  if (curCd > 0) return;
+
+  hunter.cooldowns[key] = sInfo.cd * hunter.upgrades.cd;
+  const dmgMult = hunter.upgrades.damage;
+  const aoeMult = hunter.upgrades.aoe;
+
+  // --- 1. 바바리안 고유 스킬셋 ---
+  if (sInfo.type === 'barb_whirlwind') {
+    // 3초간 지속 회전 공격 가동!
+    hunter.whirlwindTimer = 3.0;
+    hunterFloat("★ 3초 휠윈드 개시!", h.x, h.y - 50, "#fb923c", 1.2);
+    sfxBoom();
+  }
+  else if (sInfo.type === 'barb_leap') {
+    // 도약 강타
+    const targetX = h.x + Math.cos(h.angle) * 320;
+    const targetY = h.y + Math.sin(h.angle) * 320;
+    h.x = clamp(targetX, 40, WORLD.w - 40);
+    h.y = clamp(targetY, 40, WORLD.h - 40);
+    hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: 200 * aoeMult, life: 0.4, maxLife: 0.4, color: '#fb923c' });
+    sfxBoom();
+    hunter.shake = 15;
+    dealAreaDamage(h.x, h.y, 200 * aoeMult, 160 * dmgMult, 90);
+    hunterFloat("도약 강타!", h.x, h.y - 40, "#fb923c", 0.8);
+  }
+  else if (sInfo.type === 'barb_slam') {
+    // 대지 분쇄 도끼 파동
+    fireBeam(h.x, h.y, h.angle, 750, 70 * aoeMult, 260 * dmgMult, '#fb923c');
+    sfxBoom();
+    hunterFloat("대지 분쇄참!", h.x, h.y - 40, "#fb923c", 0.8);
   }
 
-  // W: 초광역 플라즈마 노바 (주변 대폭발)
-  if (key === "w" && hunter.w <= 0) {
-    hunter.w = 5.5 * hunter.upgrades.cd;
-    const r = 240 * hunter.upgrades.aoe;
-    const dmg = 120 * hunter.upgrades.damage;
+  // --- 2. 마법사 고유 스킬셋 ---
+  else if (sInfo.type === 'mage_meteor') {
+    const tx = h.x + Math.cos(h.angle) * 260, ty = h.y + Math.sin(h.angle) * 260;
+    hunter.novas.push({ x: tx, y: ty, r: 20, maxR: 280 * aoeMult, life: 0.5, maxLife: 0.5, color: '#38bdf8' });
+    sfxBoom();
+    hunter.shake = 16;
+    dealAreaDamage(tx, ty, 280 * aoeMult, 220 * dmgMult, 70);
+    hunterFloat("메테오 스트라이크!", tx, ty - 50, "#38bdf8", 1.0);
+  }
+  else if (sInfo.type === 'mage_laser') {
+    fireBeam(h.x, h.y, h.angle, 1100, 36 * aoeMult, 280 * dmgMult, '#38bdf8');
+    sfxLaser();
+    hunterFloat("아케인 디스인티그레이트!", h.x, h.y - 40, "#38bdf8", 0.8);
+  }
 
-    hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: r, life: 0.45, maxLife: 0.45 });
-    hunter.shake = 14;
+  // --- 3. 기사 고유 스킬셋 ---
+  else if (sInfo.type === 'knight_charge') {
+    const dist = 320;
+    h.x = clamp(h.x + Math.cos(h.angle) * dist, 40, WORLD.w - 40);
+    h.y = clamp(h.y + Math.sin(h.angle) * dist, 40, WORLD.h - 40);
+    hunter.invuln = 0.8;
+    dealAreaDamage(h.x, h.y, 140 * aoeMult, 120 * dmgMult, 120);
+    sfxBoom();
+    hunterFloat("방패 돌격!", h.x, h.y - 40, "#818cf8", 0.8);
+  }
+  else if (sInfo.type === 'knight_sanctuary') {
+    // 4초간 유지되는 성역 장판 생성
+    hunter.zones.push({
+      x: h.x, y: h.y, r: 220 * aoeMult, life: 4.0, maxLife: 4.0,
+      tickTimer: 0, color: '#818cf8'
+    });
+    sfxBoom();
+    hunterFloat("성역 전개 (회복 및 심판)!", h.x, h.y - 50, "#818cf8", 1.0);
+  }
+  else if (sInfo.type === 'knight_slash') {
+    fireBeam(h.x, h.y, h.angle, 600, 90 * aoeMult, 200 * dmgMult, '#818cf8');
+    sfxLaser();
+    hunterFloat("빛의 참격!", h.x, h.y - 40, "#818cf8", 0.8);
+  }
 
-    for (const e of hunter.enemies) {
-      if (!e.dead && Math.hypot(e.x - h.x, e.y - h.y) < r) {
+  // --- 4. 레인저 고유 스킬셋 ---
+  else if (sInfo.type === 'ranger_dash') {
+    h.spd = 350;
+    hunter.invuln = 1.0;
+    setTimeout(() => { if (hunter.active && h) h.spd = 170 * hunter.upgrades.speed; }, 1000);
+    hunterFloat("바람의 질주!", h.x, h.y - 40, "#34d399", 0.8);
+  }
+  else if (sInfo.type === 'ranger_rain') {
+    hunter.zones.push({
+      x: h.x, y: h.y, r: 260 * aoeMult, life: 2.5, maxLife: 2.5,
+      tickTimer: 0, color: '#34d399'
+    });
+    sfxHit();
+    hunterFloat("화살비 폭격!", h.x, h.y - 50, "#34d399", 1.0);
+  }
+  else if (sInfo.type === 'ranger_snipe') {
+    fireBeam(h.x, h.y, h.angle, 1300, 24 * aoeMult, 340 * dmgMult, '#34d399');
+    sfxLaser();
+    hunterFloat("초장거리 관통 저격!", h.x, h.y - 40, "#34d399", 0.8);
+  }
+
+  // --- 5. 서머너 고유 스킬셋 ---
+  else if (sInfo.type === 'summoner_vortex') {
+    const tx = h.x + Math.cos(h.angle) * 200, ty = h.y + Math.sin(h.angle) * 200;
+    hunter.zones.push({
+      x: tx, y: ty, r: 260 * aoeMult, life: 3.5, maxLife: 3.5,
+      tickTimer: 0, color: '#c084fc', isVortex: true
+    });
+    sfxBoom();
+    hunterFloat("심연의 블랙홀!", tx, ty - 40, "#c084fc", 1.0);
+  }
+  else if (sInfo.type === 'summoner_wave') {
+    fireBeam(h.x, h.y, h.angle, 800, 75 * aoeMult, 210 * dmgMult, '#c084fc');
+    sfxLaser();
+    hunterFloat("사령 관통파동!", h.x, h.y - 40, "#c084fc", 0.8);
+  }
+
+  // --- 6. 거너 고유 스킬셋 ---
+  else if (sInfo.type === 'gunner_tumble') {
+    const dist = 220;
+    h.x = clamp(h.x - Math.cos(h.angle) * dist, 40, WORLD.w - 40);
+    h.y = clamp(h.y - Math.sin(h.angle) * dist, 40, WORLD.h - 40);
+    hunter.invuln = 0.6;
+    burst(h.x, h.y, "#facc15", 15);
+    hunterFloat("후방 텀블링!", h.x, h.y - 40, "#facc15", 0.8);
+  }
+  else if (sInfo.type === 'gunner_cluster') {
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * TAU;
+      const tx = h.x + Math.cos(a) * 160;
+      const ty = h.y + Math.sin(a) * 160;
+      hunter.novas.push({ x: tx, y: ty, r: 10, maxR: 110 * aoeMult, life: 0.35, maxLife: 0.35, color: '#facc15' });
+      dealAreaDamage(tx, ty, 110 * aoeMult, 90 * dmgMult, 60);
+    }
+    sfxBoom();
+    hunterFloat("집속 유탄 폭격!", h.x, h.y - 50, "#facc15", 1.0);
+  }
+  else if (sInfo.type === 'gunner_railgun') {
+    fireBeam(h.x, h.y, h.angle, 1200, 30 * aoeMult, 320 * dmgMult, '#facc15');
+    sfxLaser();
+    hunterFloat("초고속 레일건!", h.x, h.y - 40, "#facc15", 0.8);
+  }
+
+  // --- 공통/기본 스킬 (점멸, 단순 광역 등) ---
+  else if (sInfo.type === 'blink') {
+    burst(h.x, h.y, JOBS[hunter.job].color, 15);
+    h.x = clamp(h.x + Math.cos(h.angle) * 260, 40, WORLD.w - 40);
+    h.y = clamp(h.y + Math.sin(h.angle) * 260, 40, WORLD.h - 40);
+    hunter.invuln = 0.5;
+    burst(h.x, h.y, "#fff", 20);
+    sfxHit();
+    hunterFloat(`${sInfo.name}!`, h.x, h.y - 40, JOBS[hunter.job].color, 0.8);
+  }
+  else {
+    // 기타 상위 궁극기 스킬들 (폭격/융단폭격 등)
+    const r = 350 * aoeMult;
+    const dmg = 400 * dmgMult;
+    const tx = h.x + Math.cos(h.angle) * 220, ty = h.y + Math.sin(h.angle) * 220;
+    hunter.novas.push({ x: tx, y: ty, r: 20, maxR: r, life: 0.6, maxLife: 0.6, color: '#ffd700' });
+    sfxBoom();
+    hunter.shake = 22;
+    dealAreaDamage(tx, ty, r, dmg, 120);
+    hunterFloat(`★ ${sInfo.name}!`, tx, ty - 60, "#ffd700", 1.4);
+  }
+}
+
+// 범위 데미지 및 넉백 헬퍼
+function dealAreaDamage(x, y, radius, dmg, knockback = 50) {
+  for (const e of hunter.enemies) {
+    if (!e.dead && Math.hypot(e.x - x, e.y - y) < radius) {
+      e.hp -= dmg;
+      e.hit = 0.2;
+      const ang = Math.atan2(e.y - y, e.x - x);
+      e.x += Math.cos(ang) * knockback;
+      e.y += Math.sin(ang) * knockback;
+      if (e.hp <= 0) hunterKillMob(e);
+    }
+  }
+}
+
+// 관통 빔 헬퍼
+function fireBeam(x, y, angle, len, width, dmg, color) {
+  const endX = x + Math.cos(angle) * len;
+  const endY = y + Math.sin(angle) * len;
+  hunter.beams.push({
+    x1: x, y1: y, x2: endX, y2: endY,
+    width, life: 0.35, maxLife: 0.35, color
+  });
+  hunter.shake = 14;
+
+  for (const e of hunter.enemies) {
+    if (e.dead) continue;
+    const dot = ((e.x - x) * (endX - x) + (e.y - y) * (endY - y)) / (len * len);
+    if (dot >= 0 && dot <= 1) {
+      const px = x + dot * (endX - x), py = y + dot * (endY - y);
+      if (Math.hypot(e.x - px, e.y - py) < width / 2 + e.r) {
         e.hp -= dmg;
-        e.hit = 0.2;
-        // 밀쳐내기 (넉백)
-        const ang = Math.atan2(e.y - h.y, e.x - h.x);
-        e.x += Math.cos(ang) * 60;
-        e.y += Math.sin(ang) * 60;
+        e.hit = 0.25;
+        e.x += Math.cos(angle) * 90;
+        e.y += Math.sin(angle) * 90;
         if (e.hp <= 0) hunterKillMob(e);
       }
     }
-    hunterFloat("W · 플라즈마 폭발!", h.x, h.y - 50, "#f43f5e", 1.0);
-  }
-
-  // E: 하이퍼 레일건 빔 레이저 (전방 관통 직선포)
-  if (key === "e" && hunter.e <= 0) {
-    hunter.e = 4.0 * hunter.upgrades.cd;
-    const ang = h.angle;
-    const len = 900;
-    const width = 36 * hunter.upgrades.aoe;
-    const dmg = 240 * hunter.upgrades.damage;
-
-    const endX = h.x + Math.cos(ang) * len;
-    const endY = h.y + Math.sin(ang) * len;
-
-    hunter.beams.push({
-      x1: h.x, y1: h.y, x2: endX, y2: endY,
-      width, life: 0.35, maxLife: 0.35, color: "#a855f7"
-    });
-    hunter.shake = 16;
-
-    // 직선 충돌 검사
-    for (const e of hunter.enemies) {
-      if (e.dead) continue;
-      // 점과 선분 사이의 거리 공식
-      const A = h.x, B = h.y, C = endX, D = endY;
-      const dot = ((e.x - A) * (C - A) + (e.y - B) * (D - B)) / (len * len);
-      if (dot >= 0 && dot <= 1) {
-        const projX = A + dot * (C - A);
-        const projY = B + dot * (D - B);
-        if (Math.hypot(e.x - projX, e.y - projY) < width / 2 + e.r) {
-          e.hp -= dmg;
-          e.hit = 0.25;
-          if (e.hp <= 0) hunterKillMob(e);
-        }
-      }
-    }
-    hunterFloat("E · 하이퍼 빔 발사!", h.x, h.y - 50, "#a855f7", 1.0);
   }
 }
 
@@ -889,19 +1154,19 @@ function updateHunterHUD() {
   document.getElementById("aXpText").textContent = `${Math.floor(hunter.xp)} / ${hunter.nextXp}`;
   document.getElementById("aHpText").textContent = `${Math.ceil(Math.max(0, h.hp))} / ${h.maxHp}`;
 
-  // 스킬 버튼 상태
-  const qBtn = document.getElementById("btnSkillQ");
-  const wBtn = document.getElementById("btnSkillW");
-  const eBtn = document.getElementById("btnSkillE");
+  const count = getUnlockedSkillCount();
+  const skills = CLASS_SKILLS[hunter.job];
+  for (let i = 0; i < count; i++) {
+    const s = skills[i];
+    const btn = document.getElementById(`btnSkill_${s.key}`);
+    const cdTxt = document.getElementById(`cdTxt_${s.key}`);
+    const cdVal = hunter.cooldowns[s.key] || 0;
 
-  qBtn.classList.toggle("cd", hunter.q > 0);
-  document.getElementById("cdQ").textContent = hunter.q > 0 ? `${hunter.q.toFixed(1)}s` : "READY";
-
-  wBtn.classList.toggle("cd", hunter.w > 0);
-  document.getElementById("cdW").textContent = hunter.w > 0 ? `${hunter.w.toFixed(1)}s` : "READY";
-
-  eBtn.classList.toggle("cd", hunter.e > 0);
-  document.getElementById("cdE").textContent = hunter.e > 0 ? `${hunter.e.toFixed(1)}s` : "READY";
+    if (btn && cdTxt) {
+      btn.classList.toggle("cd", cdVal > 0);
+      cdTxt.textContent = cdVal > 0 ? `${cdVal.toFixed(1)}s` : "READY";
+    }
+  }
 }
 
 function updateHunter(dt) {
@@ -910,13 +1175,23 @@ function updateHunter(dt) {
   if (!h || h.dead) return;
 
   hunter.elapsed += dt;
-  hunter.q = Math.max(0, hunter.q - dt);
-  hunter.w = Math.max(0, hunter.w - dt);
-  hunter.e = Math.max(0, hunter.e - dt);
   hunter.invuln = Math.max(0, hunter.invuln - dt);
   hunter.shake = Math.max(0, hunter.shake - dt * 15);
 
-  // 1. 방향키 이동 처리 (WASD 버그 완전 해결)
+  for (const k in hunter.cooldowns) {
+    if (hunter.cooldowns[k] > 0) hunter.cooldowns[k] = Math.max(0, hunter.cooldowns[k] - dt);
+  }
+
+  // --- 바바리안 휠윈드 지속 로직 (3초간 회전 연타) ---
+  if (hunter.whirlwindTimer > 0) {
+    hunter.whirlwindTimer -= dt;
+    h.angle += dt * 25; // 고속 회전
+    const r = 160 * hunter.upgrades.aoe;
+    dealAreaDamage(h.x, h.y, r, 20 * hunter.upgrades.damage, 15);
+    burst(h.x + rand(-r, r), h.y + rand(-r, r), '#fb923c', 2);
+  }
+
+  // 1. 방향키 이동 처리
   let moveX = 0, moveY = 0;
   if (hunter.key.ArrowUp) moveY -= 1;
   if (hunter.key.ArrowDown) moveY += 1;
@@ -927,15 +1202,14 @@ function updateHunter(dt) {
     const len = Math.hypot(moveX, moveY);
     h.vx = (moveX / len) * h.spd;
     h.vy = (moveY / len) * h.spd;
-    h.angle = Math.atan2(h.vy, h.vx);
+    if (hunter.whirlwindTimer <= 0) h.angle = Math.atan2(h.vy, h.vx);
   } else if (hunter.target) {
-    const dx = hunter.target.x - h.x;
-    const dy = hunter.target.y - h.y;
+    const dx = hunter.target.x - h.x, dy = hunter.target.y - h.y;
     const dist = Math.hypot(dx, dy);
     if (dist > 15) {
       h.vx = (dx / dist) * h.spd;
       h.vy = (dy / dist) * h.spd;
-      h.angle = Math.atan2(h.vy, h.vx);
+      if (hunter.whirlwindTimer <= 0) h.angle = Math.atan2(h.vy, h.vx);
     } else {
       h.vx = 0; h.vy = 0;
       hunter.target = null;
@@ -947,12 +1221,11 @@ function updateHunter(dt) {
   h.x = clamp(h.x + h.vx * dt, 40, WORLD.w - 40);
   h.y = clamp(h.y + h.vy * dt, 40, WORLD.h - 40);
 
-  // 2. 기본 자동 공격 (전방 부채꼴 투사체)
+  // 2. 기본 자동 사격
   h.attackCd -= dt;
-  if (h.attackCd <= 0) {
-    h.attackCd = 0.35;
-    // 가장 가까운 적 탐색
-    let nearest = null, minDist = 380;
+  if (h.attackCd <= 0 && hunter.whirlwindTimer <= 0) {
+    h.attackCd = 0.32;
+    let nearest = null, minDist = 400;
     for (const e of hunter.enemies) {
       if (e.dead) continue;
       const d = Math.hypot(e.x - h.x, e.y - h.y);
@@ -963,20 +1236,20 @@ function updateHunter(dt) {
       h.angle = aimAng;
       projectiles.push({
         x: h.x, y: h.y,
-        vx: Math.cos(aimAng) * 450,
-        vy: Math.sin(aimAng) * 450,
-        dmg: 28 * hunter.upgrades.damage,
+        vx: Math.cos(aimAng) * 500,
+        vy: Math.sin(aimAng) * 500,
+        dmg: 30 * hunter.upgrades.damage,
         life: 0.8,
         color: JOBS[hunter.job].color
       });
+      sfxHit();
     }
   }
 
   // 3. 투사체 이동 및 충돌
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
     p.life -= dt;
     if (p.life <= 0) { projectiles.splice(i, 1); continue; }
 
@@ -985,13 +1258,48 @@ function updateHunter(dt) {
         e.hp -= p.dmg;
         e.hit = 0.12;
         p.life = 0;
+        e.x += (p.vx / 500) * 15;
+        e.y += (p.vy / 500) * 15;
         if (e.hp <= 0) hunterKillMob(e);
         break;
       }
     }
   }
 
-  // 4. 적 몬스터 AI & 영웅 피격
+  // 4. 지속 장판 연산 (성역 힐/딜, 블랙홀 흡입 등)
+  for (let i = hunter.zones.length - 1; i >= 0; i--) {
+    const z = hunter.zones[i];
+    z.life -= dt;
+    z.tickTimer = (z.tickTimer || 0) + dt;
+
+    if (z.tickTimer >= 0.25) {
+      z.tickTimer = 0;
+      if (z.isVortex) {
+        // 블랙홀: 적들을 중심으로 강하게 끌어당김
+        for (const e of hunter.enemies) {
+          if (!e.dead && Math.hypot(e.x - z.x, e.y - z.y) < z.r) {
+            const ang = Math.atan2(z.y - e.y, z.x - e.x);
+            e.x += Math.cos(ang) * 45;
+            e.y += Math.sin(ang) * 45;
+            e.hp -= 25 * hunter.upgrades.damage;
+            e.hit = 0.1;
+            if (e.hp <= 0) hunterKillMob(e);
+          }
+        }
+      } else {
+        // 성역/화살비 지속 데미지
+        dealAreaDamage(z.x, z.y, z.r, 35 * hunter.upgrades.damage, 10);
+        // 기사 성역 내 아군 회복
+        if (z.color === '#818cf8' && Math.hypot(h.x - z.x, h.y - z.y) < z.r) {
+          h.hp = Math.min(h.maxHp, h.hp + 6);
+        }
+      }
+    }
+
+    if (z.life <= 0) hunter.zones.splice(i, 1);
+  }
+
+  // 5. 적 몬스터 AI & 영웅 피격
   for (const e of hunter.enemies) {
     if (e.dead) continue;
     e.hit = Math.max(0, e.hit - dt);
@@ -1002,31 +1310,56 @@ function updateHunter(dt) {
       e.x += (dx / dist) * e.spd * dt;
       e.y += (dy / dist) * e.spd * dt;
     } else {
-      // 영웅 타격
       if (hunter.invuln <= 0) {
         h.hp -= e.dmg;
         hunter.invuln = 0.4;
         hunter.shake = 8;
+        sfxHit();
         if (h.hp <= 0) { hunterDeath(); return; }
       }
     }
   }
 
-  // 5. 보석 자석 흡수
+  // 6. ⭐ 대폭 강화된 보석 자석 흡수 (반경 340px, 속도 750)
   for (let i = hunter.gems.length - 1; i >= 0; i--) {
     const g = hunter.gems[i];
     const d = Math.hypot(g.x - h.x, g.y - h.y);
-    if (d < 160) {
-      g.x += ((h.x - g.x) / d) * 320 * dt;
-      g.y += ((h.y - g.y) / d) * 320 * dt;
+    if (d < 340) {
+      g.x += ((h.x - g.x) / d) * 750 * dt;
+      g.y += ((h.y - g.y) / d) * 750 * dt;
     }
-    if (d < 24) {
+    if (d < 30) {
       hunterGainXP(g.val);
       hunter.gems.splice(i, 1);
     }
   }
 
-  // 6. 스폰 타이머 & 보스 체크
+  // 7. 상자 오브젝트 흡수 및 획득 (반경 300px까지 자동 견인)
+  for (let i = hunter.chests.length - 1; i >= 0; i--) {
+    const c = hunter.chests[i];
+    const d = Math.hypot(c.x - h.x, c.y - h.y);
+    if (d < 300) {
+      c.x += ((h.x - c.x) / d) * 550 * dt;
+      c.y += ((h.y - c.y) / d) * 550 * dt;
+    }
+    if (d < 32) {
+      if (c.type === 'heal') {
+        h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.4);
+        hunterFloat("체력 회복 +40%!", h.x, h.y - 40, "#4ade80", 1.2);
+      } else {
+        // 전 보석 흡수
+        hunter.gems.forEach(g => {
+          g.x = h.x + rand(-30, 30);
+          g.y = h.y + rand(-30, 30);
+        });
+        hunterFloat("마그넷 코어 작동! 전 보석 흡수!", h.x, h.y - 40, "#38bdf8", 1.5);
+      }
+      sfxLevelUp();
+      hunter.chests.splice(i, 1);
+    }
+  }
+
+  // 8. 스폰 타이머 & 보스 체크
   hunter.spawnTimer -= dt;
   if (hunter.spawnTimer <= 0) {
     hunter.spawnTimer = Math.max(0.6, 1.4 - hunter.level * 0.03);
@@ -1038,7 +1371,7 @@ function updateHunter(dt) {
     hunterSpawnBoss();
   }
 
-  // 이펙트 타이머
+  // 이펙트 타이머 정리
   for (let i = hunter.novas.length - 1; i >= 0; i--) {
     const n = hunter.novas[i];
     n.life -= dt;
@@ -1088,7 +1421,7 @@ function hunterDeath() {
 }
 
 /* =========================================================
-   헌터 전용 렌더링 (화려한 스킬 이펙트 & 고화질 스프라이트)
+   헌터 렌더링 파이프라인
 ========================================================= */
 function renderHunter(t) {
   ctx.fillStyle = "#02070c";
@@ -1101,64 +1434,67 @@ function renderHunter(t) {
     ctx.translate(rand(-hunter.shake, hunter.shake), rand(-hunter.shake, hunter.shake));
   }
 
-  // 1. 경험치 보석 렌더링
-  for (const g of hunter.gems) {
-    const s = worldToScreen(g.x, g.y);
-    ctx.fillStyle = "#38bdf8";
-    ctx.shadowBlur = 10; ctx.shadowColor = "#38bdf8";
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, 4.5 * camera.zoom, 0, TAU);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-  }
-
-  // 2. W 광역 플라즈마 노바 충격파 렌더링
-  for (const n of hunter.novas) {
-    const s = worldToScreen(n.x, n.y);
-    const alpha = n.life / n.maxLife;
+  // 1. 지속 장판 렌더링 (성역, 블랙홀 등)
+  for (const z of hunter.zones) {
+    const s = worldToScreen(z.x, z.y);
     ctx.save();
-    ctx.strokeStyle = `rgba(244,63,94,${alpha})`;
-    ctx.lineWidth = 12 * camera.zoom * alpha;
-    ctx.shadowBlur = 20; ctx.shadowColor = "#f43f5e";
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, n.r * camera.zoom, 0, TAU);
+    ctx.fillStyle = z.color;
+    ctx.globalAlpha = 0.22 * (z.life / z.maxLife);
+    ctx.beginPath(); ctx.arc(s.x, s.y, z.r * camera.zoom, 0, TAU); ctx.fill();
+    ctx.strokeStyle = z.color; ctx.lineWidth = 2.5; ctx.globalAlpha = 0.6;
     ctx.stroke();
     ctx.restore();
   }
 
-  // 3. E 하이퍼 관통 레이저 빔 렌더링
+  // 2. 상자 렌더링
+  for (const c of hunter.chests) {
+    const s = worldToScreen(c.x, c.y);
+    ctx.fillStyle = c.type === 'heal' ? "#22c55e" : "#06b6d4";
+    ctx.fillRect(s.x - 12 * camera.zoom, s.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom);
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
+    ctx.strokeRect(s.x - 12 * camera.zoom, s.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom);
+  }
+
+  // 3. 경험치 보석 렌더링
+  for (const g of hunter.gems) {
+    const s = worldToScreen(g.x, g.y);
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(s.x, s.y, 4.5 * camera.zoom, 0, TAU); ctx.fill();
+  }
+
+  // 4. 노바 충격파 렌더링
+  for (const n of hunter.novas) {
+    const s = worldToScreen(n.x, n.y);
+    const alpha = n.life / n.maxLife;
+    ctx.save();
+    ctx.strokeStyle = n.color || "#f43f5e";
+    ctx.lineWidth = 10 * camera.zoom * alpha;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.arc(s.x, s.y, n.r * camera.zoom, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }
+
+  // 5. 관통 빔 렌더링
   for (const b of hunter.beams) {
     const s1 = worldToScreen(b.x1, b.y1);
     const s2 = worldToScreen(b.x2, b.y2);
     const alpha = b.life / b.maxLife;
     ctx.save();
-    ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+    ctx.strokeStyle = b.color;
     ctx.lineWidth = b.width * camera.zoom * alpha;
-    ctx.shadowBlur = 30; ctx.shadowColor = "#a855f7";
-    ctx.beginPath();
-    ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y);
-    ctx.stroke();
-    // 중심 코어 백색 레이저
-    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-    ctx.lineWidth = (b.width * 0.4) * camera.zoom * alpha;
-    ctx.beginPath();
-    ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y);
-    ctx.stroke();
+    ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.stroke();
     ctx.restore();
   }
 
-  // 4. 일반 투사체 렌더링
+  // 6. 기본 투사체
   for (const p of projectiles) {
     const s = worldToScreen(p.x, p.y);
     ctx.fillStyle = p.color;
-    ctx.shadowBlur = 12; ctx.shadowColor = p.color;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, 5 * camera.zoom, 0, TAU);
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.arc(s.x, s.y, 5 * camera.zoom, 0, TAU); ctx.fill();
   }
 
-  // 5. 몬스터 & 보스 렌더링
+  // 7. 몬스터 및 보스
   for (const e of hunter.enemies) {
     if (e.dead) continue;
     const s = worldToScreen(e.x, e.y);
@@ -1166,24 +1502,15 @@ function renderHunter(t) {
     ctx.translate(s.x, s.y);
 
     ctx.fillStyle = e.color;
-    ctx.beginPath();
-    ctx.arc(0, 0, e.r * camera.zoom, 0, TAU);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, e.r * camera.zoom, 0, TAU); ctx.fill();
 
     if (e.isBoss) {
-      ctx.strokeStyle = "#ffd700";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, (e.r + 8) * camera.zoom, 0, TAU);
-      ctx.stroke();
-
-      ctx.fillStyle = "#fff";
-      ctx.font = `bold ${12 * camera.zoom}px sans-serif`;
-      ctx.textAlign = "center";
+      ctx.strokeStyle = "#ffd700"; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, (e.r + 8) * camera.zoom, 0, TAU); ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.font = `bold ${12 * camera.zoom}px sans-serif`; ctx.textAlign = "center";
       ctx.fillText(e.name, 0, -e.r * camera.zoom - 14);
     }
 
-    // HP바
     const hpPct = clamp(e.hp / e.maxHp, 0, 1);
     const bw = e.r * 2 * camera.zoom;
     ctx.fillStyle = "rgba(0,0,0,0.8)";
@@ -1193,22 +1520,26 @@ function renderHunter(t) {
     ctx.restore();
   }
 
-  // 6. 영웅 렌더링 (고화질 벡터 스프라이트)
+  // 8. 영웅 본체 (바바리안 휠윈드 회전 아우라 반영)
   const h = hunter.hero;
   if (h && !h.dead) {
     drawUnit(h);
-    // 무적 상태 오라
+    if (hunter.whirlwindTimer > 0) {
+      const s = worldToScreen(h.x, h.y);
+      ctx.save();
+      ctx.strokeStyle = "#fb923c"; ctx.lineWidth = 4;
+      ctx.setLineDash([12, 10]);
+      ctx.beginPath(); ctx.arc(s.x, s.y, 160 * hunter.upgrades.aoe * camera.zoom, 0, TAU); ctx.stroke();
+      ctx.restore();
+    }
     if (hunter.invuln > 0) {
       const s = worldToScreen(h.x, h.y);
-      ctx.strokeStyle = "rgba(255,255,255,0.8)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, 28 * camera.zoom, 0, TAU);
-      ctx.stroke();
+      ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(s.x, s.y, 28 * camera.zoom, 0, TAU); ctx.stroke();
     }
   }
 
-  // 7. 부유 텍스트
+  // 9. 부유 텍스트
   for (const tx of hunter.texts) {
     const s = worldToScreen(tx.x, tx.y);
     ctx.globalAlpha = clamp(tx.life / tx.max, 0, 1);
@@ -1224,7 +1555,7 @@ function renderHunter(t) {
 }
 
 /* =========================================================
-   공통 / 모드 1 연산 함수들
+   공통 및 모드 1 게임 루프
 ========================================================= */
 function produce(base, count = 1) {
   if (base.team < 0) return;
@@ -1242,10 +1573,8 @@ function produce(base, count = 1) {
       y: base.y + Math.sin(a) * d,
       vx: 0, vy: 0,
       hp: BASE_STATS.hp, maxHp: BASE_STATS.hp,
-      tier: 1,
-      attack: rand(0, 0.5),
-      targetBase: assignedRoute, 
-      home: base, target: null,
+      tier: 1, attack: rand(0, 0.5),
+      targetBase: assignedRoute, home: base, target: null,
       angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false
     });
   }
@@ -1290,8 +1619,7 @@ function updateTurrets(dt) {
         }
       }
       if (nearest) {
-        nearest.hp -= 26;
-        nearest.hit = 0.12;
+        nearest.hp -= 26; nearest.hit = 0.12;
         projectiles.push({
           x: b.x, y: b.y, tx: nearest.x, ty: nearest.y,
           life: 0.1, color: factions[b.team].color, job: "Turret", tier: 1
@@ -1430,9 +1758,7 @@ function updateUnits(dt) {
 function attack(a, b) {
   const mult = Math.pow(2.2, a.tier - 1);
   let dmg = BASE_STATS.dmg * mult;
-
-  b.hp -= dmg;
-  b.hit = 0.12;
+  b.hp -= dmg; b.hit = 0.12;
 
   projectiles.push({
     x: a.x, y: a.y, tx: b.x, ty: b.y,
@@ -2014,17 +2340,17 @@ function hitBase(wx, wy) {
 }
 
 /* =========================================================
-   입력 시스템 (키보드 방향키 이동 + Q/W/E 스킬)
+   입력 시스템
 ========================================================= */
 window.addEventListener("keydown", e => {
-  // 모드 2 헌터 키 입력
+  initAudio();
   if (activeGameMode === "HUNTER" && hunter.active) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
       e.preventDefault();
       hunter.key[e.key] = true;
     }
     const k = e.key.toLowerCase();
-    if (["q", "w", "e"].includes(k)) {
+    if (SKILL_KEYS.includes(k)) {
       e.preventDefault();
       hunterUseSkill(k);
     }
@@ -2044,6 +2370,7 @@ window.addEventListener("keyup", e => {
 });
 
 canvas.addEventListener("pointerdown", e => {
+  initAudio();
   if (isPaused) return;
   pointerDown = true;
   dragMoved = false;
@@ -2126,7 +2453,6 @@ function clampCamera() {
   camera.y = clamp(camera.y, halfH, WORLD.h - halfH);
 }
 
-// 메인 루프 가동
 initThemeParticles("GRASS");
 
 let last = performance.now();
