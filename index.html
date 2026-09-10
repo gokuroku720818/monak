@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 17.0 // SPEED & SYSTEM</title>
+<title>FRONTIER ARCADE // 3-IN-1 SUITE</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -13,10 +13,12 @@ html,body{
   touch-action:none;user-select:none;
 }
 canvas{display:block;width:100%;height:100%;cursor:crosshair}
+
+/* HUD */
 #hud{
   position:fixed;left:12px;right:12px;top:10px;
   display:flex;justify-content:space-between;align-items:flex-start;
-  pointer-events:none;z-index:5;
+  pointer-events:none;z-index:10;gap:8px;
 }
 .panel{
   background:linear-gradient(180deg,rgba(5,16,27,.94),rgba(3,9,16,.85));
@@ -27,22 +29,31 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 }
 #title{font-weight:900;letter-spacing:2px;font-size:14px}
 #sub{font-size:10px;color:#7ba5b7;margin-top:3px}
-#stats{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+#stats{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .badge{
-  min-width:72px;text-align:center;
-  padding:6px 9px;border-radius:8px;
+  min-width:68px;text-align:center;
+  padding:5px 8px;border-radius:8px;
   background:#07131d;border:1px solid rgba(255,255,255,.08);
   font-size:10px;color:#9cb7c3;
 }
 .badge b{display:block;font-size:13px;color:#e8fbff;margin-top:2px}
+.badge.mineral b{color:#ffd700}
+
+/* 업그레이드 & 조작 버튼 */
 .hud-btn{
   pointer-events:auto;cursor:pointer;
-  padding:8px 14px;border-radius:8px;
+  padding:7px 12px;border-radius:8px;
   background:#0b2636;border:1px solid #48b8d0;
   color:#dff8ff;font-weight:800;font-size:11px;
-  transition:.15s;
+  transition:.15s;display:flex;align-items:center;gap:4px;
 }
 .hud-btn:hover{background:#133c54;border-color:#71e5ff}
+.upg-btn{
+  background:#172813;border-color:#52c41a;color:#d9f7be;
+}
+.upg-btn:hover{background:#23441d;border-color:#73d13d}
+.upg-btn:disabled{opacity:0.45;pointer-events:none}
+
 #guide{
   position:fixed;left:50%;bottom:12px;transform:translateX(-50%);
   z-index:5;pointer-events:none;
@@ -53,144 +64,183 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   box-shadow:0 0 15px rgba(0,150,255,.15);
 }
 #toast{
-  position:fixed;left:50%;top:70px;transform:translateX(-50%);
-  background:rgba(5,20,30,.92);border:1px solid #5bc2dc;
+  position:fixed;left:50%;top:75px;transform:translateX(-50%);
+  background:rgba(5,20,30,.94);border:1px solid #5bc2dc;
   color:#e8faff;padding:7px 18px;border-radius:8px;font-size:11px;
-  pointer-events:none;z-index:35;opacity:0;transition:opacity .2s;
+  pointer-events:none;z-index:45;opacity:0;transition:opacity .2s;
+  box-shadow:0 0 20px rgba(0,180,255,.2);
 }
-#modal{
-  position:fixed;inset:0;z-index:20;
+
+/* ARCADE SELECTOR HUB */
+#hubModal{
+  position:fixed;inset:0;z-index:30;
   display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at center,rgba(8,31,48,.5),rgba(0,3,7,.96));
+  background:radial-gradient(circle at center,rgba(10,32,50,.85),rgba(0,3,7,.98));
+  padding:16px;
+}
+.hubBox{
+  width:min(860px,96vw);background:#071420;
+  border:1px solid #4ebcdb;border-radius:20px;padding:26px;
+  text-align:center;box-shadow:0 0 90px rgba(0,190,255,.25);
+}
+.hubBox h1{margin:0 0 6px;font-size:26px;letter-spacing:4px;color:#dffaff}
+.hubBox p{margin:0 0 20px;color:#7aa2b5;font-size:12px}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.game-card{
+  background:#091d2c;border:1px solid #234f69;border-radius:14px;
+  padding:18px 14px;cursor:pointer;transition:.2s;text-align:left;
+}
+.game-card:hover{transform:translateY(-4px);border-color:#5ee2ff;background:#0e2d44;box-shadow:0 0 20px rgba(94,226,255,.2)}
+.game-card .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:900;margin-bottom:8px}
+.game-card h3{margin:0 0 6px;font-size:16px;color:#fff}
+.game-card p{margin:0;font-size:11px;color:#96b8c8;line-height:1.5}
+
+/* CLASS SELECT MODAL */
+#classModal{
+  position:fixed;inset:0;z-index:25;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,4,10,.85);backdrop-filter:blur(6px);
 }
 #card{
-  width:min(740px,92vw);
-  border:1px solid rgba(90,220,255,.4);
+  width:min(740px,92vw);border:1px solid rgba(90,220,255,.4);
   border-radius:18px;padding:24px;
   background:linear-gradient(180deg,rgba(5,17,28,.98),rgba(2,7,13,.98));
-  box-shadow:0 0 90px rgba(0,170,255,.2);
 }
-#card h1{margin:0;font-size:26px;letter-spacing:4px;text-align:center;color:#dffaff}
-#card p{text-align:center;color:#7295a5;font-size:12px;margin:8px 0 18px}
+#card h1{margin:0;font-size:24px;letter-spacing:4px;text-align:center;color:#dffaff}
+#card p{text-align:center;color:#7295a5;font-size:12px;margin:8px 0 16px}
 #classes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .classBtn{
-  padding:14px 9px;border-radius:12px;
-  background:#06111a;border:1px solid rgba(255,255,255,.1);
-  color:#dffaff;cursor:pointer;transition:.15s;text-align:center;
+  padding:12px 8px;border-radius:12px;background:#06111a;
+  border:1px solid rgba(255,255,255,.1);color:#dffaff;cursor:pointer;transition:.15s;text-align:center;
 }
 .classBtn:hover{transform:translateY(-2px);border-color:#75e6ff;background:#081923}
 .classBtn.active{border-color:#75e6ff;background:#0d2838;box-shadow:0 0 16px rgba(99,220,255,.3)}
-.classBtn .icon{font-size:24px;display:block;margin-bottom:6px}
+.classBtn .icon{font-size:22px;display:block;margin-bottom:4px}
 .classBtn strong{display:block;font-size:12px}
-.classBtn small{display:block;margin-top:4px;color:#6e95a6;font-size:9px}
-.modal-actions{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.classBtn small{display:block;margin-top:2px;color:#6e95a6;font-size:9px}
+.modal-actions{display:flex;justify-content:center;gap:10px;margin-top:16px}
 .modal-actions button{
-  padding:12px 28px;border-radius:9px;font-weight:900;
-  letter-spacing:1px;cursor:pointer;font-size:13px;
+  padding:11px 26px;border-radius:9px;font-weight:900;cursor:pointer;font-size:12px;
 }
-#start{
-  border:1px solid #55ddff;background:#072333;color:#dffaff;
-}
-#start:hover{background:#0e364d}
-#btnLoad{
-  border:1px solid #38d39f;background:#062b21;color:#bdfce7;display:none;
-}
-#btnLoad:hover{background:#0a3f31}
-#pauseModal{
-  position:fixed;inset:0;z-index:25;display:none;
+#start{border:1px solid #55ddff;background:#072333;color:#dffaff}
+#btnLoad{border:1px solid #38d39f;background:#062b21;color:#bdfce7;display:none}
+
+/* PAUSE & RESULT MODAL */
+#pauseModal,#result{
+  position:fixed;inset:0;z-index:40;display:none;
   align-items:center;justify-content:center;
-  background:rgba(0,4,10,.78);backdrop-filter:blur(6px);
+  background:rgba(0,4,10,.82);backdrop-filter:blur(6px);
 }
-.pauseBox{
-  text-align:center;padding:32px 42px;background:#071622;
+.modalBox{
+  text-align:center;padding:32px 45px;background:#071622;
   border:1px solid #54c9e8;border-radius:16px;box-shadow:0 0 60px rgba(0,180,255,.2);
 }
-.pauseBox h2{margin:0 0 16px;letter-spacing:3px;font-size:24px}
-.pause-btns{display:flex;flex-direction:column;gap:9px}
-.pause-btns button{
-  padding:10px 30px;border-radius:8px;font-weight:700;cursor:pointer;
+.modalBox h2,#resultTitle{margin:0 0 14px;letter-spacing:3px;font-size:26px}
+.menu-btns{display:flex;flex-direction:column;gap:9px}
+.menu-btns button,.btn-res{
+  padding:10px 26px;border-radius:8px;font-weight:700;cursor:pointer;
   border:1px solid #45a2ba;background:#0a2536;color:#dffaff;
 }
-.pause-btns button:hover{background:#123b54;border-color:#65dbfc}
-#result{
-  position:fixed;inset:0;z-index:30;display:none;
-  align-items:center;justify-content:center;
-  background:rgba(0,3,7,.85);
-}
-#resultBox{
-  text-align:center;padding:35px 50px;
-  background:#06111a;border:1px solid #4bdcff;
-  border-radius:18px;box-shadow:0 0 70px rgba(0,190,255,.2);
-}
-#resultTitle{font-size:32px;font-weight:900;letter-spacing:3px}
-.btn-res{
-  margin:16px 6px 0;padding:10px 24px;border-radius:8px;
-  border:1px solid #5de2ff;background:#082536;color:#dffaff;cursor:pointer;font-weight:bold;
-}
-.btn-res:hover{background:#11384e}
-@media(max-width:650px){
-  #card{padding:16px}
+.menu-btns button:hover,.btn-res:hover{background:#123b54;border-color:#65dbfc}
+
+@media(max-width:700px){
   #classes{grid-template-columns:repeat(2,1fr)}
   #guide{font-size:9px}
+  .hud-btn{padding:5px 8px;font-size:10px}
 }
 </style>
 </head>
 <body>
 
 <canvas id="game"></canvas>
-
 <div id="toast"></div>
 
+<!-- 상단 종합 HUD -->
 <div id="hud">
   <div class="panel">
-    <div id="title">FRONTIER FLUX // TACTICS</div>
+    <div id="title">FRONTIER FLUX</div>
     <div id="sub" style="color:#62eaff">CHAPTER 1: THE AWAKENING</div>
   </div>
   <div id="stats">
+    <div class="badge mineral">MINERAL<b id="mineralTxt">0</b></div>
     <div class="badge">CHAPTER<b id="chapBadge">1/5</b></div>
     <div class="badge">TIME<b id="time">10:00</b></div>
     <div class="badge">BASES<b id="bases">0</b></div>
     <div class="badge">ARMY<b id="army">0</b></div>
-    <div class="badge">ENEMIES<b id="enemy">0</b></div>
+    
+    <!-- 업그레이드 버튼 -->
+    <button class="hud-btn upg-btn" id="btnUpgWpn" onclick="buyWeaponUpg()">⚔️ 무기강화 <span id="wpnCostTxt">(50)</span></button>
+    <button class="hud-btn upg-btn" id="btnUpgProd" onclick="buyProdUpg()">⚡ 생산강화 <span id="prodCostTxt">(75)</span></button>
+
     <button class="hud-btn" onclick="togglePause()">❚❚ PAUSE</button>
+    <button class="hud-btn" style="background:#281033;border-color:#b44be8" onclick="openHub()">🎮 아케이드</button>
   </div>
 </div>
 
-<div id="guide">기지 드래그 → 보급선 개설 · 스페이스바: 일시정지 · 2단계(10기), 3~5단계(2기) 고속 합체</div>
+<div id="guide">기지 드래그 → 보급선 개설 · 자원을 모아 무기/생산력 강화 · 아케이드 버튼으로 모드 전환</div>
 
-<!-- 메인 시작/이어하기 모달 -->
-<div id="modal">
+<!-- 1. 아케이드 게임 선택 허브 -->
+<div id="hubModal">
+  <div class="hubBox">
+    <h1>FRONTIER ARCADE HUB</h1>
+    <p>플레이할 미니 게임을 선택하십시오. 언제든지 상단 [아케이드] 버튼으로 변경할 수 있습니다.</p>
+    <div class="game-grid">
+      <!-- 게임 1: 땅따먹기 점령전 -->
+      <div class="game-card" onclick="selectGameMode('DOMINATION')">
+        <span class="tag" style="background:#034458;color:#55dfff">MODE 1</span>
+        <h3>프론티어 플럭스 (땅따먹기)</h3>
+        <p>5대 챕터 정복전. 기지 간 보급선을 이어 대규모 병력을 결집하고 5단계 신화 유닛으로 진화시키며 전장을 정복합니다.</p>
+      </div>
+      <!-- 게임 2: 저글링 블러드 -->
+      <div class="game-card" onclick="selectGameMode('ZERGLING')">
+        <span class="tag" style="background:#552805;color:#ff984d">MODE 2</span>
+        <h3>저글링 블러드 (무한 난투)</h3>
+        <p>수백 마리의 저글링 무리가 쏟아져 나오는 아레나! 끝없이 적을 베어 넘기고 킬 수를 모아 영웅 맹독수와 디파일러로 진화하십시오.</p>
+      </div>
+      <!-- 게임 3: 뮤탈 블러드 -->
+      <div class="game-card" onclick="selectGameMode('MUTALISK')">
+        <span class="tag" style="background:#421152;color:#d873ff">MODE 3</span>
+        <h3>뮤탈 블러드 (공중 3쿠션)</h3>
+        <p>비행 편대를 조작해 적들 사이를 3번 튕겨 다니는 쐐기 탄환을 난사하는 화려한 공중 편대 컨트롤 아케이드 대전입니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 직업 선택 모달 (땅따먹기 모드용) -->
+<div id="classModal">
   <div id="card">
-    <h1>FRONTIER FLUX</h1>
-    <p>완전 균형 전투 스펙 · 신속한 기동전과 전선 제어</p>
+    <h1>CHOOSE YOUR CLASS</h1>
+    <p>균형 잡힌 전투 스펙 · 선호하는 고유 스프라이트를 선택하십시오</p>
     <div id="classes"></div>
     <div class="modal-actions">
-      <button id="start">NEW CAMPAIGN</button>
-      <button id="btnLoad" onclick="loadSavedGame()">RESUME SAVED GAME</button>
+      <button id="start" onclick="startNewDomination()">CAMPAIGN DEPLOY</button>
+      <button id="btnLoad" onclick="loadSavedGame()">RESUME SAVED</button>
     </div>
   </div>
 </div>
 
-<!-- 일시정지 모달 -->
+<!-- 3. 일시정지 모달 -->
 <div id="pauseModal">
-  <div class="pauseBox">
+  <div class="modalBox">
     <h2>GAME PAUSED</h2>
-    <div class="pause-btns">
+    <div class="menu-btns">
       <button onclick="togglePause()">CONTINUE (계속하기)</button>
       <button onclick="saveCurrentGame()">SAVE GAME (저장하기)</button>
-      <button onclick="exitToTitle()">EXIT TO MENU (메뉴로)</button>
+      <button onclick="openHub()">ARCADE HUB (게임 선택)</button>
     </div>
   </div>
 </div>
 
-<!-- 결과 모달 -->
+<!-- 4. 결과 모달 -->
 <div id="result">
-  <div id="resultBox">
+  <div class="modalBox">
     <div id="resultTitle"></div>
     <div id="resultSub" style="margin-top:8px;font-size:12px;color:#7ba5b7"></div>
-    <div id="resultBtns">
+    <div style="margin-top:16px">
       <button class="btn-res" id="btnNext" onclick="nextChapter()">NEXT CHAPTER</button>
       <button class="btn-res" id="btnRetry" onclick="retryChapter()">RETRY</button>
+      <button class="btn-res" onclick="openHub()">ARCADE HUB</button>
     </div>
   </div>
 </div>
@@ -217,9 +267,55 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-// ⭐ 유닛 기본 이동 속도 대폭 상향 (40 -> 58)
+/* =========================================================
+   게임 모드 및 상태 관리
+========================================================= */
+let activeGameMode = "DOMINATION"; // "DOMINATION" | "ZERGLING" | "MUTALISK"
+let running = false;
+let isPaused = false;
+
+// 자원 및 업그레이드
+let mineral = 60;
+let wpnUpgLvl = 0;
+let prodUpgLvl = 0;
+
+function getWpnCost() { return Math.floor(50 * Math.pow(1.5, wpnUpgLvl)); }
+function getProdCost() { return Math.floor(75 * Math.pow(1.6, prodUpgLvl)); }
+
+function updateUpgHUD() {
+  document.getElementById("mineralTxt").textContent = Math.floor(mineral);
+  document.getElementById("wpnCostTxt").textContent = `(Lv.${wpnUpgLvl} - ${getWpnCost()})`;
+  document.getElementById("prodCostTxt").textContent = `(Lv.${prodUpgLvl} - ${getProdCost()})`;
+  
+  const wpnBtn = document.getElementById("btnUpgWpn");
+  const prodBtn = document.getElementById("btnUpgProd");
+  if (wpnBtn) wpnBtn.disabled = mineral < getWpnCost();
+  if (prodBtn) prodBtn.disabled = mineral < getProdCost();
+}
+
+function buyWeaponUpg() {
+  const cost = getWpnCost();
+  if (mineral >= cost) {
+    mineral -= cost;
+    wpnUpgLvl++;
+    toast(`⚔️ 무기 강화 완료! 공격력 +15% (Lv.${wpnUpgLvl})`);
+    updateUpgHUD();
+  }
+}
+
+function buyProdUpg() {
+  const cost = getProdCost();
+  if (mineral >= cost) {
+    mineral -= cost;
+    prodUpgLvl++;
+    toast(`⚡ 생산 강화 완료! 징집 딜레이 단축 (Lv.${prodUpgLvl})`);
+    updateUpgHUD();
+  }
+}
+
+// ⭐ 유닛 기본 속도 추가 상향 (58 -> 76)
 const BASE_STATS = {
-  hp: 130, dmg: 20, rng: 80, spd: 58, rate: 1.0
+  hp: 130, dmg: 20, rng: 80, spd: 76, rate: 1.0
 };
 
 const JOBS = {
@@ -228,29 +324,26 @@ const JOBS = {
   Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "에어로 활 & 레이저 조준" },
   Summoner:  { icon: "◈", name: "SUMMONER",  color: "#c084fc", desc: "공전 수정 & 부유 마도서" },
   Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 배틀액스" },
-  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 회전 개틀링 & 탄띠" }
+  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 회전 개틀링" }
 };
 
 const FACTION_COLORS = ["#38bdf8", "#f43f5e", "#10b981", "#a855f7", "#f97316", "#eab308"];
 
-const MERGE_REQ = {
-  1: 10,
-  2: 2,
-  3: 2,
-  4: 2
-};
+const MERGE_REQ = { 1: 10, 2: 2, 3: 2, 4: 2 };
 
+// 5개 챕터별 테마 환경
 const CHAPTERS = [
-  { num: 1, name: "CHAPTER 1: THE AWAKENING", enemies: 1, spawnMod: 1.5, hpMod: 1.6, desc: "1대1 입문 전투" },
-  { num: 2, name: "CHAPTER 2: EXPANDING FRONT", enemies: 2, spawnMod: 1.2, hpMod: 1.3, desc: "적 진영 2개 · 표준 난이도" },
-  { num: 3, name: "CHAPTER 3: TRIPLE THREAT", enemies: 3, spawnMod: 1.0, hpMod: 1.0, desc: "적 진영 3개 · 팽팽한 전선" },
-  { num: 4, name: "CHAPTER 4: FULL ONSLAUGHT", enemies: 4, spawnMod: 0.85, hpMod: 0.9, desc: "적 진영 4개 · 빠른 공세" },
-  { num: 5, name: "CHAPTER 5: TOTAL DOMINATION", enemies: 5, spawnMod: 0.7, hpMod: 0.8, desc: "적 진영 5개 전원 참전 · 최고 난이도" }
+  { num: 1, name: "CHAPTER 1: GRASSLAND (초원)", theme: "GRASS", bg: "#06170d", grid: "#123b20", enemies: 1, spawnMod: 1.5, hpMod: 1.6 },
+  { num: 2, name: "CHAPTER 2: DESERT (사막)", theme: "DESERT", bg: "#1a1205", grid: "#3a2c0c", enemies: 2, spawnMod: 1.2, hpMod: 1.3 },
+  { num: 3, name: "CHAPTER 3: INFERNO (불지옥)", theme: "INFERNO", bg: "#1f0705", grid: "#45120c", enemies: 3, spawnMod: 1.0, hpMod: 1.0 },
+  { num: 4, name: "CHAPTER 4: CELESTIAL (천국)", theme: "HEAVEN", bg: "#141c2b", grid: "#2e3f5e", enemies: 4, spawnMod: 0.85, hpMod: 0.9 },
+  { num: 5, name: "CHAPTER 5: COSMOS (우주)", theme: "COSMOS", bg: "#020712", grid: "#13233f", enemies: 5, spawnMod: 0.7, hpMod: 0.8 }
 ];
 
 let curChapterIdx = 0;
 let selectedJob = "Mage";
 
+// 클래스 버튼 UI
 const classesDiv = document.getElementById("classes");
 for (const [key, j] of Object.entries(JOBS)) {
   const b = document.createElement("div");
@@ -266,17 +359,6 @@ for (const [key, j] of Object.entries(JOBS)) {
   classesDiv.appendChild(b);
 }
 
-// 로컬스토리지 저장 확인 및 이어하기 버튼 노출
-function checkSaveData() {
-  const btn = document.getElementById("btnLoad");
-  if (localStorage.getItem("frontier_flux_save")) {
-    btn.style.display = "inline-block";
-  } else {
-    btn.style.display = "none";
-  }
-}
-checkSaveData();
-
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -285,16 +367,50 @@ function toast(msg) {
   t._timer = setTimeout(() => { t.style.opacity = "0"; }, 1800);
 }
 
-let running = false;
-let isPaused = false;
+function openHub() {
+  running = false;
+  isPaused = false;
+  document.getElementById("pauseModal").style.display = "none";
+  document.getElementById("result").style.display = "none";
+  document.getElementById("classModal").style.display = "none";
+  document.getElementById("hubModal").style.display = "flex";
+}
 
-document.getElementById("start").onclick = () => {
+function selectGameMode(mode) {
+  activeGameMode = mode;
+  document.getElementById("hubModal").style.display = "none";
+
+  if (mode === "DOMINATION") {
+    document.getElementById("classModal").style.display = "flex";
+    document.getElementById("title").textContent = "FRONTIER FLUX";
+    checkSaveData();
+  } else if (mode === "ZERGLING") {
+    startZerglingBlood();
+  } else if (mode === "MUTALISK") {
+    startMutaliskBlood();
+  }
+}
+
+function startNewDomination() {
+  document.getElementById("classModal").style.display = "none";
+  mineral = 70;
+  wpnUpgLvl = 0;
+  prodUpgLvl = 0;
   curChapterIdx = 0;
   startChapter(curChapterIdx);
-  document.getElementById("modal").style.display = "none";
   running = true;
   isPaused = false;
-};
+  updateUpgHUD();
+}
+
+function checkSaveData() {
+  const btn = document.getElementById("btnLoad");
+  if (localStorage.getItem("frontier_flux_save")) {
+    btn.style.display = "inline-block";
+  } else {
+    btn.style.display = "none";
+  }
+}
 
 let factions = [], bases = [], units = [], projectiles = [], particles = [], stars = [], explosions = [];
 let uid = 1, mission = 600, spawnTimer = 0, aiTimer = 0;
@@ -305,6 +421,9 @@ let pointerDown = false;
 let lastPointer = { x: 0, y: 0 };
 let dragMoved = false;
 
+/* =========================================================
+   모드 1: 프론티어 플럭스 (땅따먹기 점령전)
+========================================================= */
 function startChapter(idx) {
   curChapterIdx = idx;
   const chap = CHAPTERS[curChapterIdx];
@@ -321,12 +440,7 @@ function startChapter(idx) {
 
   const totalFactions = 1 + chap.enemies;
   for (let i = 0; i < totalFactions; i++) {
-    factions.push({
-      id: i,
-      job: jobs[i],
-      color: FACTION_COLORS[i],
-      kills: 0
-    });
+    factions.push({ id: i, job: jobs[i], color: FACTION_COLORS[i], kills: 0 });
   }
 
   bases = [];
@@ -336,20 +450,12 @@ function startChapter(idx) {
   explosions = [];
   stars = [];
 
-  for (let i = 0; i < 280; i++) {
-    stars.push({
-      x: rand(0, WORLD.w), y: rand(0, WORLD.h),
-      r: rand(0.3, 1.5), a: rand(0.2, 0.9), p: rand(0, TAU)
-    });
-  }
+  // 챕터별 테마 입자 초기화
+  initThemeParticles(chap.theme);
 
   const coreSpots = [
-    [300, 300],
-    [2300, 1200],
-    [2300, 300],
-    [300, 1200],
-    [1300, 200],
-    [1300, 1300]
+    [300, 300], [2300, 1200], [2300, 300],
+    [300, 1200], [1300, 200], [1300, 1300]
   ];
 
   for (let i = 0; i < totalFactions; i++) {
@@ -357,14 +463,8 @@ function startChapter(idx) {
     const isPlayer = i === 0;
     const hpBase = isPlayer ? 2400 * chap.hpMod : 2000;
     bases.push({
-      id: uid++, x, y,
-      team: i,
-      core: true,
-      hp: hpBase,
-      maxHp: hpBase,
-      routes: [],
-      pulse: rand(0, TAU),
-      turretCd: 0
+      id: uid++, x, y, team: i, core: true,
+      hp: hpBase, maxHp: hpBase, routes: [], pulse: rand(0, TAU), turretCd: 0
     });
   }
 
@@ -379,14 +479,8 @@ function startChapter(idx) {
   for (let i = 0; i < outpostSpots.length; i++) {
     const [x, y] = outpostSpots[i];
     bases.push({
-      id: uid++, x, y,
-      team: -1,
-      core: false,
-      hp: 1000,
-      maxHp: 1000,
-      routes: [],
-      pulse: rand(0, TAU),
-      turretCd: 0
+      id: uid++, x, y, team: -1, core: false,
+      hp: 1000, maxHp: 1000, routes: [], pulse: rand(0, TAU), turretCd: 0
     });
   }
 
@@ -402,135 +496,117 @@ function startChapter(idx) {
   updateHUD();
 }
 
+function initThemeParticles(theme) {
+  stars = [];
+  for (let i = 0; i < 260; i++) {
+    stars.push({
+      x: rand(0, WORLD.w), y: rand(0, WORLD.h),
+      r: rand(0.5, 2.0),
+      a: rand(0.2, 0.9),
+      p: rand(0, TAU),
+      speed: rand(10, 40)
+    });
+  }
+}
+
 /* =========================================================
-   ⭐ 일시정지 및 세이브/로드 시스템 (PAUSE & SAVE/LOAD)
+   모드 2: 저글링 블러드 (ZERGLING BLOOD)
 ========================================================= */
-function togglePause() {
-  if (!running) return;
-  isPaused = !isPaused;
-  document.getElementById("pauseModal").style.display = isPaused ? "flex" : "none";
-}
+let bloodKillCount = 0;
+function startZerglingBlood() {
+  document.getElementById("title").textContent = "ZERGLING BLOOD";
+  document.getElementById("sub").textContent = "무한 근접 물량 난투 아레나";
+  document.getElementById("chapBadge").textContent = "ARENA";
+  document.getElementById("guide").textContent = "화면 드래그/탭으로 저글링 군단을 이끌고 적 웨이브를 섬멸하십시오!";
 
-window.addEventListener("keydown", e => {
-  if (e.code === "Space" || e.code === "KeyP") {
-    if (running && document.getElementById("result").style.display !== "flex") {
-      togglePause();
-    }
-  }
-});
+  uid = 1; mission = 600; spawnTimer = 0;
+  bloodKillCount = 0;
+  mineral = 100;
+  wpnUpgLvl = 0;
+  prodUpgLvl = 0;
 
-function saveCurrentGame() {
-  try {
-    const saveData = {
-      curChapterIdx,
-      selectedJob,
-      mission,
-      uid,
-      factions,
-      bases: bases.map(b => ({
-        id: b.id, x: b.x, y: b.y, team: b.team, core: b.core,
-        hp: b.hp, maxHp: b.maxHp,
-        routeIds: (b.routes || []).map(r => r.id)
-      })),
-      units: units.map(u => ({
-        id: u.id, team: u.team, job: u.job, x: u.x, y: u.y,
-        hp: u.hp, maxHp: u.maxHp, tier: u.tier,
-        targetBaseId: u.targetBase ? u.targetBase.id : null,
-        homeId: u.home ? u.home.id : null
-      }))
-    };
-    localStorage.setItem("frontier_flux_save", JSON.stringify(saveData));
-    toast("진행 상황이 성공적으로 저장되었습니다!");
-  } catch (e) {
-    toast("저장 중 오류가 발생했습니다.");
-  }
-}
+  bases = [];
+  units = [];
+  projectiles = [];
+  particles = [];
+  explosions = [];
+  initThemeParticles("INFERNO");
 
-function loadSavedGame() {
-  const raw = localStorage.getItem("frontier_flux_save");
-  if (!raw) {
-    toast("저장된 데이터가 없습니다.");
-    return;
-  }
-  try {
-    const data = JSON.parse(raw);
-    curChapterIdx = data.curChapterIdx;
-    selectedJob = data.selectedJob;
-    mission = data.mission;
-    uid = data.uid;
-    factions = data.factions;
+  factions = [
+    { id: 0, job: "Barbarian", color: "#38bdf8", kills: 0 },
+    { id: 1, job: "Barbarian", color: "#f43f5e", kills: 0 }
+  ];
 
-    // 기지 복구
-    bases = data.bases.map(b => ({
-      id: b.id, x: b.x, y: b.y, team: b.team, core: b.core,
-      hp: b.hp, maxHp: b.maxHp, routes: [], pulse: rand(0, TAU), turretCd: 0,
-      _routeIds: b.routeIds
-    }));
+  // 중앙 아레나 넥서스
+  bases.push({
+    id: uid++, x: 600, y: 400, team: 0, core: true,
+    hp: 5000, maxHp: 5000, routes: [], pulse: 0, turretCd: 0
+  });
+  bases.push({
+    id: uid++, x: 2000, y: 1100, team: 1, core: true,
+    hp: 5000, maxHp: 5000, routes: [], pulse: 0, turretCd: 0
+  });
 
-    // 보급선 참조 연결
-    for (const b of bases) {
-      if (b._routeIds) {
-        b.routes = b._routeIds.map(rid => bases.find(target => target.id === rid)).filter(Boolean);
-      }
-    }
+  camera.x = 1300; camera.y = 750;
+  camera.zoom = clamp(Math.min(W / 1300, H / 750), 0.6, 1.2);
 
-    // 유닛 복구
-    units = data.units.map(u => ({
-      id: u.id, team: u.team, job: u.job, x: u.x, y: u.y,
-      vx: 0, vy: 0, hp: u.hp, maxHp: u.maxHp, tier: u.tier,
-      attack: rand(0, 0.5), angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false,
-      targetBase: u.targetBaseId ? bases.find(b => b.id === u.targetBaseId) : null,
-      home: u.homeId ? bases.find(b => b.id === u.homeId) : null
-    }));
-
-    // 별 배경 생성
-    stars = [];
-    for (let i = 0; i < 280; i++) {
-      stars.push({
-        x: rand(0, WORLD.w), y: rand(0, WORLD.h),
-        r: rand(0.3, 1.5), a: rand(0.2, 0.9), p: rand(0, TAU)
-      });
-    }
-
-    projectiles = [];
-    particles = [];
-    explosions = [];
-
-    const chap = CHAPTERS[curChapterIdx];
-    document.getElementById("sub").textContent = chap.name;
-    document.getElementById("chapBadge").textContent = `${chap.num}/5`;
-
-    document.getElementById("modal").style.display = "none";
-    document.getElementById("pauseModal").style.display = "none";
-    running = true;
-    isPaused = false;
-
-    const pBase = bases.find(b => b.team === 0) || bases[0];
-    camera.x = pBase.x;
-    camera.y = pBase.y;
-    camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.55, 1.1);
-
-    updateHUD();
-    toast("게임을 성공적으로 불러왔습니다!");
-  } catch (e) {
-    toast("세이브 파일 손상으로 불러올 수 없습니다.");
-  }
-}
-
-function exitToTitle() {
-  running = false;
+  running = true;
   isPaused = false;
-  document.getElementById("pauseModal").style.display = "none";
-  document.getElementById("modal").style.display = "flex";
-  checkSaveData();
+  updateUpgHUD();
 }
 
+/* =========================================================
+   모드 3: 뮤탈 블러드 (MUTALISK BLOOD)
+========================================================= */
+function startMutaliskBlood() {
+  document.getElementById("title").textContent = "MUTALISK BLOOD";
+  document.getElementById("sub").textContent = "3쿠션 글레이브 웜 공중 대전";
+  document.getElementById("chapBadge").textContent = "AIR WAR";
+  document.getElementById("guide").textContent = "마우스/터치를 따라 공중 편대가 이동하며 적에게 3쿠션 쐐기탄을 난사합니다!";
+
+  uid = 1; mission = 600; spawnTimer = 0;
+  mineral = 100;
+  wpnUpgLvl = 0;
+  prodUpgLvl = 0;
+
+  bases = [];
+  units = [];
+  projectiles = [];
+  particles = [];
+  explosions = [];
+  initThemeParticles("COSMOS");
+
+  factions = [
+    { id: 0, job: "Gunner", color: "#38bdf8", kills: 0 },
+    { id: 1, job: "Gunner", color: "#f43f5e", kills: 0 }
+  ];
+
+  // 상공 대칭 기지
+  bases.push({
+    id: uid++, x: 400, y: 750, team: 0, core: true,
+    hp: 4000, maxHp: 4000, routes: [], pulse: 0, turretCd: 0
+  });
+  bases.push({
+    id: uid++, x: 2200, y: 750, team: 1, core: true,
+    hp: 4000, maxHp: 4000, routes: [], pulse: 0, turretCd: 0
+  });
+
+  camera.x = 1300; camera.y = 750;
+  camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.6, 1.2);
+
+  running = true;
+  isPaused = false;
+  updateUpgHUD();
+}
+
+/* =========================================================
+   전투, 생산 및 업그레이드 연산 루프
+========================================================= */
 function produce(base, count = 1) {
   if (base.team < 0) return;
   for (let i = 0; i < count; i++) {
-    const f = factions[base.team];
+    const f = factions[base.team] || factions[0];
     const a = rand(0, TAU), d = rand(15, 30);
-    
     let assignedRoute = null;
     if (base.routes && base.routes.length > 0) {
       assignedRoute = base.routes[Math.floor(Math.random() * base.routes.length)];
@@ -545,30 +621,23 @@ function produce(base, count = 1) {
       tier: 1,
       attack: rand(0, 0.5),
       targetBase: assignedRoute, 
-      home: base, 
-      target: null,
-      angle: rand(0, TAU),
-      anim: rand(0, TAU),
-      hit: 0,
-      dead: false
+      home: base, target: null,
+      angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false
     });
   }
 }
 
 function handleAI() {
   aiTimer += 1 / 60;
-  const chap = CHAPTERS[curChapterIdx];
-  if (aiTimer < 3.0 * (chap.spawnMod || 1.0)) return;
+  if (aiTimer < 3.0) return;
   aiTimer = 0;
 
   for (const f of factions.slice(1)) {
     const own = bases.filter(b => b.team === f.id);
     if (!own.length) continue;
-
     for (const b of own) {
       if (Math.random() < 0.65) {
-        const targets = bases
-          .filter(t => t !== b && t.team !== f.id)
+        const targets = bases.filter(t => t !== b && t.team !== f.id)
           .sort((a, c) => Math.hypot(a.x - b.x, a.y - b.y) - Math.hypot(c.x - b.x, c.y - b.y));
         if (targets.length) {
           b.routes = [targets[0]];
@@ -583,47 +652,113 @@ function handleAI() {
   }
 }
 
-function updateTurrets(dt) {
-  for (const b of bases) {
-    if (b.team < 0 || b.core) continue;
-    b.turretCd -= dt;
-    if (b.turretCd <= 0) {
-      b.turretCd = 0.8;
-      let nearest = null, minDist = 150;
-      for (const u of units) {
-        if (u.team !== b.team && !u.dead) {
-          const d = Math.hypot(u.x - b.x, u.y - b.y);
-          if (d < minDist) { minDist = d; nearest = u; }
-        }
-      }
-      if (nearest) {
-        nearest.hp -= 26;
-        nearest.hit = 0.12;
-        projectiles.push({
-          x: b.x, y: b.y, tx: nearest.x, ty: nearest.y,
-          life: 0.1, color: factions[b.team].color, job: "Turret", tier: 1
-        });
-        if (nearest.hp <= 0) killUnit(nearest, b.team);
-      }
+function attack(a, b) {
+  const mult = Math.pow(2.2, a.tier - 1);
+  // ⭐ 무기 강화 레벨당 공격력 +15% 증가
+  const wpnBonus = a.team === 0 ? (1 + wpnUpgLvl * 0.15) : 1.0;
+  let dmg = BASE_STATS.dmg * mult * wpnBonus;
+
+  b.hp -= dmg;
+  b.hit = 0.12;
+
+  // 뮤탈 블러드 모드: 3쿠션 튕기는 쐐기 투사체
+  if (activeGameMode === "MUTALISK") {
+    projectiles.push({
+      x: a.x, y: a.y, tx: b.x, ty: b.y,
+      life: 0.18, color: factions[a.team].color, job: a.job, bounces: 2
+    });
+  } else {
+    projectiles.push({
+      x: a.x, y: a.y, tx: b.x, ty: b.y,
+      life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
+    });
+  }
+
+  if (b.hp <= 0) killUnit(b, a.team);
+}
+
+function killUnit(u, killer) {
+  if (u.dead) return;
+  u.dead = true;
+  if (killer != null && factions[killer]) factions[killer].kills++;
+
+  // ⭐ 적 처치 시 미네랄 자원 획득!
+  if (killer === 0) {
+    mineral += 3.5 * u.tier;
+    updateUpgHUD();
+  }
+
+  burst(u.x, u.y, factions[u.team].color, 6 + u.tier * 2);
+}
+
+function captureBase(b, team) {
+  b.team = team;
+  b.hp = b.maxHp * 0.55;
+  b.routes = [];
+  burst(b.x, b.y, factions[team].color, 35);
+
+  if (team === 0) {
+    mineral += 45; // 거점 점령 보너스 미네랄
+    toast("⭐ 거점 점령 성공! +45 MINERAL");
+    updateUpgHUD();
+  }
+
+  for (const u of units) {
+    if (u.targetBase === b) {
+      u.targetBase = null;
+      u.home = b;
     }
   }
 }
 
-function updateMythicUltimates(dt) {
-  let mythicUltTimer = 0;
-  mythicUltTimer += dt;
-  if (mythicUltTimer < 5.0) return;
-  mythicUltTimer = 0;
-
+function handleAutoMerge() {
+  const groups = new Map();
   for (const u of units) {
-    if (!u.dead && u.tier === 5) {
-      explosions.push({ x: u.x, y: u.y, r: 180, life: 0.4, maxLife: 0.4 });
-      for (const target of units) {
-        if (target.team !== u.team && !target.dead && Math.hypot(target.x - u.x, target.y - u.y) < 180) {
-          target.hp -= 200 * Math.pow(2.2, 4);
-          target.hit = 0.2;
-          if (target.hp <= 0) killUnit(target, u.team);
-        }
+    if (u.dead || u.tier >= 5) continue;
+    const k = u.team + "|" + u.tier;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(u);
+  }
+
+  for (const arr of groups.values()) {
+    if (!arr.length) continue;
+    const curTier = arr[0].tier;
+    const req = MERGE_REQ[curTier] || 2;
+    if (arr.length < req) continue;
+
+    for (let i = 0; i < arr.length; i++) {
+      const a = arr[i];
+      if (a.dead) continue;
+      const near = [];
+      for (let k = i + 1; k < arr.length; k++) {
+        const b = arr[k];
+        if (!b.dead && Math.hypot(a.x - b.x, a.y - b.y) < 110) near.push(b);
+        if (near.length >= req - 1) break;
+      }
+
+      if (near.length >= req - 1) {
+        const list = [a, ...near];
+        const x = list.reduce((s, v) => s + v.x, 0) / req;
+        const y = list.reduce((s, v) => s + v.y, 0) / req;
+        const target = a.targetBase;
+        const homeBase = a.home;
+        list.forEach(v => v.dead = true);
+
+        const nextTier = curTier + 1;
+        const hpMult = Math.pow(2.3, nextTier - 1);
+
+        units.push({
+          id: uid++, team: a.team, job: a.job,
+          x, y, vx: 0, vy: 0,
+          hp: BASE_STATS.hp * hpMult, maxHp: BASE_STATS.hp * hpMult,
+          tier: nextTier,
+          attack: 0, targetBase: target,
+          home: homeBase, target: null, angle: 0,
+          anim: rand(0, TAU), hit: 0, dead: false
+        });
+
+        burst(x, y, factions[a.team].color, 35);
+        break;
       }
     }
   }
@@ -683,7 +818,8 @@ function updateUnits(dt) {
       if (distToBase < 30) {
         if (u.targetBase.team !== u.team) {
           const mult = Math.pow(2.2, u.tier - 1);
-          u.targetBase.hp -= BASE_STATS.dmg * mult * dt;
+          const wpnBonus = u.team === 0 ? (1 + wpnUpgLvl * 0.15) : 1.0;
+          u.targetBase.hp -= BASE_STATS.dmg * mult * wpnBonus * dt;
           if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
         } else {
           if (u.targetBase.routes && u.targetBase.routes.length > 0) {
@@ -739,128 +875,12 @@ function updateUnits(dt) {
   }
 }
 
-function attack(a, b) {
-  const mult = Math.pow(2.2, a.tier - 1);
-  let dmg = BASE_STATS.dmg * mult;
-
-  b.hp -= dmg;
-  b.hit = 0.12;
-
-  projectiles.push({
-    x: a.x, y: a.y, tx: b.x, ty: b.y,
-    life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
-  });
-
-  if (b.hp <= 0) killUnit(b, a.team);
-}
-
-function killUnit(u, killer) {
-  if (u.dead) return;
-  u.dead = true;
-  if (killer != null && factions[killer]) factions[killer].kills++;
-  burst(u.x, u.y, factions[u.team].color, 6 + u.tier * 2);
-}
-
-function captureBase(b, team) {
-  b.team = team;
-  b.hp = b.maxHp * 0.55;
-  b.routes = [];
-  burst(b.x, b.y, factions[team].color, 35);
-
-  for (const u of units) {
-    if (u.targetBase === b) {
-      u.targetBase = null;
-      u.home = b;
-    }
-  }
-}
-
-function handleAutoMerge() {
-  const groups = new Map();
-  for (const u of units) {
-    if (u.dead || u.tier >= 5) continue;
-    const k = u.team + "|" + u.tier;
-    if (!groups.has(k)) groups.set(k, []);
-    groups.get(k).push(u);
-  }
-
-  for (const arr of groups.values()) {
-    if (!arr.length) continue;
-    const curTier = arr[0].tier;
-    const req = MERGE_REQ[curTier] || 2;
-
-    if (arr.length < req) continue;
-
-    for (let i = 0; i < arr.length; i++) {
-      const a = arr[i];
-      if (a.dead) continue;
-      const near = [];
-      for (let k = i + 1; k < arr.length; k++) {
-        const b = arr[k];
-        if (!b.dead && Math.hypot(a.x - b.x, a.y - b.y) < 110) near.push(b);
-        if (near.length >= req - 1) break;
-      }
-
-      if (near.length >= req - 1) {
-        const list = [a, ...near];
-        const x = list.reduce((s, v) => s + v.x, 0) / req;
-        const y = list.reduce((s, v) => s + v.y, 0) / req;
-        const target = a.targetBase;
-        const homeBase = a.home;
-        list.forEach(v => v.dead = true);
-
-        const nextTier = curTier + 1;
-        const hpMult = Math.pow(2.3, nextTier - 1);
-
-        units.push({
-          id: uid++, team: a.team, job: a.job,
-          x, y, vx: 0, vy: 0,
-          hp: BASE_STATS.hp * hpMult, maxHp: BASE_STATS.hp * hpMult,
-          tier: nextTier,
-          attack: 0, targetBase: target,
-          home: homeBase,
-          target: null, angle: 0,
-          anim: rand(0, TAU), hit: 0, dead: false
-        });
-
-        burst(x, y, factions[a.team].color, 35);
-        break;
-      }
-    }
-  }
-}
-
-function cleanup() {
-  units = units.filter(u => !u.dead);
-  if (units.length > 3500) units.splice(0, units.length - 3500);
-}
-
-function burst(x, y, color, n) {
-  for (let i = 0; i < n; i++) {
-    particles.push({
-      x, y, vx: rand(-70, 70), vy: rand(-70, 70),
-      life: rand(0.3, 0.6), max: 0.6, r: rand(1.2, 3), color
-    });
-  }
-}
-
-function updateEffects(dt) {
-  for (const p of particles) {
-    p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
-  }
-  particles = particles.filter(p => p.life > 0);
-
-  for (const p of projectiles) p.life -= dt;
-  projectiles = projectiles.filter(p => p.life > 0);
-  
-  for (const exp of explosions) exp.life -= dt;
-  explosions = explosions.filter(e => e.life > 0);
-}
-
+// ⭐ 생산 주기 단축 (기본 2초 - 생산강화 레벨당 12% 단축)
 function updateBases(dt) {
   const chap = CHAPTERS[curChapterIdx];
   spawnTimer += dt;
-  const spawnThreshold = 2.0 * (chap.spawnMod || 1.0);
+  const prodReduction = Math.pow(0.88, prodUpgLvl);
+  const spawnThreshold = Math.max(0.6, 2.0 * (chap.spawnMod || 1.0) * prodReduction);
 
   if (spawnTimer >= spawnThreshold) {
     spawnTimer = 0;
@@ -868,6 +888,10 @@ function updateBases(dt) {
       if (b.team >= 0) produce(b, 1);
     }
   }
+
+  // 패시브 미네랄 수급
+  mineral += dt * 2.5 * (bases.filter(b => b.team === 0).length || 1);
+  updateUpgHUD();
 }
 
 function updateGame(dt) {
@@ -884,11 +908,37 @@ function updateGame(dt) {
   handleAI();
   updateUnits(dt);
   handleAutoMerge();
-  updateTurrets(dt);
-  updateMythicUltimates(dt);
-  updateEffects(dt);
-  cleanup();
 
+  // 투사체 처리
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    p.life -= dt;
+    if (p.life <= 0) {
+      // 3쿠션 튕김 연산
+      if (p.bounces && p.bounces > 0) {
+        const nextTarget = units.find(u => u.team !== 0 && !u.dead && Math.hypot(u.x - p.tx, u.y - p.ty) < 160);
+        if (nextTarget) {
+          projectiles.push({
+            x: p.tx, y: p.ty, tx: nextTarget.x, ty: nextTarget.y,
+            life: 0.15, color: p.color, bounces: p.bounces - 1
+          });
+          nextTarget.hp -= 18;
+          if (nextTarget.hp <= 0) killUnit(nextTarget, 0);
+        }
+      }
+      projectiles.splice(i, 1);
+    }
+  }
+
+  for (const p of particles) {
+    p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
+  }
+  particles = particles.filter(p => p.life > 0);
+
+  for (const exp of explosions) exp.life -= dt;
+  explosions = explosions.filter(e => e.life > 0);
+
+  // 승패 판정
   const playerBases = bases.filter(b => b.team === 0);
   const enemyCores = bases.filter(b => b.team > 0 && b.core);
 
@@ -901,6 +951,15 @@ function updateGame(dt) {
   updateHUD();
 }
 
+function burst(x, y, color, n) {
+  for (let i = 0; i < n; i++) {
+    particles.push({
+      x, y, vx: rand(-70, 70), vy: rand(-70, 70),
+      life: rand(0.3, 0.6), max: 0.6, r: rand(1.2, 3), color
+    });
+  }
+}
+
 function endGame(win, reason) {
   running = false;
   document.getElementById("result").style.display = "flex";
@@ -911,11 +970,11 @@ function endGame(win, reason) {
     document.getElementById("resultTitle").textContent = "VICTORY!";
     document.getElementById("resultTitle").style.color = "#63efff";
     if (curChapterIdx < CHAPTERS.length - 1) {
-      document.getElementById("resultSub").textContent = `${CHAPTERS[curChapterIdx].name} 완료! 다음 챕터로 진격하십시오.`;
+      document.getElementById("resultSub").textContent = `${CHAPTERS[curChapterIdx].name} 완료! 다음 환경으로 진격하십시오.`;
       btnNext.style.display = "inline-block";
       btnRetry.style.display = "none";
     } else {
-      document.getElementById("resultSub").textContent = "축하합니다! 전 5개 챕터를 모두 평정하여 전 은하를 통일했습니다!";
+      document.getElementById("resultSub").textContent = "축하합니다! 전 5개 챕터를 모두 평정하여 우주를 제패했습니다!";
       btnNext.style.display = "none";
       btnRetry.style.display = "inline-block";
       btnRetry.textContent = "CAMPAIGN RESTART";
@@ -923,7 +982,7 @@ function endGame(win, reason) {
   } else {
     document.getElementById("resultTitle").textContent = "DEFEAT";
     document.getElementById("resultTitle").style.color = "#ff607b";
-    document.getElementById("resultSub").textContent = reason + " · 전열을 재정비하고 다시 도전하십시오.";
+    document.getElementById("resultSub").textContent = reason;
     btnNext.style.display = "none";
     btnRetry.style.display = "inline-block";
     btnRetry.textContent = "RETRY CHAPTER";
@@ -945,6 +1004,72 @@ function retryChapter() {
   isPaused = false;
 }
 
+function togglePause() {
+  if (!running) return;
+  isPaused = !isPaused;
+  document.getElementById("pauseModal").style.display = isPaused ? "flex" : "none";
+}
+
+function saveCurrentGame() {
+  try {
+    const saveData = {
+      curChapterIdx, selectedJob, mission, mineral, wpnUpgLvl, prodUpgLvl,
+      bases: bases.map(b => ({
+        id: b.id, x: b.x, y: b.y, team: b.team, core: b.core, hp: b.hp, maxHp: b.maxHp,
+        routeIds: (b.routes || []).map(r => r.id)
+      })),
+      units: units.map(u => ({
+        id: u.id, team: u.team, job: u.job, x: u.x, y: u.y, hp: u.hp, maxHp: u.maxHp, tier: u.tier,
+        targetBaseId: u.targetBase ? u.targetBase.id : null, homeId: u.home ? u.home.id : null
+      }))
+    };
+    localStorage.setItem("frontier_flux_save", JSON.stringify(saveData));
+    toast("게임 진행 상황이 안전하게 저장되었습니다!");
+  } catch (e) {
+    toast("저장 중 오류가 발생했습니다.");
+  }
+}
+
+function loadSavedGame() {
+  const raw = localStorage.getItem("frontier_flux_save");
+  if (!raw) { toast("저장된 데이터가 없습니다."); return; }
+  try {
+    const d = JSON.parse(raw);
+    curChapterIdx = d.curChapterIdx;
+    selectedJob = d.selectedJob;
+    mission = d.mission;
+    mineral = d.mineral || 50;
+    wpnUpgLvl = d.wpnUpgLvl || 0;
+    prodUpgLvl = d.prodUpgLvl || 0;
+
+    bases = d.bases.map(b => ({
+      id: b.id, x: b.x, y: b.y, team: b.team, core: b.core, hp: b.hp, maxHp: b.maxHp,
+      routes: [], pulse: 0, turretCd: 0, _rIds: b.routeIds
+    }));
+
+    for (const b of bases) {
+      if (b._rIds) b.routes = b._rIds.map(rid => bases.find(t => t.id === rid)).filter(Boolean);
+    }
+
+    units = d.units.map(u => ({
+      id: u.id, team: u.team, job: u.job, x: u.x, y: u.y, vx: 0, vy: 0,
+      hp: u.hp, maxHp: u.maxHp, tier: u.tier, attack: 0, angle: 0, anim: 0, hit: 0, dead: false,
+      targetBase: u.targetBaseId ? bases.find(b => b.id === u.targetBaseId) : null,
+      home: u.homeId ? bases.find(b => b.id === u.homeId) : null
+    }));
+
+    initThemeParticles(CHAPTERS[curChapterIdx].theme);
+    document.getElementById("classModal").style.display = "none";
+    document.getElementById("pauseModal").style.display = "none";
+    running = true;
+    isPaused = false;
+    updateUpgHUD();
+    toast("저장된 게임을 불러왔습니다!");
+  } catch (e) {
+    toast("세이브 파일 손상으로 불러올 수 없습니다.");
+  }
+}
+
 function updateHUD() {
   const sec = Math.ceil(mission);
   document.getElementById("time").textContent =
@@ -955,50 +1080,98 @@ function updateHUD() {
 }
 
 function worldToScreen(x, y) {
-  return {
-    x: (x - camera.x) * camera.zoom + W / 2,
-    y: (y - camera.y) * camera.zoom + H / 2
-  };
+  return { x: (x - camera.x) * camera.zoom + W / 2, y: (y - camera.y) * camera.zoom + H / 2 };
 }
 function screenToWorld(x, y) {
-  return {
-    x: (x - W / 2) / camera.zoom + camera.x,
-    y: (y - H / 2) / camera.zoom + camera.y
-  };
+  return { x: (x - W / 2) / camera.zoom + camera.x, y: (y - H / 2) / camera.zoom + camera.y };
 }
 
+/* =========================================================
+   ⭐ 5대 챕터별 테마 배경 렌더링 (초원/사막/지옥/천국/우주)
+========================================================= */
 function drawBackground(t) {
-  ctx.fillStyle = "#02070c";
-  ctx.fillRect(0, 0, W, H);
+  const chap = CHAPTERS[curChapterIdx] || CHAPTERS[0];
+  const theme = chap.theme;
 
   ctx.save();
   ctx.translate(W / 2 - camera.x * camera.zoom, H / 2 - camera.y * camera.zoom);
   ctx.scale(camera.zoom, camera.zoom);
 
-  ctx.fillStyle = "#06101a";
+  // 1. 테마별 지면 기본색
+  ctx.fillStyle = chap.bg;
   ctx.fillRect(0, 0, WORLD.w, WORLD.h);
 
+  // 2. 테마별 디테일 지형 연출
+  if (theme === "GRASS") {
+    // 초원: 잔디 타일 & 흩날리는 자연 파티클
+    ctx.strokeStyle = chap.grid;
+    ctx.lineWidth = 1.5;
+    for (let x = 0; x < WORLD.w; x += 80) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD.h); ctx.stroke();
+    }
+    for (let y = 0; y < WORLD.h; y += 80) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD.w, y); ctx.stroke();
+    }
+    // 잔디 덤불 & 잎사귀
+    ctx.fillStyle = "rgba(46,125,50,0.18)";
+    for (let i = 0; i < 50; i++) {
+      const gx = (i * 97) % WORLD.w, gy = (i * 131) % WORLD.h;
+      ctx.beginPath(); ctx.arc(gx, gy, 45, 0, TAU); ctx.fill();
+    }
+  } else if (theme === "DESERT") {
+    // 사막: 물결치는 모래 언덕(Dune) 라인 & 황토빛 모래바람
+    ctx.strokeStyle = "rgba(180,130,40,0.15)";
+    ctx.lineWidth = 3;
+    for (let y = 0; y < WORLD.h; y += 110) {
+      ctx.beginPath();
+      for (let x = 0; x <= WORLD.w; x += 60) {
+        const dy = Math.sin((x + t * 0.05) * 0.005) * 20;
+        if (x === 0) ctx.moveTo(x, y + dy); else ctx.lineTo(x, y + dy);
+      }
+      ctx.stroke();
+    }
+  } else if (theme === "INFERNO") {
+    // 불지옥: 갈라진 흑요석 균열 & 붉은 마그마 용암
+    ctx.strokeStyle = "rgba(239,68,68,0.25)";
+    ctx.lineWidth = 2.5;
+    for (let i = 0; i < 30; i++) {
+      const rx = (i * 123) % WORLD.w, ry = (i * 167) % WORLD.h;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx + 60, ry + 40);
+      ctx.lineTo(rx + 110, ry + 20);
+      ctx.stroke();
+    }
+  } else if (theme === "HEAVEN") {
+    // 천국: 부유하는 성스러운 구름 & 골드 대리석 바닥
+    ctx.fillStyle = "rgba(255,255,255,0.06)";
+    for (let i = 0; i < 35; i++) {
+      const cx = (i * 140 + t * 0.02) % (WORLD.w + 200) - 100;
+      const cy = (i * 90) % WORLD.h;
+      ctx.beginPath(); ctx.arc(cx, cy, 70, 0, TAU); ctx.fill();
+    }
+  } else if (theme === "COSMOS") {
+    // 우주: 성운(Nebula) 그라데이션
+    const grad = ctx.createRadialGradient(1300, 750, 100, 1300, 750, 1200);
+    grad.addColorStop(0, "rgba(56,189,248,0.08)");
+    grad.addColorStop(0.5, "rgba(168,85,247,0.05)");
+    grad.addColorStop(1, "transparent");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, WORLD.w, WORLD.h);
+  }
+
+  // 공통 떠다니는 입자 (별/먼지/불티/빛무리)
   for (const s of stars) {
-    const a = s.a * (0.65 + 0.35 * Math.sin(t * 0.001 + s.p));
+    const a = s.a * (0.6 + 0.4 * Math.sin(t * 0.002 + s.p));
     ctx.globalAlpha = a;
-    ctx.fillStyle = "#9edfff";
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, TAU); ctx.fill();
+    ctx.fillStyle = theme === "INFERNO" ? "#ff7849" : (theme === "DESERT" ? "#e6b800" : "#dff8ff");
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, TAU); ctx.fill();
   }
-  ctx.globalAlpha = 1;
+  ctx.globalAlpha = 1.0;
 
-  ctx.strokeStyle = "rgba(70,150,190,.055)";
-  ctx.lineWidth = 1;
-  const grid = 60;
-  for (let x = 0; x < WORLD.w; x += grid) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD.h); ctx.stroke();
-  }
-  for (let y = 0; y < WORLD.h; y += grid) {
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD.w, y); ctx.stroke();
-  }
-
-  ctx.strokeStyle = "rgba(75,220,255,.12)";
-  ctx.strokeRect(18, 18, WORLD.w - 36, WORLD.h - 36);
+  // 외곽 경계선
+  ctx.strokeStyle = "rgba(99,220,255,0.2)";
+  ctx.strokeRect(15, 15, WORLD.w - 30, WORLD.h - 30);
 
   ctx.restore();
 }
@@ -1017,7 +1190,7 @@ function drawRoutes(t) {
       ctx.globalAlpha = 0.85;
       ctx.lineWidth = 3.5;
       ctx.setLineDash([12, 8]);
-      ctx.lineDashOffset = -t * 0.05;
+      ctx.lineDashOffset = -t * 0.06;
       ctx.beginPath();
       ctx.moveTo(b.x, b.y);
       ctx.lineTo(target.x, target.y);
@@ -1095,7 +1268,7 @@ function drawBase(b, t) {
 
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
-  const j = JOBS[u.job];
+  const j = JOBS[u.job] || JOBS.Mage;
   const c = factions[u.team] ? factions[u.team].color : "#ffffff";
   const sc = Math.max(0.85, camera.zoom * 1.3);
   const size = (u.tier >= 4 ? 15 : u.tier >= 2 ? 11 : 8) * sc;
@@ -1118,14 +1291,6 @@ function drawUnit(u) {
     ctx.setLineDash([6, 6]);
     ctx.beginPath(); ctx.arc(0, 0, size * 2.2, 0, TAU); ctx.stroke();
     ctx.restore();
-
-    ctx.fillStyle = c;
-    ctx.globalAlpha = 0.25;
-    ctx.beginPath();
-    ctx.moveTo(-size * 0.5, 0); ctx.lineTo(-size * 2.4, -size * 1.4); ctx.lineTo(-size * 1.2, 0);
-    ctx.moveTo(-size * 0.5, 0); ctx.lineTo(-size * 2.4, size * 1.4); ctx.lineTo(-size * 1.2, 0);
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
   }
 
   ctx.rotate(u.angle);
@@ -1140,8 +1305,6 @@ function drawUnit(u) {
   }
 
   if (u.job === "Mage") {
-    ctx.strokeStyle = "rgba(56,189,248,0.4)"; ctx.lineWidth = 1;
-    ctx.strokeRect(-size, -size, size * 2, size * 2);
     ctx.fillStyle = "#0c2438";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
@@ -1149,79 +1312,41 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
     ctx.fillStyle = "#38bdf8";
     ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
-    const rot = t * 0.004;
-    ctx.fillStyle = "#7dd3fc";
-    ctx.beginPath(); ctx.arc(Math.cos(rot) * size * 1.8, Math.sin(rot) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.arc(Math.cos(rot + Math.PI) * size * 1.8, Math.sin(rot + Math.PI) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
   } else if (u.job === "Knight") {
     ctx.fillStyle = "#1e1b4b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.fillStyle = "rgba(129,140,248,0.85)";
-    ctx.beginPath();
-    ctx.moveTo(size * 0.6, -size * 1.6);
-    ctx.lineTo(size * 1.3, -size * 1.2);
-    ctx.lineTo(size * 1.3, size * 1.2);
-    ctx.lineTo(size * 0.6, size * 1.6);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.stroke();
-    ctx.strokeStyle = "#c7d2fe"; ctx.lineWidth = 2.5 * sc;
-    ctx.beginPath(); ctx.moveTo(-size * 0.2, size * 0.6); ctx.lineTo(size * 2.1, size * 0.6); ctx.stroke();
+    ctx.fillRect(size * 0.6, -size * 1.5, size * 0.7, size * 3.0);
   } else if (u.job === "Ranger") {
     ctx.fillStyle = "#064e3b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-    ctx.strokeStyle = c; ctx.lineWidth = 3 * sc;
+    ctx.strokeStyle = c; ctx.lineWidth = 2.5 * sc;
     ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
-    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(size * 0.5, -size * 1.5); ctx.lineTo(-size * 0.4, 0); ctx.lineTo(size * 0.5, size * 1.5); ctx.stroke();
-    ctx.strokeStyle = "#ecfdf5"; ctx.lineWidth = 2 * sc;
-    ctx.beginPath(); ctx.moveTo(-size * 0.4, 0); ctx.lineTo(size * 2.4, 0); ctx.stroke();
-    ctx.strokeStyle = "rgba(52,211,153,0.5)"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(size * 2.4, 0); ctx.lineTo(size * 12, 0); ctx.stroke();
   } else if (u.job === "Summoner") {
     ctx.fillStyle = "#3b0764";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = "#f3e8ff";
     ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
-    ctx.strokeStyle = "#c084fc"; ctx.lineWidth = 1.5;
-    ctx.strokeRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
-    const rot = t * 0.0035;
-    ctx.fillStyle = "#a855f7";
-    for (let k = 0; k < 3; k++) {
-      const a = rot + (k * TAU) / 3;
-      ctx.fillRect(Math.cos(a) * size * 1.7 - 2, Math.sin(a) * size * 1.7 - 2, size * 0.5, size * 0.5);
-    }
   } else if (u.job === "Barbarian") {
     ctx.fillStyle = "#431407";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = "#78350f";
-    ctx.fillRect(size * 0.8, -size * 1.8, size * 0.35, size * 3.6);
     ctx.fillStyle = "#fb923c";
     ctx.beginPath();
     ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
     ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
     ctx.fill();
-    ctx.strokeStyle = "#fff7ed"; ctx.lineWidth = 1.5; ctx.stroke();
   } else if (u.job === "Gunner") {
     ctx.fillStyle = "#18181b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
     ctx.fillStyle = "#3f3f46";
     ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
-    ctx.fillRect(size * 0.3, -size * 0.18, size * 2.3, size * 0.35);
     ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
-    ctx.strokeStyle = "#facc15"; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(-size * 0.2, size * 0.6, size * 0.6, 0, Math.PI * 0.8); ctx.stroke();
     ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
   }
 
   ctx.rotate(-u.angle);
-
   const hp = clamp(u.hp / u.maxHp, 0, 1);
   ctx.fillStyle = "rgba(0,0,0,.75)";
   ctx.fillRect(-size - 2, -size - 8, size * 2 + 4, 3);
@@ -1237,7 +1362,7 @@ function drawEffects() {
     const s2 = worldToScreen(p.tx, p.ty);
     ctx.save();
     ctx.strokeStyle = p.color;
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.5 + (wpnUpgLvl * 0.3);
     ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.stroke();
     ctx.restore();
   }
@@ -1249,24 +1374,9 @@ function drawEffects() {
     ctx.beginPath(); ctx.arc(s.x, s.y, p.r * camera.zoom, 0, TAU); ctx.fill();
     ctx.restore();
   }
-
-  for (const exp of explosions) {
-    const s = worldToScreen(exp.x, exp.y);
-    ctx.save();
-    ctx.strokeStyle = "#ffd700";
-    ctx.lineWidth = 3;
-    ctx.globalAlpha = exp.life / exp.maxLife;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, exp.r * camera.zoom, 0, TAU);
-    ctx.stroke();
-    ctx.restore();
-  }
 }
 
 function render(t) {
-  ctx.fillStyle = "#02070c";
-  ctx.fillRect(0, 0, W, H);
-
   drawBackground(t);
   drawRoutes(t);
 
@@ -1343,16 +1453,12 @@ window.addEventListener("pointerup", e => {
       }
       for (const u of units) {
         if (u.team === dragBase.team && Math.hypot(u.x - dragBase.x, u.y - dragBase.y) < 150) {
-          if (!u.targetBase || u.targetBase === dragBase) {
-            u.targetBase = target;
-          }
+          if (!u.targetBase || u.targetBase === dragBase) u.targetBase = target;
         }
       }
     } else if (!dragMoved || target === dragBase) {
       for (const u of units) {
-        if (u.team === dragBase.team && dragBase.routes.includes(u.targetBase)) {
-          u.targetBase = null;
-        }
+        if (u.team === dragBase.team && dragBase.routes.includes(u.targetBase)) u.targetBase = null;
       }
       dragBase.routes = [];
     }
