@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 16.0 // CYBER-FANTASY REBORN</title>
+<title>FRONTIER FLUX 17.0 // SPEED & SYSTEM</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -27,7 +27,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 }
 #title{font-weight:900;letter-spacing:2px;font-size:14px}
 #sub{font-size:10px;color:#7ba5b7;margin-top:3px}
-#stats{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+#stats{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .badge{
   min-width:72px;text-align:center;
   padding:6px 9px;border-radius:8px;
@@ -35,6 +35,14 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   font-size:10px;color:#9cb7c3;
 }
 .badge b{display:block;font-size:13px;color:#e8fbff;margin-top:2px}
+.hud-btn{
+  pointer-events:auto;cursor:pointer;
+  padding:8px 14px;border-radius:8px;
+  background:#0b2636;border:1px solid #48b8d0;
+  color:#dff8ff;font-weight:800;font-size:11px;
+  transition:.15s;
+}
+.hud-btn:hover{background:#133c54;border-color:#71e5ff}
 #guide{
   position:fixed;left:50%;bottom:12px;transform:translateX(-50%);
   z-index:5;pointer-events:none;
@@ -43,6 +51,12 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   border-radius:999px;padding:7px 18px;
   font-size:11px;color:#89b4c6;white-space:nowrap;
   box-shadow:0 0 15px rgba(0,150,255,.15);
+}
+#toast{
+  position:fixed;left:50%;top:70px;transform:translateX(-50%);
+  background:rgba(5,20,30,.92);border:1px solid #5bc2dc;
+  color:#e8faff;padding:7px 18px;border-radius:8px;font-size:11px;
+  pointer-events:none;z-index:35;opacity:0;transition:opacity .2s;
 }
 #modal{
   position:fixed;inset:0;z-index:20;
@@ -69,13 +83,35 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .classBtn .icon{font-size:24px;display:block;margin-bottom:6px}
 .classBtn strong{display:block;font-size:12px}
 .classBtn small{display:block;margin-top:4px;color:#6e95a6;font-size:9px}
+.modal-actions{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.modal-actions button{
+  padding:12px 28px;border-radius:9px;font-weight:900;
+  letter-spacing:1px;cursor:pointer;font-size:13px;
+}
 #start{
-  display:block;margin:18px auto 0;
-  padding:12px 38px;border:1px solid #55ddff;
-  background:#072333;color:#dffaff;border-radius:9px;
-  font-weight:900;letter-spacing:2px;cursor:pointer;
+  border:1px solid #55ddff;background:#072333;color:#dffaff;
 }
 #start:hover{background:#0e364d}
+#btnLoad{
+  border:1px solid #38d39f;background:#062b21;color:#bdfce7;display:none;
+}
+#btnLoad:hover{background:#0a3f31}
+#pauseModal{
+  position:fixed;inset:0;z-index:25;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,4,10,.78);backdrop-filter:blur(6px);
+}
+.pauseBox{
+  text-align:center;padding:32px 42px;background:#071622;
+  border:1px solid #54c9e8;border-radius:16px;box-shadow:0 0 60px rgba(0,180,255,.2);
+}
+.pauseBox h2{margin:0 0 16px;letter-spacing:3px;font-size:24px}
+.pause-btns{display:flex;flex-direction:column;gap:9px}
+.pause-btns button{
+  padding:10px 30px;border-radius:8px;font-weight:700;cursor:pointer;
+  border:1px solid #45a2ba;background:#0a2536;color:#dffaff;
+}
+.pause-btns button:hover{background:#123b54;border-color:#65dbfc}
 #result{
   position:fixed;inset:0;z-index:30;display:none;
   align-items:center;justify-content:center;
@@ -103,9 +139,11 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
 <canvas id="game"></canvas>
 
+<div id="toast"></div>
+
 <div id="hud">
   <div class="panel">
-    <div id="title">FRONTIER FLUX // REBORN</div>
+    <div id="title">FRONTIER FLUX // TACTICS</div>
     <div id="sub" style="color:#62eaff">CHAPTER 1: THE AWAKENING</div>
   </div>
   <div id="stats">
@@ -114,20 +152,38 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
     <div class="badge">BASES<b id="bases">0</b></div>
     <div class="badge">ARMY<b id="army">0</b></div>
     <div class="badge">ENEMIES<b id="enemy">0</b></div>
+    <button class="hud-btn" onclick="togglePause()">❚❚ PAUSE</button>
   </div>
 </div>
 
-<div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10마리, 3~5단계는 단 2마리씩 고속 합체!</div>
+<div id="guide">기지 드래그 → 보급선 개설 · 스페이스바: 일시정지 · 2단계(10기), 3~5단계(2기) 고속 합체</div>
 
+<!-- 메인 시작/이어하기 모달 -->
 <div id="modal">
   <div id="card">
     <h1>FRONTIER FLUX</h1>
-    <p>완전 균형 전투 스펙 · 진영의 고유 비주얼 엠블럼을 선택하십시오</p>
+    <p>완전 균형 전투 스펙 · 신속한 기동전과 전선 제어</p>
     <div id="classes"></div>
-    <button id="start">CAMPAIGN DEPLOY</button>
+    <div class="modal-actions">
+      <button id="start">NEW CAMPAIGN</button>
+      <button id="btnLoad" onclick="loadSavedGame()">RESUME SAVED GAME</button>
+    </div>
   </div>
 </div>
 
+<!-- 일시정지 모달 -->
+<div id="pauseModal">
+  <div class="pauseBox">
+    <h2>GAME PAUSED</h2>
+    <div class="pause-btns">
+      <button onclick="togglePause()">CONTINUE (계속하기)</button>
+      <button onclick="saveCurrentGame()">SAVE GAME (저장하기)</button>
+      <button onclick="exitToTitle()">EXIT TO MENU (메뉴로)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 결과 모달 -->
 <div id="result">
   <div id="resultBox">
     <div id="resultTitle"></div>
@@ -161,9 +217,9 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-// 모든 직업의 전투 스펙은 100% 동일 (완전 균형)
+// ⭐ 유닛 기본 이동 속도 대폭 상향 (40 -> 58)
 const BASE_STATS = {
-  hp: 130, dmg: 20, rng: 80, spd: 40, rate: 1.0
+  hp: 130, dmg: 20, rng: 80, spd: 58, rate: 1.0
 };
 
 const JOBS = {
@@ -177,12 +233,11 @@ const JOBS = {
 
 const FACTION_COLORS = ["#38bdf8", "#f43f5e", "#10b981", "#a855f7", "#f97316", "#eab308"];
 
-// ⭐ 2단계부터는 2마리씩 고속 진화 공식!
 const MERGE_REQ = {
-  1: 10, // 1단계 10마리 -> 2단계
-  2: 2,  // 2단계 2마리  -> 3단계
-  3: 2,  // 3단계 2마리  -> 4단계
-  4: 2   // 4단계 2마리  -> 5단계 신화
+  1: 10,
+  2: 2,
+  3: 2,
+  4: 2
 };
 
 const CHAPTERS = [
@@ -211,12 +266,34 @@ for (const [key, j] of Object.entries(JOBS)) {
   classesDiv.appendChild(b);
 }
 
+// 로컬스토리지 저장 확인 및 이어하기 버튼 노출
+function checkSaveData() {
+  const btn = document.getElementById("btnLoad");
+  if (localStorage.getItem("frontier_flux_save")) {
+    btn.style.display = "inline-block";
+  } else {
+    btn.style.display = "none";
+  }
+}
+checkSaveData();
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.opacity = "1";
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = "0"; }, 1800);
+}
+
 let running = false;
+let isPaused = false;
+
 document.getElementById("start").onclick = () => {
   curChapterIdx = 0;
   startChapter(curChapterIdx);
   document.getElementById("modal").style.display = "none";
   running = true;
+  isPaused = false;
 };
 
 let factions = [], bases = [], units = [], projectiles = [], particles = [], stars = [], explosions = [];
@@ -267,12 +344,12 @@ function startChapter(idx) {
   }
 
   const coreSpots = [
-    [300, 300],   // 0: 플레이어
-    [2300, 1200], // 1
-    [2300, 300],  // 2
-    [300, 1200],  // 3
-    [1300, 200],  // 4
-    [1300, 1300]  // 5
+    [300, 300],
+    [2300, 1200],
+    [2300, 300],
+    [300, 1200],
+    [1300, 200],
+    [1300, 1300]
   ];
 
   for (let i = 0; i < totalFactions; i++) {
@@ -323,6 +400,129 @@ function startChapter(idx) {
   camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.55, 1.1);
 
   updateHUD();
+}
+
+/* =========================================================
+   ⭐ 일시정지 및 세이브/로드 시스템 (PAUSE & SAVE/LOAD)
+========================================================= */
+function togglePause() {
+  if (!running) return;
+  isPaused = !isPaused;
+  document.getElementById("pauseModal").style.display = isPaused ? "flex" : "none";
+}
+
+window.addEventListener("keydown", e => {
+  if (e.code === "Space" || e.code === "KeyP") {
+    if (running && document.getElementById("result").style.display !== "flex") {
+      togglePause();
+    }
+  }
+});
+
+function saveCurrentGame() {
+  try {
+    const saveData = {
+      curChapterIdx,
+      selectedJob,
+      mission,
+      uid,
+      factions,
+      bases: bases.map(b => ({
+        id: b.id, x: b.x, y: b.y, team: b.team, core: b.core,
+        hp: b.hp, maxHp: b.maxHp,
+        routeIds: (b.routes || []).map(r => r.id)
+      })),
+      units: units.map(u => ({
+        id: u.id, team: u.team, job: u.job, x: u.x, y: u.y,
+        hp: u.hp, maxHp: u.maxHp, tier: u.tier,
+        targetBaseId: u.targetBase ? u.targetBase.id : null,
+        homeId: u.home ? u.home.id : null
+      }))
+    };
+    localStorage.setItem("frontier_flux_save", JSON.stringify(saveData));
+    toast("진행 상황이 성공적으로 저장되었습니다!");
+  } catch (e) {
+    toast("저장 중 오류가 발생했습니다.");
+  }
+}
+
+function loadSavedGame() {
+  const raw = localStorage.getItem("frontier_flux_save");
+  if (!raw) {
+    toast("저장된 데이터가 없습니다.");
+    return;
+  }
+  try {
+    const data = JSON.parse(raw);
+    curChapterIdx = data.curChapterIdx;
+    selectedJob = data.selectedJob;
+    mission = data.mission;
+    uid = data.uid;
+    factions = data.factions;
+
+    // 기지 복구
+    bases = data.bases.map(b => ({
+      id: b.id, x: b.x, y: b.y, team: b.team, core: b.core,
+      hp: b.hp, maxHp: b.maxHp, routes: [], pulse: rand(0, TAU), turretCd: 0,
+      _routeIds: b.routeIds
+    }));
+
+    // 보급선 참조 연결
+    for (const b of bases) {
+      if (b._routeIds) {
+        b.routes = b._routeIds.map(rid => bases.find(target => target.id === rid)).filter(Boolean);
+      }
+    }
+
+    // 유닛 복구
+    units = data.units.map(u => ({
+      id: u.id, team: u.team, job: u.job, x: u.x, y: u.y,
+      vx: 0, vy: 0, hp: u.hp, maxHp: u.maxHp, tier: u.tier,
+      attack: rand(0, 0.5), angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false,
+      targetBase: u.targetBaseId ? bases.find(b => b.id === u.targetBaseId) : null,
+      home: u.homeId ? bases.find(b => b.id === u.homeId) : null
+    }));
+
+    // 별 배경 생성
+    stars = [];
+    for (let i = 0; i < 280; i++) {
+      stars.push({
+        x: rand(0, WORLD.w), y: rand(0, WORLD.h),
+        r: rand(0.3, 1.5), a: rand(0.2, 0.9), p: rand(0, TAU)
+      });
+    }
+
+    projectiles = [];
+    particles = [];
+    explosions = [];
+
+    const chap = CHAPTERS[curChapterIdx];
+    document.getElementById("sub").textContent = chap.name;
+    document.getElementById("chapBadge").textContent = `${chap.num}/5`;
+
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("pauseModal").style.display = "none";
+    running = true;
+    isPaused = false;
+
+    const pBase = bases.find(b => b.team === 0) || bases[0];
+    camera.x = pBase.x;
+    camera.y = pBase.y;
+    camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.55, 1.1);
+
+    updateHUD();
+    toast("게임을 성공적으로 불러왔습니다!");
+  } catch (e) {
+    toast("세이브 파일 손상으로 불러올 수 없습니다.");
+  }
+}
+
+function exitToTitle() {
+  running = false;
+  isPaused = false;
+  document.getElementById("pauseModal").style.display = "none";
+  document.getElementById("modal").style.display = "flex";
+  checkSaveData();
 }
 
 function produce(base, count = 1) {
@@ -527,8 +727,8 @@ function updateUnits(dt) {
     const moveD = Math.hypot(tx - u.x, ty - u.y);
     if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
       const speed = BASE_STATS.spd * (1 + (u.tier - 1) * 0.08);
-      u.vx = lerp(u.vx, ax * speed, dt * 4);
-      u.vy = lerp(u.vy, ay * speed, dt * 4);
+      u.vx = lerp(u.vx, ax * speed, dt * 5);
+      u.vy = lerp(u.vy, ay * speed, dt * 5);
       u.x += u.vx * dt;
       u.y += u.vy * dt;
       u.angle = Math.atan2(u.vy, u.vx);
@@ -575,7 +775,6 @@ function captureBase(b, team) {
   }
 }
 
-// ⭐ 2단계부터는 2마리씩 고속 진화 실행!
 function handleAutoMerge() {
   const groups = new Map();
   for (const u of units) {
@@ -672,7 +871,7 @@ function updateBases(dt) {
 }
 
 function updateGame(dt) {
-  if (!running) return;
+  if (!running || isPaused) return;
 
   mission -= dt;
   if (mission <= 0) {
@@ -736,12 +935,14 @@ function nextChapter() {
   curChapterIdx++;
   startChapter(curChapterIdx);
   running = true;
+  isPaused = false;
 }
 
 function retryChapter() {
   document.getElementById("result").style.display = "none";
   startChapter(curChapterIdx);
   running = true;
+  isPaused = false;
 }
 
 function updateHUD() {
@@ -892,9 +1093,6 @@ function drawBase(b, t) {
   ctx.restore();
 }
 
-/* =========================================================
-   ⭐ 사이버-판타지 메카닉 리마스터 그래픽 (입체 레이어 & 네온 효과)
-========================================================= */
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
   const j = JOBS[u.job];
@@ -907,13 +1105,11 @@ function drawUnit(u) {
   ctx.save();
   ctx.translate(s.x, s.y + bob);
 
-  // 티어 번호 배지
   ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
   ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
   ctx.textAlign = "center";
   ctx.fillText(`★${u.tier}`, 0, -size - 13);
 
-  // ⭐ 티어 4~5단계 에너지 날개 / 신화 룬 링
   if (u.tier >= 4) {
     ctx.save();
     ctx.rotate(t * 0.001);
@@ -923,7 +1119,6 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 2.2, 0, TAU); ctx.stroke();
     ctx.restore();
 
-    // 에너지 윙
     ctx.fillStyle = c;
     ctx.globalAlpha = 0.25;
     ctx.beginPath();
@@ -935,50 +1130,33 @@ function drawUnit(u) {
 
   ctx.rotate(u.angle);
 
-  // 입체 섀도우 베이스
   ctx.fillStyle = "rgba(0,0,0,0.4)";
   ctx.beginPath(); ctx.arc(size * 0.2, size * 0.2, size * 1.1, 0, TAU); ctx.fill();
 
-  // 티어 2 이상 네온 펄스 아우라
   if (u.tier >= 2) {
     ctx.strokeStyle = u.tier >= 4 ? "#ffd700" : c;
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.arc(0, 0, size * 1.4, 0, TAU); ctx.stroke();
   }
 
-  // 1. 마법사: 비전 룬 링 + 고깔 투구 + 2중 공전 오브
   if (u.job === "Mage") {
-    // 룬 서클
     ctx.strokeStyle = "rgba(56,189,248,0.4)"; ctx.lineWidth = 1;
     ctx.strokeRect(-size, -size, size * 2, size * 2);
-
-    // 본체 코어 로브
     ctx.fillStyle = "#0c2438";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-
-    // 마력 지팡이 샤프트
     ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
     ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
-
-    // 지팡이 헤드 보석
     ctx.fillStyle = "#38bdf8";
     ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
-
-    // 2개의 궤도 공전 오브
     const rot = t * 0.004;
     ctx.fillStyle = "#7dd3fc";
     ctx.beginPath(); ctx.arc(Math.cos(rot) * size * 1.8, Math.sin(rot) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.arc(Math.cos(rot + Math.PI) * size * 1.8, Math.sin(rot + Math.PI) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
-  }
-  // 2. 기사: 헥사곤 역장 타워실드 + 네온 에너지 광검
-  else if (u.job === "Knight") {
-    // 중장갑 풀 플레이트 바디
+  } else if (u.job === "Knight") {
     ctx.fillStyle = "#1e1b4b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
-
-    // 전방 헥사곤 타워 실드
     ctx.fillStyle = "rgba(129,140,248,0.85)";
     ctx.beginPath();
     ctx.moveTo(size * 0.6, -size * 1.6);
@@ -988,99 +1166,62 @@ function drawUnit(u) {
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.stroke();
-
-    // 에너지 광검
     ctx.strokeStyle = "#c7d2fe"; ctx.lineWidth = 2.5 * sc;
     ctx.beginPath(); ctx.moveTo(-size * 0.2, size * 0.6); ctx.lineTo(size * 2.1, size * 0.6); ctx.stroke();
-  }
-  // 3. 레인저: 기계식 에어로 컴파운드 롱보우 + 레이저 조준경
-  else if (u.job === "Ranger") {
-    // 본체
+  } else if (u.job === "Ranger") {
     ctx.fillStyle = "#064e3b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-
-    // 에어로 롱보우 활몸
     ctx.strokeStyle = c; ctx.lineWidth = 3 * sc;
     ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
-
-    // 활시위
     ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(size * 0.5, -size * 1.5); ctx.lineTo(-size * 0.4, 0); ctx.lineTo(size * 0.5, size * 1.5); ctx.stroke();
-
-    // 장전된 화살
     ctx.strokeStyle = "#ecfdf5"; ctx.lineWidth = 2 * sc;
     ctx.beginPath(); ctx.moveTo(-size * 0.4, 0); ctx.lineTo(size * 2.4, 0); ctx.stroke();
-
-    // 그린 레이저 포인터
     ctx.strokeStyle = "rgba(52,211,153,0.5)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(size * 2.4, 0); ctx.lineTo(size * 12, 0); ctx.stroke();
-  }
-  // 4. 서머너: 부유 흑요석 마도서 + 3점 삼각 공전 룬
-  else if (u.job === "Summoner") {
-    // 본체
+  } else if (u.job === "Summoner") {
     ctx.fillStyle = "#3b0764";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-
-    // 부유 마도서
     ctx.fillStyle = "#f3e8ff";
     ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
     ctx.strokeStyle = "#c084fc"; ctx.lineWidth = 1.5;
     ctx.strokeRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
-
-    // 3각 궤도 암흑 수정체
     const rot = t * 0.0035;
     ctx.fillStyle = "#a855f7";
     for (let k = 0; k < 3; k++) {
       const a = rot + (k * TAU) / 3;
       ctx.fillRect(Math.cos(a) * size * 1.7 - 2, Math.sin(a) * size * 1.7 - 2, size * 0.5, size * 0.5);
     }
-  }
-  // 5. 바바리안: 열선 플라즈마 양날 배틀액스
-  else if (u.job === "Barbarian") {
-    // 근육질 파워 코어
+  } else if (u.job === "Barbarian") {
     ctx.fillStyle = "#431407";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
-
-    // 도끼 자루
     ctx.fillStyle = "#78350f";
     ctx.fillRect(size * 0.8, -size * 1.8, size * 0.35, size * 3.6);
-
-    // 달아오른 열선 양날 도끼날
     ctx.fillStyle = "#fb923c";
     ctx.beginPath();
     ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
     ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
     ctx.fill();
     ctx.strokeStyle = "#fff7ed"; ctx.lineWidth = 1.5; ctx.stroke();
-  }
-  // 6. 거너: 3연장 회전식 헤비 개틀링 + 전술 레이저 조준선
-  else if (u.job === "Gunner") {
-    // 기계식 코어 바디
+  } else if (u.job === "Gunner") {
     ctx.fillStyle = "#18181b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
     ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-
-    // 3연장 중화기 회전 배럴
     ctx.fillStyle = "#3f3f46";
     ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
     ctx.fillRect(size * 0.3, -size * 0.18, size * 2.3, size * 0.35);
     ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
-
-    // 탄띠 공급 체인
     ctx.strokeStyle = "#facc15"; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(-size * 0.2, size * 0.6, size * 0.6, 0, Math.PI * 0.8); ctx.stroke();
-
-    // 붉은색 레이저 타겟팅 조준선
     ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
   }
 
   ctx.rotate(-u.angle);
 
-  // 체력바
   const hp = clamp(u.hp / u.maxHp, 0, 1);
   ctx.fillStyle = "rgba(0,0,0,.75)";
   ctx.fillRect(-size - 2, -size - 8, size * 2 + 4, 3);
@@ -1157,6 +1298,7 @@ function hitBase(wx, wy) {
 }
 
 canvas.addEventListener("pointerdown", e => {
+  if (isPaused) return;
   pointerDown = true;
   dragMoved = false;
   pointer.x = e.clientX; pointer.y = e.clientY;
@@ -1169,6 +1311,7 @@ canvas.addEventListener("pointerdown", e => {
 });
 
 window.addEventListener("pointermove", e => {
+  if (isPaused) return;
   pointer.x = e.clientX; pointer.y = e.clientY;
   if (!pointerDown) return;
 
@@ -1185,6 +1328,7 @@ window.addEventListener("pointermove", e => {
 });
 
 window.addEventListener("pointerup", e => {
+  if (isPaused) return;
   if (!pointerDown) return;
   pointerDown = false;
 
@@ -1217,6 +1361,7 @@ window.addEventListener("pointerup", e => {
 });
 
 canvas.addEventListener("wheel", e => {
+  if (isPaused) return;
   e.preventDefault();
   const before = screenToWorld(e.clientX, e.clientY);
   camera.zoom = clamp(camera.zoom * Math.exp(-e.deltaY * 0.001), 0.4, 1.8);
