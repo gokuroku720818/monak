@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER ARCADE // 3-IN-1 SUITE</title>
+<title>FRONTIER ARCADE // 2-IN-1 SUITE</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -62,7 +62,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   pointer-events:none;z-index:45;opacity:0;transition:opacity .2s;
 }
 
-/* ARCADE SELECTOR HUB */
+/* ARCADE SELECTOR HUB (2종 깔끔 정돈) */
 #hubModal{
   position:fixed;inset:0;z-index:30;
   display:flex;align-items:center;justify-content:center;
@@ -70,36 +70,36 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   padding:16px;
 }
 .hubBox{
-  width:min(860px,96vw);background:#071420;
-  border:1px solid #4ebcdb;border-radius:20px;padding:26px;
+  width:min(740px,94vw);background:#071420;
+  border:1px solid #4ebcdb;border-radius:20px;padding:28px 24px;
   text-align:center;box-shadow:0 0 90px rgba(0,190,255,.25);
 }
 .hubBox h1{margin:0 0 6px;font-size:26px;letter-spacing:4px;color:#dffaff}
-.hubBox p{margin:0 0 20px;color:#7aa2b5;font-size:12px}
-.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.hubBox p{margin:0 0 24px;color:#7aa2b5;font-size:12px}
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .game-card{
   background:#091d2c;border:1px solid #234f69;border-radius:14px;
-  padding:20px 16px;cursor:pointer;transition:.2s;text-align:left;
+  padding:24px 18px;cursor:pointer;transition:.2s;text-align:left;
 }
-.game-card:hover{transform:translateY(-4px);border-color:#5ee2ff;background:#0e2d44;box-shadow:0 0 20px rgba(94,226,255,.2)}
+.game-card:hover{transform:translateY(-4px);border-color:#5ee2ff;background:#0e2d44;box-shadow:0 0 25px rgba(94,226,255,.25)}
 .game-card .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:900;margin-bottom:8px}
-.game-card h3{margin:0 0 6px;font-size:16px;color:#fff}
-.game-card p{margin:0;font-size:11px;color:#96b8c8;line-height:1.5}
+.game-card h3{margin:0 0 8px;font-size:17px;color:#fff}
+.game-card p{margin:0;font-size:11px;color:#96b8c8;line-height:1.6}
 
-/* CLASS SELECT MODAL (모드 1용) */
-#classModal{
-  position:fixed;inset:0;z-index:25;display:none;
+/* CLASS SELECT MODALS */
+#classModal,#hunterClassModal{
+  position:fixed;inset:0;z-index:35;display:none;
   align-items:center;justify-content:center;
-  background:rgba(0,4,10,.85);backdrop-filter:blur(6px);
+  background:rgba(0,4,10,.88);backdrop-filter:blur(6px);
 }
-#card{
-  width:min(740px,92vw);border:1px solid rgba(90,220,255,.4);
+#card,#hunterCard{
+  width:min(760px,94vw);border:1px solid rgba(90,220,255,.4);
   border-radius:18px;padding:24px;
   background:linear-gradient(180deg,rgba(5,17,28,.98),rgba(2,7,13,.98));
 }
-#card h1{margin:0;font-size:24px;letter-spacing:4px;text-align:center;color:#dffaff}
-#card p{text-align:center;color:#7295a5;font-size:12px;margin:8px 0 16px}
-#classes{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+#card h1,#hunterCard h1{margin:0;font-size:24px;letter-spacing:4px;text-align:center;color:#dffaff}
+#card p,#hunterCard p{text-align:center;color:#7295a5;font-size:12px;margin:8px 0 16px}
+#classes,#hunterClasses{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .classBtn{
   padding:12px 8px;border-radius:12px;background:#06111a;
   border:1px solid rgba(255,255,255,.1);color:#dffaff;cursor:pointer;transition:.15s;text-align:center;
@@ -113,7 +113,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .modal-actions button{
   padding:11px 26px;border-radius:9px;font-weight:900;cursor:pointer;font-size:12px;
 }
-#start{border:1px solid #55ddff;background:#072333;color:#dffaff}
+#start,#hunterStart{border:1px solid #55ddff;background:#072333;color:#dffaff}
 #btnLoad{border:1px solid #38d39f;background:#062b21;color:#bdfce7;display:none}
 
 /* PAUSE & RESULT MODAL */
@@ -134,9 +134,36 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 }
 .menu-btns button:hover,.btn-res:hover{background:#123b54;border-color:#65dbfc}
 
-@media(max-width:700px){
-  #classes{grid-template-columns:repeat(2,1fr)}
-  #guide{font-size:9px}
+/* HUNTER HUD & SKILLS */
+#arcadeHUD{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:30;display:none;width:min(880px,96vw);padding:10px 14px;border:1px solid #ffffff1a;border-radius:16px;background:linear-gradient(180deg,#07111ceb,#02050de8);box-shadow:0 10px 40px #000b,0 0 35px #7b3cff14;backdrop-filter:blur(10px);pointer-events:none}
+#arcadeHUD .row{display:flex;align-items:center;gap:9px;justify-content:center;flex-wrap:wrap;font-weight:900;letter-spacing:.04em;font-size:11px}
+.stat{padding:5px 8px;border-radius:8px;background:#ffffff07;border:1px solid #ffffff10}
+.cyan{color:#65edff}.gold{color:#ffe06b}.pink{color:#ff6b91}
+.bar{display:inline-block;vertical-align:middle;width:240px;height:11px;background:#ffffff0d;border-radius:99px;overflow:hidden;border:1px solid #ffffff15}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4deaff,#78ff9b)}
+.xpbar i{background:linear-gradient(90deg,#b66cff,#ffd76a)!important}
+
+#arcadeSkills{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:31;display:none;gap:12px;pointer-events:auto}
+.arcSkill{width:86px;height:68px;border:1px solid #ffffff24;border-radius:14px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008}
+.arcSkill b{display:block;font-size:18px}
+.arcSkill span{display:block;font-size:10px;color:#63efff;margin:2px 0}
+.arcSkill small{font-size:9px;color:#91b7c4}
+.arcSkill.cd{opacity:.4;filter:saturate(.45)}
+
+#arcadeEvo{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#01040acb;backdrop-filter:blur(7px)}
+#arcadeEvo .box{width:min(740px,94vw);padding:24px;border:1px solid #ffffff22;border-radius:20px;background:linear-gradient(180deg,#091521f7,#03070df7);text-align:center}
+.evoCards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.evo{padding:18px 12px;border:1px solid #ffffff18;border-radius:14px;background:#ffffff08;color:#eaffff;cursor:pointer;transition:.15s}
+.evo:hover{transform:translateY(-3px);border-color:#65edff88;background:#65edff0c}
+.evo strong{display:block;font-size:16px;color:#70edff;margin-bottom:8px}
+.evo span{font-size:11px;color:#a8bbc2;line-height:1.5}
+
+@media(max-width:650px){
+  .game-grid{grid-template-columns:1fr}
+  #classes,#hunterClasses{grid-template-columns:repeat(2,1fr)}
+  .bar{width:140px!important}
+  .arcSkill{width:70px;height:60px}
+  .evoCards{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -165,21 +192,21 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
 <div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10기, 3~5단계는 2기씩 고속 합체!</div>
 
-<!-- 1. 아케이드 허브 -->
+<!-- 1. 아케이드 허브 (2종 체제) -->
 <div id="hubModal">
   <div class="hubBox">
-    <h1>FRONTIER ARCADE HUB</h1>
-    <p>플레이할 게임 모드를 선택하세요. 언제든지 상단 [모드 선택] 버튼으로 돌아올 수 있습니다.</p>
+    <h1>FRONTIER ARCADE</h1>
+    <p>플레이할 게임 모드를 선택하세요. 상단 [모드 선택] 버튼으로 언제든 전환 가능합니다.</p>
     <div class="game-grid">
       <div class="game-card" onclick="selectGameMode('DOMINATION')">
         <span class="tag" style="background:#034458;color:#55dfff">MODE 1</span>
         <h3>프론티어 플럭스 (땅따먹기)</h3>
-        <p>초원/사막/지옥/천국/우주 5대 챕터 정복전! 보급선을 이어 대규모 병력을 결집하고 5단계 신화 유닛으로 진화시키며 전장을 지배합니다.</p>
+        <p>초원/사막/불지옥/천국/우주 5대 챕터 정복전! 보급선을 연결하여 부대를 결집하고 5단계 신화 유닛으로 진화시키며 전장을 지배합니다.</p>
       </div>
-      <div class="game-card" onclick="selectGameMode('ARCADE')">
+      <div class="game-card" onclick="selectGameMode('HUNTER')">
         <span class="tag" style="background:#3b164f;color:#e18aff">MODE 2</span>
         <h3>프론티어 헌터 (생존 사냥)</h3>
-        <p>게임 1의 6개 캐릭터를 영웅으로 선택! 각자 전혀 다른 전투 스타일로 맵을 누비며 몹을 몰아잡고 성장하세요. Q 순간이동 · W 범위공격 · E 단일공격. 지역 보스를 차례대로 격파합니다.</p>
+        <p>6대 영웅을 직접 조작하는 생존 로그라이크! 방향키 이동과 순간이동(Q), 플라즈마 폭발(W), 관통 하이퍼 레이저(E)로 적 웨이브와 보스를 토벌하세요.</p>
       </div>
     </div>
   </div>
@@ -198,17 +225,20 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<!-- 2-B. 게임 2 영웅 선택 -->
-<div id="hunterClassModal" style="position:fixed;inset:0;z-index:35;display:none;align-items:center;justify-content:center;background:rgba(0,4,10,.9);backdrop-filter:blur(7px)">
-  <div id="hunterCard" style="width:min(900px,94vw);padding:25px;border:1px solid #b875ff55;border-radius:20px;background:linear-gradient(180deg,#0b1320,#03070d);box-shadow:0 0 80px #8b5cf633">
-    <h1 style="margin:0;text-align:center;letter-spacing:4px;font-size:24px;color:#f1e7ff">FRONTIER HUNTER</h1>
-    <p style="text-align:center;color:#8197a5;font-size:12px;margin:8px 0 18px">게임 1의 6개 캐릭터를 영웅으로 선택하세요 · 캐릭터마다 플레이 방식이 완전히 다릅니다</p>
-    <div id="hunterClasses" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
-    <div style="display:flex;justify-content:center;gap:10px;margin-top:17px"><button id="hunterStart" style="padding:11px 28px;border-radius:9px;border:1px solid #d18aff;background:#24113a;color:#f4e9ff;font-weight:900;cursor:pointer">HUNT START</button><button onclick="openHub()" style="padding:11px 20px;border-radius:9px;border:1px solid #526879;background:#09131d;color:#d8e5ea;font-weight:800;cursor:pointer">BACK</button></div>
+<!-- 3. 영웅 선택 모달 (모드 2 헌터용) -->
+<div id="hunterClassModal">
+  <div id="hunterCard">
+    <h1>SELECT YOUR HERO</h1>
+    <p>사냥에 출격할 영웅을 선택하십시오 · 캐릭터마다 고유한 비주얼과 탄막 스타일을 지닙니다</p>
+    <div id="hunterClasses"></div>
+    <div class="modal-actions">
+      <button id="hunterStart" onclick="confirmHunterDeploy()">HUNT START</button>
+      <button onclick="openHub()" style="border:1px solid #4a5c68;background:#09121a;color:#cbd5e1">BACK</button>
+    </div>
   </div>
 </div>
 
-<!-- 3. 일시정지 모달 -->
+<!-- 4. 일시정지 모달 -->
 <div id="pauseModal">
   <div class="modalBox">
     <h2>GAME PAUSED</h2>
@@ -220,7 +250,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<!-- 4. 결과 모달 -->
+<!-- 5. 결과 모달 -->
 <div id="result">
   <div class="modalBox">
     <div id="resultTitle"></div>
@@ -233,16 +263,48 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<style>
-#arcadeHUD{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:30;display:none;width:min(900px,96vw);padding:11px 14px;border:1px solid #ffffff1a;border-radius:16px;background:linear-gradient(180deg,#07111ceb,#02050de8);box-shadow:0 10px 40px #000b,0 0 35px #7b3cff14;backdrop-filter:blur(10px);pointer-events:none}
-#arcadeHUD .row{display:flex;align-items:center;gap:9px;justify-content:center;flex-wrap:wrap;font-weight:900;letter-spacing:.04em;font-size:11px}.stat{padding:6px 9px;border-radius:8px;background:#ffffff07;border:1px solid #ffffff10}.cyan{color:#65edff}.pink{color:#ff6b91}.gold{color:#ffe06b}.green{color:#72ffb0}
-#arcadeHUD .bar{display:inline-block;vertical-align:middle;width:300px;height:13px;background:#ffffff0d;border-radius:99px;overflow:hidden;border:1px solid #ffffff15}.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4deaff,#78ff9b);box-shadow:0 0 12px #4deaff88}.xpbar{background:#ffffff0d!important}.xpbar i{background:linear-gradient(90deg,#b66cff,#ffd76a)!important}
-#arcadeSkills{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:31;display:none;gap:10px;pointer-events:auto}.arcSkill{width:76px;height:64px;border:1px solid #ffffff24;border-radius:13px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008}.arcSkill b{display:block;font-size:19px}.arcSkill small{font-size:9px;color:#91b7c4}.arcSkill.cd{opacity:.4;filter:saturate(.45)}
-#arcadeEvo{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#01040acb;backdrop-filter:blur(7px)}#arcadeEvo .box{width:min(780px,94vw);padding:25px;border:1px solid #ffffff22;border-radius:22px;background:linear-gradient(180deg,#091521f7,#03070df7);box-shadow:0 25px 100px #000;text-align:center}.evoCards{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:20px}.evo{position:relative;min-height:160px;padding:24px 14px 18px;border:1px solid #ffffff18;border-radius:16px;background:linear-gradient(180deg,#ffffff08,#ffffff03);color:#eaffff;cursor:pointer;transition:.15s;display:flex;flex-direction:column;justify-content:center}.evo:hover{transform:translateY(-5px);border-color:#65edff88;background:#65edff0c;box-shadow:0 12px 35px #000}.evo .num{position:absolute;top:9px;left:11px;font-size:10px;color:#829aa5;border:1px solid #ffffff18;border-radius:5px;padding:2px 5px}.evo strong{font-size:17px;color:#70edff;margin-bottom:10px;letter-spacing:.05em}.evo span{font-size:11px;color:#a8bbc2;line-height:1.6}@media(max-width:650px){#arcadeHUD{top:5px;padding:7px}.bar{width:180px!important}.evoCards{grid-template-columns:1fr}.evo{min-height:100px}.arcSkill{width:65px;height:58px}}
-</style>
-<div id="arcadeHUD"><div class="row"><span class="stat cyan" id="aMode">MAGE</span><span class="stat" id="aPassive">ARCANE</span><span class="stat gold">LEVEL <b id="aLevel">1</b></span><span class="stat">KILLS <b id="aKills">0</b></span><span class="stat pink">COMBO <b id="aCombo">0</b></span><span class="stat">SCORE <b id="aScore">0</b></span></div><div class="row" style="margin-top:6px"><span class="stat">XP <span class="bar xpbar"><i id="aXp"></i></span> <b id="aXpText">0 / 35</b></span><span class="stat">HP <span class="bar"><i id="aHp"></i></span> <b id="aHpText">240 / 240</b></span></div></div>
-<div id="arcadeSkills"><button class="arcSkill" id="aQ"><b>Q</b><small>TELEPORT</small></button><button class="arcSkill" id="aW"><b>W</b><small>AREA</small></button><button class="arcSkill" id="aE"><b>E</b><small>SINGLE</small></button></div>
-<div id="arcadeEvo"><div class="box"><div style="font-size:10px;letter-spacing:.2em;color:#829faa">EVOLUTION</div><h2 id="evoTitle" style="margin:7px 0 4px">LEVEL UP</h2><div id="evoSub" style="font-size:12px;color:#93aeb7">하나를 선택하세요.</div><div class="evoCards" id="evoCards"></div><div style="margin-top:13px;font-size:9px;color:#60747d">키보드 1 / 2 / 3 으로도 선택 가능</div></div></div>
+<!-- 헌터 모드 전용 HUD & 스킬 버튼 -->
+<div id="arcadeHUD">
+  <div class="row">
+    <span class="stat cyan" id="aHeroName">MAGE</span>
+    <span class="stat gold">LEVEL <b id="aLevel">1</b></span>
+    <span class="stat">KILLS <b id="aKills">0</b></span>
+    <span class="stat pink">SCORE <b id="aScore">0</b></span>
+    <span class="stat">ZONE <b id="aZone">1/5</b></span>
+  </div>
+  <div class="row" style="margin-top:6px">
+    <span class="stat">XP <span class="bar xpbar"><i id="aXp"></i></span> <b id="aXpText">0 / 100</b></span>
+    <span class="stat">HP <span class="bar"><i id="aHp"></i></span> <b id="aHpText">260 / 260</b></span>
+  </div>
+</div>
+
+<div id="arcadeSkills">
+  <button class="arcSkill" id="btnSkillQ" onclick="hunterUseSkill('q')">
+    <b>Q</b>
+    <span>순간이동</span>
+    <small id="cdQ">READY</small>
+  </button>
+  <button class="arcSkill" id="btnSkillW" onclick="hunterUseSkill('w')">
+    <b>W</b>
+    <span>플라즈마 폭발</span>
+    <small id="cdW">READY</small>
+  </button>
+  <button class="arcSkill" id="btnSkillE" onclick="hunterUseSkill('e')">
+    <b>E</b>
+    <span>하이퍼 레이저</span>
+    <small id="cdE">READY</small>
+  </button>
+</div>
+
+<div id="arcadeEvo">
+  <div class="box">
+    <div style="font-size:10px;letter-spacing:.2em;color:#63efff">LEVEL UP MUTATION</div>
+    <h2 style="margin:8px 0 4px">진화 능력을 선택하세요</h2>
+    <div style="font-size:12px;color:#94a3b8">키보드 1 / 2 / 3 또는 클릭</div>
+    <div class="evoCards" id="evoCards"></div>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -265,7 +327,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-let activeGameMode = "DOMINATION";
+let activeGameMode = "DOMINATION"; // "DOMINATION" | "HUNTER"
 let running = false;
 let isPaused = false;
 
@@ -295,20 +357,36 @@ const CHAPTERS = [
 
 let curChapterIdx = 0;
 let selectedJob = "Mage";
+let hunterSelectedJob = "Mage";
 
+// 모드 1 클래스 선택지
 const classesDiv = document.getElementById("classes");
 for (const [key, j] of Object.entries(JOBS)) {
   const b = document.createElement("div");
   b.className = "classBtn" + (key === "Mage" ? " active" : "");
   b.dataset.job = key;
-  b.innerHTML = `<span class="icon" style="color:${j.color}">${j.icon}</span>
-  <strong>${j.name}</strong><small>${j.desc}</small>`;
+  b.innerHTML = `<span class="icon" style="color:${j.color}">${j.icon}</span><strong>${j.name}</strong><small>${j.desc}</small>`;
   b.onclick = () => {
     selectedJob = key;
-    document.querySelectorAll(".classBtn").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll("#classes .classBtn").forEach(x => x.classList.remove("active"));
     b.classList.add("active");
   };
   classesDiv.appendChild(b);
+}
+
+// 모드 2 영웅 선택지
+const hunterClassesDiv = document.getElementById("hunterClasses");
+for (const [key, j] of Object.entries(JOBS)) {
+  const b = document.createElement("div");
+  b.className = "classBtn" + (key === "Mage" ? " active" : "");
+  b.dataset.job = key;
+  b.innerHTML = `<span class="icon" style="color:${j.color}">${j.icon}</span><strong>${j.name}</strong><small>${j.desc}</small>`;
+  b.onclick = () => {
+    hunterSelectedJob = key;
+    document.querySelectorAll("#hunterClasses .classBtn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+  };
+  hunterClassesDiv.appendChild(b);
 }
 
 function toast(msg) {
@@ -322,12 +400,13 @@ function toast(msg) {
 function openHub() {
   running = false;
   isPaused = false;
+  hunter.active = false;
+  document.getElementById("arcadeHUD").style.display = "none";
+  document.getElementById("arcadeSkills").style.display = "none";
   document.getElementById("pauseModal").style.display = "none";
   document.getElementById("result").style.display = "none";
   document.getElementById("classModal").style.display = "none";
-  const hm=document.getElementById("hunterClassModal"); if(hm) hm.style.display="none";
-  if(typeof hunterShow==='function') hunterShow(false);
-  if(typeof hunter!=='undefined') hunter.active=false;
+  document.getElementById("hunterClassModal").style.display = "none";
   document.getElementById("hubModal").style.display = "flex";
 }
 
@@ -336,16 +415,24 @@ function selectGameMode(mode) {
   document.getElementById("hubModal").style.display = "none";
 
   if (mode === "DOMINATION") {
+    hunter.active = false;
+    document.getElementById("arcadeHUD").style.display = "none";
+    document.getElementById("arcadeSkills").style.display = "none";
     document.getElementById("btnSave").style.display = "block";
     document.getElementById("lblBadge1").textContent = "CHAPTER";
     document.getElementById("lblBadge2").textContent = "BASES";
     document.getElementById("lblBadge3").textContent = "ARMY";
     document.getElementById("classModal").style.display = "flex";
     checkSaveData();
-  } else if (mode === "ARCADE") {
+  } else if (mode === "HUNTER") {
     document.getElementById("btnSave").style.display = "none";
-    openHunterSelect();
+    document.getElementById("hunterClassModal").style.display = "flex";
   }
+}
+
+function confirmHunterDeploy() {
+  document.getElementById("hunterClassModal").style.display = "none";
+  startHunterGame(hunterSelectedJob);
 }
 
 function checkSaveData() {
@@ -450,100 +537,6 @@ function startChapter(idx) {
   updateHUD();
 }
 
-/* =========================================================
-   게임 2: 저글링 블러드 (ZERGLING BLOOD)
-========================================================= */
-let zergKills = 0;
-function startZerglingBlood() {
-  document.getElementById("title").textContent = "ZERGLING BLOOD";
-  document.getElementById("sub").textContent = "무한 근접 물량 난투 아레나";
-  document.getElementById("lblBadge1").textContent = "KILLS";
-  document.getElementById("chapBadge").textContent = "0";
-  document.getElementById("lblBadge2").textContent = "TIER";
-  document.getElementById("lblBadge3").textContent = "SWARM";
-  document.getElementById("guide").textContent = "화면 드래그로 시점 이동 · 양 기지에서 쏟아지는 저글링 군단으로 적 본진을 파괴하세요!";
-
-  uid = 1; mission = 400; spawnTimer = 0; aiTimer = 0;
-  zergKills = 0;
-
-  factions = [
-    { id: 0, job: "Barbarian", color: "#38bdf8", kills: 0 },
-    { id: 1, job: "Barbarian", color: "#f43f5e", kills: 0 }
-  ];
-
-  bases = [
-    { id: uid++, x: 500, y: 750, team: 0, core: true, hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0 },
-    { id: uid++, x: 2100, y: 750, team: 1, core: true, hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0 }
-  ];
-
-  bases[0].routes = [bases[1]];
-  bases[1].routes = [bases[0]];
-
-  units = [];
-  projectiles = [];
-  particles = [];
-  explosions = [];
-  stars = [];
-  initThemeParticles("INFERNO");
-
-  // 초기 저글링 12기 즉시 투입
-  produce(bases[0], 12);
-  produce(bases[1], 12);
-
-  camera.x = 1300; camera.y = 750;
-  camera.zoom = clamp(Math.min(W / 1500, H / 850), 0.6, 1.1);
-
-  running = true;
-  isPaused = false;
-  updateHUD();
-}
-
-/* =========================================================
-   게임 3: 뮤탈 블러드 (MUTALISK BLOOD)
-========================================================= */
-function startMutaliskBlood() {
-  document.getElementById("title").textContent = "MUTALISK BLOOD";
-  document.getElementById("sub").textContent = "3쿠션 글레이브 웜 공중 혈투";
-  document.getElementById("lblBadge1").textContent = "KILLS";
-  document.getElementById("chapBadge").textContent = "0";
-  document.getElementById("lblBadge2").textContent = "FLEET";
-  document.getElementById("lblBadge3").textContent = "MUTAS";
-  document.getElementById("guide").textContent = "공중 편대가 마주치면 3쿠션 쐐기탄을 난사합니다! 적 본진을 파괴하세요.";
-
-  uid = 1; mission = 400; spawnTimer = 0; aiTimer = 0;
-
-  factions = [
-    { id: 0, job: "Gunner", color: "#38bdf8", kills: 0 },
-    { id: 1, job: "Gunner", color: "#f43f5e", kills: 0 }
-  ];
-
-  bases = [
-    { id: uid++, x: 450, y: 750, team: 0, core: true, hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0 },
-    { id: uid++, x: 2150, y: 750, team: 1, core: true, hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0 }
-  ];
-
-  bases[0].routes = [bases[1]];
-  bases[1].routes = [bases[0]];
-
-  units = [];
-  projectiles = [];
-  particles = [];
-  explosions = [];
-  stars = [];
-  initThemeParticles("COSMOS");
-
-  // 초기 뮤탈 8기 즉시 투입
-  produce(bases[0], 8);
-  produce(bases[1], 8);
-
-  camera.x = 1300; camera.y = 750;
-  camera.zoom = clamp(Math.min(W / 1500, H / 850), 0.6, 1.1);
-
-  running = true;
-  isPaused = false;
-  updateHUD();
-}
-
 function initThemeParticles(theme) {
   stars = [];
   for (let i = 0; i < 260; i++) {
@@ -557,7 +550,681 @@ function initThemeParticles(theme) {
 }
 
 /* =========================================================
-   생산, 전투 및 이동 연산
+   게임 2: 프론티어 헌터 (방향키 이동 + Q/W/E 직관 스킬셋)
+========================================================= */
+const hunter = {
+  active: false,
+  hero: null,
+  job: "Mage",
+  level: 1,
+  xp: 0,
+  nextXp: 80,
+  kills: 0,
+  score: 0,
+  elapsed: 0,
+  zone: 0,
+  q: 0, w: 0, e: 0,
+  invuln: 0,
+  shake: 0,
+  pendingLevel: false,
+  target: null,
+  key: {},
+  enemies: [],
+  gems: [],
+  beams: [],     // E스킬 하이퍼 빔 레이저 이펙트
+  novas: [],     // W스킬 광역 노바 이펙트
+  texts: [],
+  spawnTimer: 0,
+  bossTimer: 45,
+  bossIndex: 0,
+  boss: null,
+  upgrades: { damage: 1, speed: 1, aoe: 1, cd: 1 }
+};
+
+const HUNTER_BOSS_NAMES = ["GROVE BEHEMOTH", "DUNE COLOSSUS", "INFERNAL LORD", "VOID REAPER"];
+
+function startHunterGame(job) {
+  activeGameMode = "HUNTER";
+  hunter.active = true;
+  hunter.job = job;
+  hunter.level = 1;
+  hunter.xp = 0;
+  hunter.nextXp = 80;
+  hunter.kills = 0;
+  hunter.score = 0;
+  hunter.elapsed = 0;
+  hunter.zone = 0;
+  hunter.q = 0; hunter.w = 0; hunter.e = 0;
+  hunter.invuln = 0;
+  hunter.shake = 0;
+  hunter.pendingLevel = false;
+  hunter.enemies = [];
+  hunter.gems = [];
+  hunter.beams = [];
+  hunter.novas = [];
+  hunter.texts = [];
+  hunter.spawnTimer = 0;
+  hunter.bossTimer = 40;
+  hunter.bossIndex = 0;
+  hunter.boss = null;
+  hunter.upgrades = { damage: 1, speed: 1, aoe: 1, cd: 1 };
+  hunter.key = {};
+
+  bases = [];
+  units = [];
+  projectiles = [];
+  particles = [];
+  explosions = [];
+  stars = [];
+  initThemeParticles("INFERNO");
+
+  document.getElementById("title").textContent = "FRONTIER HUNTER";
+  document.getElementById("sub").textContent = "생존 사냥 & 보스 토벌전";
+  document.getElementById("guide").textContent = "키보드 방향키(↑↓←→) 이동 · Q 순간이동 · W 광역폭발 · E 관통레이저";
+
+  document.getElementById("arcadeHUD").style.display = "block";
+  document.getElementById("arcadeSkills").style.display = "flex";
+
+  // 영웅 생성
+  hunter.hero = {
+    id: 9999,
+    team: 0,
+    job: job,
+    x: 1300, y: 750,
+    vx: 0, vy: 0,
+    hp: 260, maxHp: 260,
+    tier: 3,
+    spd: 160,
+    angle: 0, anim: 0, hit: 0, dead: false,
+    attackCd: 0
+  };
+
+  camera.x = 1300; camera.y = 750;
+  camera.zoom = 0.85; // 쾌적한 시야각
+
+  running = true;
+  isPaused = false;
+  updateHunterHUD();
+  hunterFloat(`${JOBS[job].name} 출격!`, 1300, 700, JOBS[job].color, 2.0);
+}
+
+function hunterFloat(txt, x, y, color = "#fff", life = 1.0) {
+  hunter.texts.push({ txt, x, y, color, life, max: life });
+}
+
+function hunterSpawnMob() {
+  const h = hunter.hero;
+  if (!h) return;
+  const ang = rand(0, TAU);
+  const dist = rand(550, 750);
+  const x = clamp(h.x + Math.cos(ang) * dist, 60, WORLD.w - 60);
+  const y = clamp(h.y + Math.sin(ang) * dist, 60, WORLD.h - 60);
+
+  const isElite = Math.random() < 0.2;
+  const hpBase = (isElite ? 160 : 45) * (1 + hunter.level * 0.15);
+  const spd = isElite ? 90 : 110;
+
+  hunter.enemies.push({
+    id: uid++,
+    x, y, vx: 0, vy: 0,
+    hp: hpBase, maxHp: hpBase,
+    dmg: isElite ? 18 : 8,
+    spd,
+    r: isElite ? 22 : 14,
+    color: isElite ? "#fb923c" : "#f43f5e",
+    isElite,
+    dead: false,
+    hit: 0
+  });
+}
+
+function hunterSpawnBoss() {
+  if (hunter.boss || hunter.bossIndex >= HUNTER_BOSS_NAMES.length) return;
+  const h = hunter.hero;
+  const bName = HUNTER_BOSS_NAMES[hunter.bossIndex];
+  const bHp = 2200 * (1 + hunter.bossIndex * 0.6);
+
+  hunter.boss = {
+    id: uid++,
+    name: bName,
+    x: clamp(h.x + rand(-300, 300), 200, WORLD.w - 200),
+    y: clamp(h.y - 450, 200, WORLD.h - 200),
+    hp: bHp, maxHp: bHp,
+    dmg: 28,
+    spd: 75,
+    r: 45,
+    color: "#a855f7",
+    isBoss: true,
+    dead: false,
+    hit: 0,
+    skillCd: 3.0
+  };
+
+  hunter.enemies.push(hunter.boss);
+  hunterFloat(`⚠ BOSS WARNING: ${bName}!`, h.x, h.y - 120, "#ff0055", 3.0);
+  hunter.shake = 20;
+}
+
+function hunterKillMob(e) {
+  if (e.dead) return;
+  e.dead = true;
+  hunter.kills++;
+  hunter.score += e.isBoss ? 5000 : (e.isElite ? 200 : 50);
+
+  // 경험치 보석 드랍
+  const gemCount = e.isBoss ? 20 : (e.isElite ? 4 : 1);
+  const xpVal = e.isBoss ? 40 : (e.isElite ? 15 : 6);
+  for (let i = 0; i < gemCount; i++) {
+    hunter.gems.push({
+      x: e.x + rand(-20, 20),
+      y: e.y + rand(-20, 20),
+      val: xpVal,
+      life: 40
+    });
+  }
+
+  if (e.isBoss) {
+    hunter.boss = null;
+    hunter.bossIndex++;
+    hunter.bossTimer = 50;
+    hunterFloat("★ 보스 토벌 완료! 대량의 경험치 획득!", e.x, e.y, "#ffd700", 2.5);
+    hunter.shake = 25;
+    if (hunter.bossIndex >= HUNTER_BOSS_NAMES.length) {
+      hunterWin();
+    }
+  }
+
+  burst(e.x, e.y, e.color, e.isBoss ? 50 : 8);
+}
+
+function hunterGainXP(val) {
+  hunter.xp += val;
+  if (hunter.xp >= hunter.nextXp) {
+    hunter.xp -= hunter.nextXp;
+    hunter.level++;
+    hunter.nextXp = Math.floor(hunter.nextXp * 1.35 + 20);
+    hunter.pendingLevel = true;
+    showHunterEvo();
+  }
+}
+
+function showHunterEvo() {
+  const cards = document.getElementById("evoCards");
+  cards.innerHTML = "";
+  const opts = [
+    { type: "damage", name: "플라즈마 과충전", desc: "모든 공격 및 스킬 피해량 +25%" },
+    { type: "speed", name: "중력 가속 엔진", desc: "영웅 이동속도 +18%" },
+    { type: "aoe", name: "광역 공명 증폭", desc: "W폭발 반경 및 E레이저 두께 +30%" },
+    { type: "cd", name: "크로노 부스터", desc: "모든 스킬 쿨다운 15% 단축" }
+  ];
+
+  // 랜덤 3개 선택
+  const shuffled = opts.sort(() => Math.random() - 0.5).slice(0, 3);
+  shuffled.forEach((o, i) => {
+    const d = document.createElement("div");
+    d.className = "evo";
+    d.innerHTML = `<strong>[${i + 1}] ${o.name}</strong><span>${o.desc}</span>`;
+    d.onclick = () => selectHunterEvo(o.type);
+    cards.appendChild(d);
+  });
+
+  document.getElementById("arcadeEvo").style.display = "flex";
+}
+
+function selectHunterEvo(type) {
+  if (type === "damage") hunter.upgrades.damage += 0.25;
+  if (type === "speed") {
+    hunter.upgrades.speed += 0.18;
+    hunter.hero.spd = 160 * hunter.upgrades.speed;
+  }
+  if (type === "aoe") hunter.upgrades.aoe += 0.3;
+  if (type === "cd") hunter.upgrades.cd *= 0.85;
+
+  hunter.pendingLevel = false;
+  document.getElementById("arcadeEvo").style.display = "none";
+  hunterFloat("능력 진화 완료!", hunter.hero.x, hunter.hero.y - 60, "#ffd700", 1.2);
+  updateHunterHUD();
+}
+
+/* =========================================================
+   스킬 시스템 (Q: 점멸 / W: 플라즈마 노바 / E: 관통 레이저)
+========================================================= */
+function hunterUseSkill(key) {
+  if (!hunter.active || isPaused || hunter.pendingLevel || !hunter.hero || hunter.hero.dead) return;
+  const h = hunter.hero;
+
+  // Q: 순간이동 (점멸 + 무적 + 잔상)
+  if (key === "q" && hunter.q <= 0) {
+    hunter.q = 3.5 * hunter.upgrades.cd;
+    const ang = h.angle;
+    const dist = 240;
+    
+    // 점멸 전 이펙트
+    burst(h.x, h.y, "#38bdf8", 15);
+    
+    h.x = clamp(h.x + Math.cos(ang) * dist, 40, WORLD.w - 40);
+    h.y = clamp(h.y + Math.sin(ang) * dist, 40, WORLD.h - 40);
+    hunter.invuln = 0.5; // 0.5초 무적
+    
+    // 점멸 후 이펙트
+    burst(h.x, h.y, "#fff", 20);
+    hunterFloat("Q · 점멸!", h.x, h.y - 40, "#38bdf8", 0.8);
+    hunter.shake = 6;
+  }
+
+  // W: 초광역 플라즈마 노바 (주변 대폭발)
+  if (key === "w" && hunter.w <= 0) {
+    hunter.w = 5.5 * hunter.upgrades.cd;
+    const r = 240 * hunter.upgrades.aoe;
+    const dmg = 120 * hunter.upgrades.damage;
+
+    hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: r, life: 0.45, maxLife: 0.45 });
+    hunter.shake = 14;
+
+    for (const e of hunter.enemies) {
+      if (!e.dead && Math.hypot(e.x - h.x, e.y - h.y) < r) {
+        e.hp -= dmg;
+        e.hit = 0.2;
+        // 밀쳐내기 (넉백)
+        const ang = Math.atan2(e.y - h.y, e.x - h.x);
+        e.x += Math.cos(ang) * 60;
+        e.y += Math.sin(ang) * 60;
+        if (e.hp <= 0) hunterKillMob(e);
+      }
+    }
+    hunterFloat("W · 플라즈마 폭발!", h.x, h.y - 50, "#f43f5e", 1.0);
+  }
+
+  // E: 하이퍼 레일건 빔 레이저 (전방 관통 직선포)
+  if (key === "e" && hunter.e <= 0) {
+    hunter.e = 4.0 * hunter.upgrades.cd;
+    const ang = h.angle;
+    const len = 900;
+    const width = 36 * hunter.upgrades.aoe;
+    const dmg = 240 * hunter.upgrades.damage;
+
+    const endX = h.x + Math.cos(ang) * len;
+    const endY = h.y + Math.sin(ang) * len;
+
+    hunter.beams.push({
+      x1: h.x, y1: h.y, x2: endX, y2: endY,
+      width, life: 0.35, maxLife: 0.35, color: "#a855f7"
+    });
+    hunter.shake = 16;
+
+    // 직선 충돌 검사
+    for (const e of hunter.enemies) {
+      if (e.dead) continue;
+      // 점과 선분 사이의 거리 공식
+      const A = h.x, B = h.y, C = endX, D = endY;
+      const dot = ((e.x - A) * (C - A) + (e.y - B) * (D - B)) / (len * len);
+      if (dot >= 0 && dot <= 1) {
+        const projX = A + dot * (C - A);
+        const projY = B + dot * (D - B);
+        if (Math.hypot(e.x - projX, e.y - projY) < width / 2 + e.r) {
+          e.hp -= dmg;
+          e.hit = 0.25;
+          if (e.hp <= 0) hunterKillMob(e);
+        }
+      }
+    }
+    hunterFloat("E · 하이퍼 빔 발사!", h.x, h.y - 50, "#a855f7", 1.0);
+  }
+}
+
+function updateHunterHUD() {
+  const h = hunter.hero;
+  if (!h) return;
+
+  document.getElementById("aHeroName").textContent = JOBS[hunter.job].name;
+  document.getElementById("aLevel").textContent = hunter.level;
+  document.getElementById("aKills").textContent = hunter.kills;
+  document.getElementById("aScore").textContent = hunter.score;
+  document.getElementById("aZone").textContent = `${Math.min(4, hunter.bossIndex + 1)}/4`;
+
+  const xpPct = clamp(hunter.xp / hunter.nextXp, 0, 1);
+  const hpPct = clamp(h.hp / h.maxHp, 0, 1);
+  document.getElementById("aXp").style.width = `${xpPct * 100}%`;
+  document.getElementById("aHp").style.width = `${hpPct * 100}%`;
+  document.getElementById("aXpText").textContent = `${Math.floor(hunter.xp)} / ${hunter.nextXp}`;
+  document.getElementById("aHpText").textContent = `${Math.ceil(Math.max(0, h.hp))} / ${h.maxHp}`;
+
+  // 스킬 버튼 상태
+  const qBtn = document.getElementById("btnSkillQ");
+  const wBtn = document.getElementById("btnSkillW");
+  const eBtn = document.getElementById("btnSkillE");
+
+  qBtn.classList.toggle("cd", hunter.q > 0);
+  document.getElementById("cdQ").textContent = hunter.q > 0 ? `${hunter.q.toFixed(1)}s` : "READY";
+
+  wBtn.classList.toggle("cd", hunter.w > 0);
+  document.getElementById("cdW").textContent = hunter.w > 0 ? `${hunter.w.toFixed(1)}s` : "READY";
+
+  eBtn.classList.toggle("cd", hunter.e > 0);
+  document.getElementById("cdE").textContent = hunter.e > 0 ? `${hunter.e.toFixed(1)}s` : "READY";
+}
+
+function updateHunter(dt) {
+  if (!hunter.active || isPaused || hunter.pendingLevel) return;
+  const h = hunter.hero;
+  if (!h || h.dead) return;
+
+  hunter.elapsed += dt;
+  hunter.q = Math.max(0, hunter.q - dt);
+  hunter.w = Math.max(0, hunter.w - dt);
+  hunter.e = Math.max(0, hunter.e - dt);
+  hunter.invuln = Math.max(0, hunter.invuln - dt);
+  hunter.shake = Math.max(0, hunter.shake - dt * 15);
+
+  // 1. 방향키 이동 처리 (WASD 버그 완전 해결)
+  let moveX = 0, moveY = 0;
+  if (hunter.key.ArrowUp) moveY -= 1;
+  if (hunter.key.ArrowDown) moveY += 1;
+  if (hunter.key.ArrowLeft) moveX -= 1;
+  if (hunter.key.ArrowRight) moveX += 1;
+
+  if (moveX !== 0 || moveY !== 0) {
+    const len = Math.hypot(moveX, moveY);
+    h.vx = (moveX / len) * h.spd;
+    h.vy = (moveY / len) * h.spd;
+    h.angle = Math.atan2(h.vy, h.vx);
+  } else if (hunter.target) {
+    const dx = hunter.target.x - h.x;
+    const dy = hunter.target.y - h.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist > 15) {
+      h.vx = (dx / dist) * h.spd;
+      h.vy = (dy / dist) * h.spd;
+      h.angle = Math.atan2(h.vy, h.vx);
+    } else {
+      h.vx = 0; h.vy = 0;
+      hunter.target = null;
+    }
+  } else {
+    h.vx = 0; h.vy = 0;
+  }
+
+  h.x = clamp(h.x + h.vx * dt, 40, WORLD.w - 40);
+  h.y = clamp(h.y + h.vy * dt, 40, WORLD.h - 40);
+
+  // 2. 기본 자동 공격 (전방 부채꼴 투사체)
+  h.attackCd -= dt;
+  if (h.attackCd <= 0) {
+    h.attackCd = 0.35;
+    // 가장 가까운 적 탐색
+    let nearest = null, minDist = 380;
+    for (const e of hunter.enemies) {
+      if (e.dead) continue;
+      const d = Math.hypot(e.x - h.x, e.y - h.y);
+      if (d < minDist) { minDist = d; nearest = e; }
+    }
+    if (nearest) {
+      const aimAng = Math.atan2(nearest.y - h.y, nearest.x - h.x);
+      h.angle = aimAng;
+      projectiles.push({
+        x: h.x, y: h.y,
+        vx: Math.cos(aimAng) * 450,
+        vy: Math.sin(aimAng) * 450,
+        dmg: 28 * hunter.upgrades.damage,
+        life: 0.8,
+        color: JOBS[hunter.job].color
+      });
+    }
+  }
+
+  // 3. 투사체 이동 및 충돌
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.life -= dt;
+    if (p.life <= 0) { projectiles.splice(i, 1); continue; }
+
+    for (const e of hunter.enemies) {
+      if (!e.dead && Math.hypot(e.x - p.x, e.y - p.y) < e.r + 6) {
+        e.hp -= p.dmg;
+        e.hit = 0.12;
+        p.life = 0;
+        if (e.hp <= 0) hunterKillMob(e);
+        break;
+      }
+    }
+  }
+
+  // 4. 적 몬스터 AI & 영웅 피격
+  for (const e of hunter.enemies) {
+    if (e.dead) continue;
+    e.hit = Math.max(0, e.hit - dt);
+    const dx = h.x - e.x, dy = h.y - e.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > e.r + 15) {
+      e.x += (dx / dist) * e.spd * dt;
+      e.y += (dy / dist) * e.spd * dt;
+    } else {
+      // 영웅 타격
+      if (hunter.invuln <= 0) {
+        h.hp -= e.dmg;
+        hunter.invuln = 0.4;
+        hunter.shake = 8;
+        if (h.hp <= 0) { hunterDeath(); return; }
+      }
+    }
+  }
+
+  // 5. 보석 자석 흡수
+  for (let i = hunter.gems.length - 1; i >= 0; i--) {
+    const g = hunter.gems[i];
+    const d = Math.hypot(g.x - h.x, g.y - h.y);
+    if (d < 160) {
+      g.x += ((h.x - g.x) / d) * 320 * dt;
+      g.y += ((h.y - g.y) / d) * 320 * dt;
+    }
+    if (d < 24) {
+      hunterGainXP(g.val);
+      hunter.gems.splice(i, 1);
+    }
+  }
+
+  // 6. 스폰 타이머 & 보스 체크
+  hunter.spawnTimer -= dt;
+  if (hunter.spawnTimer <= 0) {
+    hunter.spawnTimer = Math.max(0.6, 1.4 - hunter.level * 0.03);
+    hunterSpawnMob();
+  }
+
+  hunter.bossTimer -= dt;
+  if (hunter.bossTimer <= 0 && !hunter.boss) {
+    hunterSpawnBoss();
+  }
+
+  // 이펙트 타이머
+  for (let i = hunter.novas.length - 1; i >= 0; i--) {
+    const n = hunter.novas[i];
+    n.life -= dt;
+    n.r = n.maxR * (1 - n.life / n.maxLife);
+    if (n.life <= 0) hunter.novas.splice(i, 1);
+  }
+  for (let i = hunter.beams.length - 1; i >= 0; i--) {
+    hunter.beams[i].life -= dt;
+    if (hunter.beams[i].life <= 0) hunter.beams.splice(i, 1);
+  }
+  for (let i = hunter.texts.length - 1; i >= 0; i--) {
+    hunter.texts[i].life -= dt;
+    hunter.texts[i].y -= 18 * dt;
+    if (hunter.texts[i].life <= 0) hunter.texts.splice(i, 1);
+  }
+
+  camera.x = lerp(camera.x, h.x, 0.1);
+  camera.y = lerp(camera.y, h.y, 0.1);
+  clampCamera();
+  updateHunterHUD();
+}
+
+function hunterWin() {
+  hunter.active = false;
+  running = false;
+  document.getElementById("result").style.display = "flex";
+  document.getElementById("resultTitle").textContent = "VICTORY!";
+  document.getElementById("resultTitle").style.color = "#63efff";
+  document.getElementById("resultSub").textContent = `모든 보스를 토벌하고 프론티어를 정복했습니다! (최종 레벨: ${hunter.level}, 처치: ${hunter.kills})`;
+  document.getElementById("btnNext").style.display = "none";
+  document.getElementById("btnRetry").style.display = "inline-block";
+  document.getElementById("btnRetry").textContent = "PLAY AGAIN";
+}
+
+function hunterDeath() {
+  hunter.hero.dead = true;
+  hunter.active = false;
+  running = false;
+  document.getElementById("result").style.display = "flex";
+  document.getElementById("resultTitle").textContent = "DEFEAT";
+  document.getElementById("resultTitle").style.color = "#ff607b";
+  document.getElementById("resultSub").textContent = `영웅이 쓰러졌습니다... (도달 레벨: ${hunter.level}, 처치: ${hunter.kills})`;
+  document.getElementById("btnNext").style.display = "none";
+  document.getElementById("btnRetry").style.display = "inline-block";
+  document.getElementById("btnRetry").textContent = "RETRY";
+  burst(hunter.hero.x, hunter.hero.y, "#ff3b5c", 40);
+}
+
+/* =========================================================
+   헌터 전용 렌더링 (화려한 스킬 이펙트 & 고화질 스프라이트)
+========================================================= */
+function renderHunter(t) {
+  ctx.fillStyle = "#02070c";
+  ctx.fillRect(0, 0, W, H);
+
+  drawBackground(t);
+
+  ctx.save();
+  if (hunter.shake > 0) {
+    ctx.translate(rand(-hunter.shake, hunter.shake), rand(-hunter.shake, hunter.shake));
+  }
+
+  // 1. 경험치 보석 렌더링
+  for (const g of hunter.gems) {
+    const s = worldToScreen(g.x, g.y);
+    ctx.fillStyle = "#38bdf8";
+    ctx.shadowBlur = 10; ctx.shadowColor = "#38bdf8";
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 4.5 * camera.zoom, 0, TAU);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // 2. W 광역 플라즈마 노바 충격파 렌더링
+  for (const n of hunter.novas) {
+    const s = worldToScreen(n.x, n.y);
+    const alpha = n.life / n.maxLife;
+    ctx.save();
+    ctx.strokeStyle = `rgba(244,63,94,${alpha})`;
+    ctx.lineWidth = 12 * camera.zoom * alpha;
+    ctx.shadowBlur = 20; ctx.shadowColor = "#f43f5e";
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, n.r * camera.zoom, 0, TAU);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 3. E 하이퍼 관통 레이저 빔 렌더링
+  for (const b of hunter.beams) {
+    const s1 = worldToScreen(b.x1, b.y1);
+    const s2 = worldToScreen(b.x2, b.y2);
+    const alpha = b.life / b.maxLife;
+    ctx.save();
+    ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+    ctx.lineWidth = b.width * camera.zoom * alpha;
+    ctx.shadowBlur = 30; ctx.shadowColor = "#a855f7";
+    ctx.beginPath();
+    ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y);
+    ctx.stroke();
+    // 중심 코어 백색 레이저
+    ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+    ctx.lineWidth = (b.width * 0.4) * camera.zoom * alpha;
+    ctx.beginPath();
+    ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 4. 일반 투사체 렌더링
+  for (const p of projectiles) {
+    const s = worldToScreen(p.x, p.y);
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 12; ctx.shadowColor = p.color;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 5 * camera.zoom, 0, TAU);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // 5. 몬스터 & 보스 렌더링
+  for (const e of hunter.enemies) {
+    if (e.dead) continue;
+    const s = worldToScreen(e.x, e.y);
+    ctx.save();
+    ctx.translate(s.x, s.y);
+
+    ctx.fillStyle = e.color;
+    ctx.beginPath();
+    ctx.arc(0, 0, e.r * camera.zoom, 0, TAU);
+    ctx.fill();
+
+    if (e.isBoss) {
+      ctx.strokeStyle = "#ffd700";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, (e.r + 8) * camera.zoom, 0, TAU);
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff";
+      ctx.font = `bold ${12 * camera.zoom}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText(e.name, 0, -e.r * camera.zoom - 14);
+    }
+
+    // HP바
+    const hpPct = clamp(e.hp / e.maxHp, 0, 1);
+    const bw = e.r * 2 * camera.zoom;
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillRect(-bw / 2, e.r * camera.zoom + 4, bw, 3);
+    ctx.fillStyle = e.color;
+    ctx.fillRect(-bw / 2, e.r * camera.zoom + 4, bw * hpPct, 3);
+    ctx.restore();
+  }
+
+  // 6. 영웅 렌더링 (고화질 벡터 스프라이트)
+  const h = hunter.hero;
+  if (h && !h.dead) {
+    drawUnit(h);
+    // 무적 상태 오라
+    if (hunter.invuln > 0) {
+      const s = worldToScreen(h.x, h.y);
+      ctx.strokeStyle = "rgba(255,255,255,0.8)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 28 * camera.zoom, 0, TAU);
+      ctx.stroke();
+    }
+  }
+
+  // 7. 부유 텍스트
+  for (const tx of hunter.texts) {
+    const s = worldToScreen(tx.x, tx.y);
+    ctx.globalAlpha = clamp(tx.life / tx.max, 0, 1);
+    ctx.fillStyle = tx.color;
+    ctx.font = `900 ${14 * camera.zoom}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(tx.txt, s.x, s.y);
+    ctx.globalAlpha = 1.0;
+  }
+
+  drawEffects();
+  ctx.restore();
+}
+
+/* =========================================================
+   공통 / 모드 1 연산 함수들
 ========================================================= */
 function produce(base, count = 1) {
   if (base.team < 0) return;
@@ -569,19 +1236,12 @@ function produce(base, count = 1) {
       assignedRoute = base.routes[Math.floor(Math.random() * base.routes.length)];
     }
 
-    let hp = BASE_STATS.hp, spd = BASE_STATS.spd;
-    if (activeGameMode === "ZERGLING") {
-      hp = 65; spd = 95;
-    } else if (activeGameMode === "MUTALISK") {
-      hp = 110; spd = 85;
-    }
-
     units.push({
       id: uid++, team: base.team, job: f.job,
       x: base.x + Math.cos(a) * d,
       y: base.y + Math.sin(a) * d,
       vx: 0, vy: 0,
-      hp: hp, maxHp: hp,
+      hp: BASE_STATS.hp, maxHp: BASE_STATS.hp,
       tier: 1,
       attack: rand(0, 0.5),
       targetBase: assignedRoute, 
@@ -595,8 +1255,6 @@ function handleAI() {
   aiTimer += 1 / 60;
   if (aiTimer < 3.0) return;
   aiTimer = 0;
-
-  if (activeGameMode !== "DOMINATION") return;
 
   for (const f of factions.slice(1)) {
     const own = bases.filter(b => b.team === f.id);
@@ -619,7 +1277,6 @@ function handleAI() {
 }
 
 function updateTurrets(dt) {
-  if (activeGameMode !== "DOMINATION") return;
   for (const b of bases) {
     if (b.team < 0 || b.core) continue;
     b.turretCd -= dt;
@@ -691,23 +1348,21 @@ function updateUnits(dt) {
     }
 
     let enemy = null, ed = Infinity;
-    const rng = activeGameMode === "ZERGLING" ? 40 : (activeGameMode === "MUTALISK" ? 120 : BASE_STATS.rng);
     for (const v of nearby) {
       if (v.dead || v.team === u.team) continue;
       const d = Math.hypot(v.x - u.x, v.y - u.y);
-      if (d < rng + 35 && d < ed) { ed = d; enemy = v; }
+      if (d < BASE_STATS.rng + 35 && d < ed) { ed = d; enemy = v; }
     }
 
     u.target = enemy;
     let tx = null, ty = null;
 
-    if (enemy && ed <= rng) {
+    if (enemy && ed <= BASE_STATS.rng) {
       tx = enemy.x; ty = enemy.y;
       u.attack -= dt;
       if (u.attack <= 0) {
         attack(u, enemy);
-        const rate = activeGameMode === "ZERGLING" ? 1.6 : (activeGameMode === "MUTALISK" ? 1.2 : BASE_STATS.rate);
-        u.attack = 1 / rate;
+        u.attack = 1 / BASE_STATS.rate;
       }
     } else if (u.targetBase) {
       tx = u.targetBase.x; ty = u.targetBase.y;
@@ -716,8 +1371,7 @@ function updateUnits(dt) {
       if (distToBase < 30) {
         if (u.targetBase.team !== u.team) {
           const mult = Math.pow(2.2, u.tier - 1);
-          const dmg = activeGameMode === "ZERGLING" ? 14 : BASE_STATS.dmg;
-          u.targetBase.hp -= dmg * mult * dt;
+          u.targetBase.hp -= BASE_STATS.dmg * mult * dt;
           if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
         } else {
           if (u.targetBase.routes && u.targetBase.routes.length > 0) {
@@ -760,8 +1414,7 @@ function updateUnits(dt) {
 
     const moveD = Math.hypot(tx - u.x, ty - u.y);
     if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
-      const baseSpd = activeGameMode === "ZERGLING" ? 95 : (activeGameMode === "MUTALISK" ? 85 : BASE_STATS.spd);
-      const speed = baseSpd * (1 + (u.tier - 1) * 0.08);
+      const speed = BASE_STATS.spd * (1 + (u.tier - 1) * 0.08);
       u.vx = lerp(u.vx, ax * speed, dt * 5);
       u.vy = lerp(u.vy, ay * speed, dt * 5);
       u.x += u.vx * dt;
@@ -776,23 +1429,15 @@ function updateUnits(dt) {
 
 function attack(a, b) {
   const mult = Math.pow(2.2, a.tier - 1);
-  const baseDmg = activeGameMode === "ZERGLING" ? 14 : BASE_STATS.dmg;
-  let dmg = baseDmg * mult;
+  let dmg = BASE_STATS.dmg * mult;
 
   b.hp -= dmg;
   b.hit = 0.12;
 
-  if (activeGameMode === "MUTALISK") {
-    projectiles.push({
-      x: a.x, y: a.y, tx: b.x, ty: b.y,
-      life: 0.14, color: factions[a.team].color, job: a.job, bounces: 2, team: a.team
-    });
-  } else {
-    projectiles.push({
-      x: a.x, y: a.y, tx: b.x, ty: b.y,
-      life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
-    });
-  }
+  projectiles.push({
+    x: a.x, y: a.y, tx: b.x, ty: b.y,
+    life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
+  });
 
   if (b.hp <= 0) killUnit(b, a.team);
 }
@@ -801,18 +1446,6 @@ function killUnit(u, killer) {
   if (u.dead) return;
   u.dead = true;
   if (killer != null && factions[killer]) factions[killer].kills++;
-
-  if (activeGameMode === "ZERGLING" && killer === 0) {
-    zergKills++;
-    document.getElementById("chapBadge").textContent = zergKills;
-    if (zergKills === 30 || zergKills === 80 || zergKills === 150) {
-      toast(`★ 저글링 군단 진화! (${zergKills} KILLS 달성)`);
-      for (const myU of units) {
-        if (myU.team === 0 && myU.tier < 5) myU.tier++;
-      }
-    }
-  }
-
   burst(u.x, u.y, factions[u.team].color, 6 + u.tier * 2);
 }
 
@@ -831,8 +1464,6 @@ function captureBase(b, team) {
 }
 
 function handleAutoMerge() {
-  if (activeGameMode !== "DOMINATION") return;
-
   const groups = new Map();
   for (const u of units) {
     if (u.dead || u.tier >= 5) continue;
@@ -886,8 +1517,9 @@ function handleAutoMerge() {
 }
 
 function updateBases(dt) {
+  const chap = CHAPTERS[curChapterIdx];
   spawnTimer += dt;
-  const threshold = activeGameMode === "ZERGLING" ? 0.25 : (activeGameMode === "MUTALISK" ? 1.0 : 2.0);
+  const threshold = 2.0 * (chap.spawnMod || 1.0);
 
   if (spawnTimer >= threshold) {
     spawnTimer = 0;
@@ -917,21 +1549,7 @@ function updateGameBase(dt) {
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.life -= dt;
-    if (p.life <= 0) {
-      if (p.bounces && p.bounces > 0) {
-        const next = units.find(u => u.team !== p.team && !u.dead && Math.hypot(u.x - p.tx, u.y - p.ty) < 170);
-        if (next) {
-          projectiles.push({
-            x: p.tx, y: p.ty, tx: next.x, ty: next.y,
-            life: 0.14, color: p.color, bounces: p.bounces - 1, team: p.team
-          });
-          next.hp -= 16;
-          next.hit = 0.12;
-          if (next.hp <= 0) killUnit(next, p.team);
-        }
-      }
-      projectiles.splice(i, 1);
-    }
+    if (p.life <= 0) projectiles.splice(i, 1);
   }
 
   for (const p of particles) {
@@ -948,7 +1566,7 @@ function updateGameBase(dt) {
   if (!playerBases.length) {
     endGame(false, "COMMAND BASE OVERRUN");
   } else if (!enemyCores.length) {
-    endGame(true, activeGameMode === "DOMINATION" ? "CHAPTER COMPLETED" : "TOTAL VICTORY");
+    endGame(true, "CHAPTER COMPLETED");
   }
 
   updateHUD();
@@ -972,12 +1590,12 @@ function endGame(win, reason) {
   if (win) {
     document.getElementById("resultTitle").textContent = "VICTORY!";
     document.getElementById("resultTitle").style.color = "#63efff";
-    if (activeGameMode === "DOMINATION" && curChapterIdx < CHAPTERS.length - 1) {
+    if (curChapterIdx < CHAPTERS.length - 1) {
       document.getElementById("resultSub").textContent = `${CHAPTERS[curChapterIdx].name} 완료! 다음 챕터로 진격하십시오.`;
       btnNext.style.display = "inline-block";
       btnRetry.style.display = "none";
     } else {
-      document.getElementById("resultSub").textContent = "축하합니다! 전장을 완전히 장악했습니다!";
+      document.getElementById("resultSub").textContent = "축하합니다! 전 5개 챕터를 모두 정복했습니다!";
       btnNext.style.display = "none";
       btnRetry.style.display = "inline-block";
       btnRetry.textContent = "PLAY AGAIN";
@@ -1003,9 +1621,7 @@ function nextChapter() {
 function retryGame() {
   document.getElementById("result").style.display = "none";
   if (activeGameMode === "DOMINATION") startChapter(curChapterIdx);
-  else if (activeGameMode === "ZERGLING") startZerglingBlood();
-  else if (activeGameMode === "MUTALISK") startMutaliskBlood();
-  else if (activeGameMode === "ARCADE") startHunterGame();
+  else if (activeGameMode === "HUNTER") startHunterGame(hunterSelectedJob);
   running = true;
   isPaused = false;
 }
@@ -1095,8 +1711,8 @@ function screenToWorld(x, y) {
 ========================================================= */
 function drawBackground(t) {
   const chap = CHAPTERS[curChapterIdx] || CHAPTERS[0];
-  const theme = activeGameMode === "ZERGLING" ? "INFERNO" : (activeGameMode === "MUTALISK" ? "COSMOS" : chap.theme);
-  const bg = activeGameMode === "ZERGLING" ? "#1a0805" : (activeGameMode === "MUTALISK" ? "#040714" : chap.bg);
+  const theme = activeGameMode === "HUNTER" ? "INFERNO" : chap.theme;
+  const bg = activeGameMode === "HUNTER" ? "#120508" : chap.bg;
 
   ctx.save();
   ctx.translate(W / 2 - camera.x * camera.zoom, H / 2 - camera.y * camera.zoom);
@@ -1238,7 +1854,7 @@ function drawBase(b, t) {
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
   const j = JOBS[u.job] || JOBS.Mage;
-  const c = factions[u.team] ? factions[u.team].color : "#ffffff";
+  const c = factions[u.team] ? factions[u.team].color : (u.isHero ? JOBS[u.job].color : "#ffffff");
   const sc = Math.max(0.85, camera.zoom * 1.3);
   const size = (u.tier >= 4 ? 15 : u.tier >= 2 ? 11 : 8) * sc;
   const bob = Math.sin(u.anim) * 1.5 * sc;
@@ -1247,12 +1863,14 @@ function drawUnit(u) {
   ctx.save();
   ctx.translate(s.x, s.y + bob);
 
-  ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
-  ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
-  ctx.textAlign = "center";
-  ctx.fillText(`★${u.tier}`, 0, -size - 13);
+  if (!u.isHero) {
+    ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
+    ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
+    ctx.textAlign = "center";
+    ctx.fillText(`★${u.tier}`, 0, -size - 13);
+  }
 
-  if (u.tier >= 4) {
+  if (u.tier >= 4 || u.isHero) {
     ctx.save();
     ctx.rotate(t * 0.001);
     ctx.strokeStyle = u.tier === 5 ? "#ffd700" : c;
@@ -1273,65 +1891,46 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 1.4, 0, TAU); ctx.stroke();
   }
 
-  if (activeGameMode === "MUTALISK") {
-    ctx.fillStyle = c;
-    ctx.beginPath();
-    ctx.moveTo(size * 1.6, 0);
-    ctx.lineTo(-size, -size * 1.8);
-    ctx.lineTo(-size * 0.4, 0);
-    ctx.lineTo(-size, size * 1.8);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
-  } else if (activeGameMode === "ZERGLING") {
-    ctx.fillStyle = c;
+  if (u.job === "Mage") {
+    ctx.fillStyle = "#0c2438";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
+    ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
+  } else if (u.job === "Knight") {
+    ctx.fillStyle = "#1e1b4b";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = "rgba(129,140,248,0.85)";
+    ctx.fillRect(size * 0.6, -size * 1.5, size * 0.7, size * 3.0);
+  } else if (u.job === "Ranger") {
+    ctx.fillStyle = "#064e3b";
     ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = c; ctx.lineWidth = 2.5 * sc;
+    ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
+  } else if (u.job === "Summoner") {
+    ctx.fillStyle = "#3b0764";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#f3e8ff";
+    ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
+  } else if (u.job === "Barbarian") {
+    ctx.fillStyle = "#431407";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#fb923c";
     ctx.beginPath();
-    ctx.moveTo(size * 0.5, -size * 1.2); ctx.lineTo(size * 1.8, 0); ctx.lineTo(size * 0.5, size * 1.2);
+    ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
+    ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
     ctx.fill();
-  } else {
-    if (u.job === "Mage") {
-      ctx.fillStyle = "#0c2438";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
-      ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-      ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
-      ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
-      ctx.fillStyle = "#38bdf8";
-      ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
-    } else if (u.job === "Knight") {
-      ctx.fillStyle = "#1e1b4b";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
-      ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = "rgba(129,140,248,0.85)";
-      ctx.fillRect(size * 0.6, -size * 1.5, size * 0.7, size * 3.0);
-    } else if (u.job === "Ranger") {
-      ctx.fillStyle = "#064e3b";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-      ctx.strokeStyle = c; ctx.lineWidth = 2.5 * sc;
-      ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
-    } else if (u.job === "Summoner") {
-      ctx.fillStyle = "#3b0764";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#f3e8ff";
-      ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
-    } else if (u.job === "Barbarian") {
-      ctx.fillStyle = "#431407";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#fb923c";
-      ctx.beginPath();
-      ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
-      ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
-      ctx.fill();
-    } else if (u.job === "Gunner") {
-      ctx.fillStyle = "#18181b";
-      ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
-      ctx.fillStyle = "#3f3f46";
-      ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
-      ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
-      ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
-    }
+  } else if (u.job === "Gunner") {
+    ctx.fillStyle = "#18181b";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#3f3f46";
+    ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
+    ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
+    ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
   }
 
   ctx.rotate(-u.angle);
@@ -1347,7 +1946,7 @@ function drawUnit(u) {
 function drawEffects() {
   for (const p of projectiles) {
     const s1 = worldToScreen(p.x, p.y);
-    const s2 = worldToScreen(p.tx, p.ty);
+    const s2 = worldToScreen(p.tx || p.x, p.ty || p.y);
     ctx.save();
     ctx.strokeStyle = p.color;
     ctx.lineWidth = 2.5;
@@ -1365,6 +1964,22 @@ function drawEffects() {
 }
 
 function render(t) {
+  if (activeGameMode === "HUNTER") {
+    renderHunter(t);
+  } else {
+    renderBase(t);
+  }
+}
+
+function updateGame(dt) {
+  if (activeGameMode === "HUNTER") {
+    updateHunter(dt);
+  } else {
+    updateGameBase(dt);
+  }
+}
+
+function renderBase(t) {
   ctx.fillStyle = "#02070c";
   ctx.fillRect(0, 0, W, H);
 
@@ -1379,7 +1994,7 @@ function render(t) {
   if (dragBase) {
     const a = worldToScreen(dragBase.x, dragBase.y);
     ctx.save();
-    ctx.strokeStyle = factions[dragBase.team] ? factions[dragBase.team].color : "#62eaff";
+    ctx.strokeStyle = (factions[dragBase.team] && factions[dragBase.team].color) ? factions[dragBase.team].color : "#62eaff";
     ctx.lineWidth = 3;
     ctx.setLineDash([8, 6]);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y); ctx.stroke();
@@ -1398,6 +2013,36 @@ function hitBase(wx, wy) {
   return best;
 }
 
+/* =========================================================
+   입력 시스템 (키보드 방향키 이동 + Q/W/E 스킬)
+========================================================= */
+window.addEventListener("keydown", e => {
+  // 모드 2 헌터 키 입력
+  if (activeGameMode === "HUNTER" && hunter.active) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+      e.preventDefault();
+      hunter.key[e.key] = true;
+    }
+    const k = e.key.toLowerCase();
+    if (["q", "w", "e"].includes(k)) {
+      e.preventDefault();
+      hunterUseSkill(k);
+    }
+    if (["1", "2", "3"].includes(k) && hunter.pendingLevel) {
+      const cards = document.querySelectorAll("#evoCards .evo");
+      if (cards[+k - 1]) cards[+k - 1].click();
+    }
+  }
+});
+
+window.addEventListener("keyup", e => {
+  if (activeGameMode === "HUNTER" && hunter.active) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+      hunter.key[e.key] = false;
+    }
+  }
+});
+
 canvas.addEventListener("pointerdown", e => {
   if (isPaused) return;
   pointerDown = true;
@@ -1406,8 +2051,13 @@ canvas.addEventListener("pointerdown", e => {
   lastPointer = { x: e.clientX, y: e.clientY };
 
   const w = screenToWorld(pointer.x, pointer.y);
-  const b = hitBase(w.x, w.y);
 
+  if (activeGameMode === "HUNTER" && hunter.active) {
+    hunter.target = w;
+    return;
+  }
+
+  const b = hitBase(w.x, w.y);
   if (b && b.team === 0) dragBase = b;
 });
 
@@ -1420,7 +2070,7 @@ window.addEventListener("pointermove", e => {
   const dy = e.clientY - lastPointer.y;
   if (Math.hypot(dx, dy) > 4) dragMoved = true;
 
-  if (!dragBase) {
+  if (!dragBase && activeGameMode === "DOMINATION") {
     camera.x -= dx / camera.zoom;
     camera.y -= dy / camera.zoom;
     clampCamera();
@@ -1432,6 +2082,8 @@ window.addEventListener("pointerup", e => {
   if (isPaused) return;
   if (!pointerDown) return;
   pointerDown = false;
+
+  if (activeGameMode === "HUNTER") return;
 
   if (dragBase) {
     const w = screenToWorld(e.clientX, e.clientY);
@@ -1474,313 +2126,19 @@ function clampCamera() {
   camera.y = clamp(camera.y, halfH, WORLD.h - halfH);
 }
 
+// 메인 루프 가동
+initThemeParticles("GRASS");
 
-/* =========================================================
-   GAME 2: FRONTIER HUNTER
-   게임 1의 JOBS 캐릭터 컨셉을 가져온 독립 생존/사냥 게임.
-   DOMINATION 로직은 이 블록 밖의 기존 로직을 그대로 유지한다.
-========================================================= */
-const hunter = {
-  active:false, hero:null, job:'Mage', level:1, xp:0, nextXp:105, kills:0, score:0,
-  elapsed:0, spawnTimer:0, bossTimer:38, bossIndex:0, boss:null, zone:0,
-  q:0,w:0,e:0,invuln:0,shake:0,pendingLevel:false,target:null,key:{},
-  enemies:[], gems:[], projectiles:[], particles:[], texts:[], rings:[], minions:[],
-  upgrades:{damage:0,speed:0,hp:0,armor:0,crit:0,skill:0,magnet:0,regen:0,aoe:0,moveDmg:0},
-  resource:0,resourceMax:100,ammo:6,maxAmmo:6,reload:0,marks:new Map(),
-  stats:{damage:1,speed:220,maxHp:260,armor:0,crit:0,magnet:105,regen:0,skill:1,aoe:1,moveDmg:0}
-};
-const HUNTER_CLASSES={
- Mage:{icon:'✦',name:'MAGE',color:'#38bdf8',desc:'비전술사 · 원거리 폭발 · 표식 연쇄',hp:220,speed:205,damage:1.15,range:430,q:380,w:210,e:460,passive:'ARCANE CHARGE'},
- Knight:{icon:'♜',name:'KNIGHT',color:'#818cf8',desc:'성기사 · 방패전진 · 피해를 받아 반격',hp:380,speed:175,damage:1.20,range:150,q:270,w:175,e:190,passive:'GUARD METER'},
- Ranger:{icon:'➶',name:'RANGER',color:'#34d399',desc:'사냥꾼 · 이동하며 강화 · 관통 사격',hp:230,speed:265,damage:1.05,range:520,q:420,w:240,e:600,passive:'MOMENTUM'},
- Summoner:{icon:'◈',name:'SUMMONER',color:'#c084fc',desc:'소환술사 · 수정 2기 · 저주 표식',hp:250,speed:195,damage:.92,range:360,q:330,w:200,e:420,passive:'SOUL LINK'},
- Barbarian:{icon:'✚',name:'BARBARIAN',color:'#fb923c',desc:'광전사 · 분노 축적 · 돌진과 회전베기',hp:440,speed:190,damage:1.30,range:165,q:300,w:190,e:180,passive:'RAGE'},
- Gunner:{icon:'▣',name:'GUNNER',color:'#facc15',desc:'중화기병 · 탄창 관리 · 폭발/집중사격',hp:245,speed:215,damage:.92,range:560,q:350,w:220,e:650,passive:'AMMO'}
-};
-const HUNTER_ART={
- Mage:{src:'https://opengameart.org/sites/default/files/black_mage_1.png',sw:32,sh:32},
- Knight:{src:'https://opengameart.org/sites/default/files/Ye_Oldy_Knight_Guy.png',sw:16,sh:16},
- Ranger:{src:'https://opengameart.org/sites/default/files/arqueira_0.png',sw:64,sh:64},
- Summoner:{src:'https://opengameart.org/sites/default/files/black_mage_1.png',sw:32,sh:32},
- Barbarian:{src:'https://opengameart.org/sites/default/files/player_28.png',sw:16,sh:16},
- Gunner:{src:'https://opengameart.org/sites/default/files/przemekSz_0.png',sw:48,sh:48}
-};
-const hunterArtCache={};
-function hunterLoadArt(job){const a=HUNTER_ART[job];if(!a)return null;if(!hunterArtCache[job]){const im=new Image();im.src=a.src;im.onload=()=>{hunterArtCache[job]=im};hunterArtCache[job]=im}return hunterArtCache[job]}
-Object.keys(HUNTER_ART).forEach(hunterLoadArt);
-const HUNTER_ZONES=[
- {name:'FRONTIER MEADOW',color:'#5ee7a8',x:0,w:650},
- {name:'INFESTED GROVE',color:'#ff7652',x:650,w:650},
- {name:'RUINED OUTPOST',color:'#e5c15b',x:1300,w:650},
- {name:'VOID CANYON',color:'#b875ff',x:1950,w:650},
- {name:'BROOD HEART',color:'#ff3f72',x:2600,w:600}
-];
-const HUNTER_BOSSES=[
- {name:'GROVE BEHEMOTH',zone:1,hp:900,dmg:12,speed:72},
- {name:'IRON DEVOURER',zone:2,hp:1450,dmg:16,speed:66},
- {name:'VOID REAPER',zone:3,hp:2200,dmg:20,speed:78},
- {name:'BROOD TYRANT',zone:4,hp:3200,dmg:25,speed:60}
-];
-function openHunterSelect(){
-  const modal=document.getElementById('hunterClassModal'),grid=document.getElementById('hunterClasses');
-  grid.innerHTML='';
-  Object.entries(HUNTER_CLASSES).forEach(([key,c])=>{
-    const b=document.createElement('button');b.className='hunterChoice';b.dataset.job=key;b.style.cssText='padding:15px 10px;border-radius:13px;border:1px solid #ffffff18;background:#07111b;color:#eaffff;cursor:pointer;text-align:left;transition:.15s';
-    b.innerHTML=`<div style="display:flex;gap:10px;align-items:center"><div style="width:72px;height:72px;border-radius:12px;overflow:hidden;background:#02070c;border:1px solid ${c.color}55;display:flex;align-items:center;justify-content:center"><img src="${HUNTER_ART[key].src}" style="width:70px;height:70px;object-fit:contain;image-rendering:pixelated" onerror="this.style.display='none'"></div><div><strong style="display:block;font-size:13px">${c.name}</strong><small style="display:block;color:#91a8b4;margin-top:5px;line-height:1.45">${c.desc}</small><small style="display:block;color:${c.color};margin-top:5px;font-weight:800">PASSIVE · ${c.passive}</small></div></div>`;
-    b.onclick=()=>{hunter.job=key;grid.querySelectorAll('.hunterChoice').forEach(x=>x.style.borderColor='#ffffff18');b.style.borderColor=c.color;b.style.boxShadow='0 0 20px '+c.color+'33'};
-    if(key===hunter.job){b.style.borderColor=c.color;b.style.boxShadow='0 0 20px '+c.color+'33'}grid.appendChild(b);
-  });
-  document.getElementById('hunterStart').onclick=()=>{modal.style.display='none';startHunterGame()};
-  modal.style.display='flex';
-}
-
-function hunterReset(){
-  Object.assign(hunter,{active:true,hero:null,level:1,xp:0,nextXp:105,kills:0,score:0,elapsed:0,spawnTimer:0,bossTimer:38,bossIndex:0,boss:null,zone:0,q:0,w:0,e:0,invuln:0,shake:0,pendingLevel:false,target:null,key:{},enemies:[],gems:[],projectiles:[],particles:[],texts:[],rings:[],minions:[]});
-  hunter.upgrades={damage:0,speed:0,hp:0,armor:0,crit:0,skill:0,magnet:0,regen:0,aoe:0,moveDmg:0};hunter.resource=0;hunter.resourceMax=100;hunter.ammo=6;hunter.maxAmmo=6;hunter.reload=0;hunter.marks=new Map();
-  const c=HUNTER_CLASSES[hunter.job];
-  hunter.stats={damage:c.damage,speed:c.speed,maxHp:c.hp,armor:hunter.job==='Knight'?.12:0,crit:hunter.job==='Ranger'?.08:0,magnet:105,regen:hunter.job==='Summoner'?.7:0,skill:1,aoe:1,moveDmg:hunter.job==='Barbarian'?.18:0};
-  bases=[];units=[];projectiles=[];particles=[];explosions=[];stars=[];factions=[{id:0,job:hunter.job,color:c.color,kills:0}];uid=1;mission=999999;
-}
-function startHunterGame(){
-  activeGameMode='ARCADE';
-  document.getElementById('classModal').style.display='none';
-  document.getElementById('result').style.display='none';
-  hunter.job=HUNTER_CLASSES[selectedJob]?selectedJob:'Mage';
-  hunterReset();
-  document.getElementById('title').textContent='FRONTIER HUNTER';
-  document.getElementById('sub').textContent='GAME 2 · SURVIVAL HUNT';
-  document.getElementById('lblBadge1').textContent='LEVEL';
-  document.getElementById('lblBadge2').textContent='KILLS';
-  document.getElementById('lblBadge3').textContent='SCORE';
-  document.getElementById('guide').textContent='A/S/D+방향키 이동 · 마우스 클릭 이동/조준 · Q 순간이동 · W 직업스킬 · E 핵심스킬 · 직업별 패시브를 활용하세요!';
-  makeHunterHero();
-  camera.x=hunter.hero.x;camera.y=hunter.hero.y;camera.zoom=clamp(Math.min(W/1250,H/760),.58,1.05);clampCamera();
-  hunterShow(true);updateHunterHUD();
-  hunterFloat(HUNTER_CLASSES[hunter.job].name+' DEPLOY',hunter.hero.x,hunter.hero.y-70,HUNTER_CLASSES[hunter.job].color,1.8);
-  running=true;isPaused=false;
-}
-function makeHunterHero(){
-  const c=HUNTER_CLASSES[hunter.job],h={id:uid++,team:0,job:hunter.job,x:300,y:750,vx:0,vy:0,hp:c.hp,maxHp:c.hp,tier:1,attack:0,target:null,home:null,angle:0,anim:0,hit:0,dead:false,kind:'hero',isHero:true,dmg:c.damage,spd:c.speed,radius:22};
-  hunter.hero=h;units.push(h);
-  if(hunter.job==='Summoner'){
-    hunter.minions=[{angle:0,cd:.2},{angle:Math.PI,cd:.7}];
-  }
-}
-function hunterShow(on){
-  document.getElementById('arcadeHUD').style.display=on?'block':'none';
-  document.getElementById('arcadeSkills').style.display=on?'flex':'none';
-}
-function hunterFloat(txt,x,y,color='#fff',life=1){hunter.texts.push({txt,x,y,color,life,max:life})}
-function hunterZone(x){for(let i=0;i<HUNTER_ZONES.length;i++){const z=HUNTER_ZONES[i];if(x>=z.x&&x<z.x+z.w)return i}return 4}
-function updateHunterZone(){
-  const h=hunter.hero;if(!h)return;const z=hunterZone(h.x);
-  if(z!==hunter.zone){hunter.zone=z;hunterFloat(HUNTER_ZONES[z].name,h.x,h.y-60,HUNTER_ZONES[z].color,1.8);hunter.shake=5;}
-}
-function hunterSpawnEnemy(){
-  const h=hunter.hero;if(!h)return;const z=hunter.zone,n=hunter.level;
-  const ang=rand(0,TAU),dist=rand(520,760);
-  let x=clamp(h.x+Math.cos(ang)*dist,30,WORLD.w-30),y=clamp(h.y+Math.sin(ang)*dist,30,WORLD.h-30);
-  const zone=HUNTER_ZONES[z];x=clamp(x,zone.x+35,zone.x+zone.w-35);
-  const pool=['drone','drone','drone'];if(z>=1)pool.push('charger','shooter');if(z>=2)pool.push('tank');if(z>=3)pool.push('assassin');if(z>=4)pool.push('splitter');
-  const kind=pool[Math.floor(Math.random()*pool.length)];
-  const base={drone:[42,7,88],charger:[34,11,125],shooter:[38,8,64],tank:[115,10,46],assassin:[28,14,140],splitter:[58,8,72]}[kind];
-  const scale=1+z*.08+(n-1)*.035;
-  hunter.enemies.push({id:uid++,kind,x,y,vx:0,vy:0,hp:base[0]*scale,maxHp:base[0]*scale,dmg:base[1]*scale,spd:base[2],radius:kind==='tank'?20:14,attack:rand(.2,1),hit:0,dead:false,angle:0,anim:rand(0,6.28),elite:kind!=='drone',shot:kind==='shooter'});
-}
-function hunterSpawnBoss(){
-  const data=HUNTER_BOSSES[hunter.bossIndex];if(!data)return;
-  const z=data.zone,x=data.zone*650+420,y=750;
-  const scale=1+(hunter.level-5)*.055;
-  hunter.boss={id:uid++,kind:'boss',name:data.name,x,y,vx:0,vy:0,hp:data.hp*scale,maxHp:data.hp*scale,dmg:data.dmg*scale,spd:data.speed,attack:1.2,hit:0,radius:42,dead:false,angle:0,anim:0};
-  hunter.enemies.push(hunter.boss);hunterFloat('⚠ BOSS · '+data.name,x,y-90,'#ff5577',2.5);hunter.shake=18;
-}
-function hunterDropGem(e){
-  const xp=e.kind==='boss'?Math.ceil(hunter.nextXp*.48):e.elite?14:5;
-  const count=e.kind==='boss'?12:e.elite?2:1;
-  for(let i=0;i<count;i++)hunter.gems.push({x:e.x+rand(-16,16),y:e.y+rand(-16,16),xp,life:35,spin:rand(0,6.28)});
-}
-function hunterKill(e){
-  if(e.dead)return;e.dead=true;hunter.kills++;hunter.combo=(hunter.combo||0)+1;hunter.comboTimer=2.2;hunter.score+=e.kind==='boss'?5000:e.elite?180:70;hunterDropGem(e);
-  if(e.kind==='boss'){hunter.boss=null;hunter.bossIndex++;hunter.bossTimer=42;if(hunter.bossIndex>=HUNTER_BOSSES.length){hunterWin();return}hunterFloat('BOSS DOWN · NEXT AREA UNLOCKED',e.x,e.y,'#ffe06b',2);hunter.shake=24}
-  else if(hunter.kills%10===0)hunterFloat(hunter.kills+' KILLS',e.x,e.y,'#fff',.7);
-  hunter.shake=Math.max(hunter.shake,e.kind==='boss'?18:3);
-  burst(e.x,e.y,HUNTER_CLASSES[hunter.job].color,8+(e.kind==='boss'?60:0));
-}
-function hunterGainXP(v){
-  hunter.xp+=v;
-  if(hunter.xp>=hunter.nextXp){
-    hunter.xp-=hunter.nextXp;hunter.level++;
-    hunter.nextXp=Math.floor(92+hunter.level*34+Math.pow(hunter.level,1.28)*7);
-    hunter.pendingLevel=true;
-    const h=hunter.hero;if(h){hunter.stats.maxHp+=(hunter.job==='Knight'||hunter.job==='Barbarian'?20:14);h.maxHp=hunter.stats.maxHp;h.hp=Math.min(h.maxHp,h.hp+35);hunter.resource=Math.min(hunter.resourceMax,hunter.resource+20);if(hunter.job==='Gunner'){hunter.ammo=hunter.maxAmmo;hunter.reload=0}}
-    hunterShowLevel();
-  }
-}
-function hunterNearest(max=9999){const h=hunter.hero;let best=null,bd=max;for(const e of hunter.enemies){if(e.dead)continue;const d=Math.hypot(e.x-h.x,e.y-h.y);if(d<bd){bd=d;best=e}}return best}
-function hunterDamage(e,dmg,tag='HIT'){if(!e||e.dead)return;e.hp-=dmg;e.hit=.16;hunterFloat(tag,e.x,e.y-18,'#fff',.3);if(e.hp<=0)hunterKill(e)}
-function hunterUseSkill(k){
-  if(!hunter.active||hunter.pendingLevel||!hunter.hero||hunter.hero.dead)return;
-  const h=hunter.hero,c=HUNTER_CLASSES[hunter.job];
-  if(k==='q'&&hunter.q<=0){
-    const p=hunter.target||screenToWorld(pointer.x,pointer.y);let dx=p.x-h.x,dy=p.y-h.y,d=Math.hypot(dx,dy)||1;
-    const range=c.q+hunter.upgrades.skill*20;
-    // Ranger Q leaves a decoy; Knight Q is a shielded charge.
-    h.x=clamp(h.x+dx/d*range,35,WORLD.w-35);h.y=clamp(h.y+dy/d*range,35,WORLD.h-35);
-    hunter.invuln=hunter.job==='Knight'?1.05:.7;hunter.q=Math.max(2.8,4.6-hunter.upgrades.skill*.18);
-    if(hunter.job==='Ranger'){hunter.rings.push({x:h.x-dx/d*70,y:h.y-dy/d*70,r:8,max:46,life:.8,decoy:true})}
-    if(hunter.job==='Barbarian'){hunter.resource=Math.min(100,hunter.resource+18);}
-    hunter.target=null;hunterFloat('Q · '+(hunter.job==='Knight'?'CHARGE':hunter.job==='Ranger'?'DASH':'TELEPORT'),h.x,h.y,c.color,.8);hunter.rings.push({x:h.x,y:h.y,r:10,max:70,life:.3});hunter.shake=7;return;
-  }
-  if(k==='w'&&hunter.w<=0){
-    const radius=c.w+hunter.upgrades.aoe*14,list=hunter.enemies.filter(e=>!e.dead&&Math.hypot(e.x-h.x,e.y-h.y)<radius);
-    let base=hunter.job==='Knight'?85:hunter.job==='Barbarian'?125:hunter.job==='Gunner'?100:hunter.job==='Mage'?135:hunter.job==='Ranger'?100:92;
-    base*=hunter.stats.damage*(1+hunter.upgrades.skill*.12);
-    if(hunter.job==='Mage'){
-      list.forEach(e=>{const marked=(hunter.marks.get(e.id)||0)>0;hunterDamage(e,base*(marked?1.75:1),'W · ARCANE NOVA');hunter.marks.delete(e.id)});
-      hunter.resource=Math.max(0,hunter.resource-30);
-    }else if(hunter.job==='Knight'){
-      list.forEach(e=>hunterDamage(e,base*(e.kind==='boss'?.72:1),'W · SHIELD BASH'));
-      h.hp=Math.min(h.maxHp,h.hp+70);hunter.invuln=1.0;hunter.resource=0;
-    }else if(hunter.job==='Ranger'){
-      // Trap field: enemies hit are slowed and marked.
-      list.forEach(e=>{hunterDamage(e,base,'W · HUNTER TRAP');e.slow=.55;e.slowT=2.8});hunter.resource=Math.min(100,hunter.resource+22);
-    }else if(hunter.job==='Summoner'){
-      list.forEach(e=>{hunterDamage(e,base,'W · SOUL NOVA');hunter.marks.set(e.id,3)});hunter.minions.forEach(m=>m.cd=0);hunter.resource=Math.min(100,hunter.resource+25);
-    }else if(hunter.job==='Barbarian'){
-      list.forEach(e=>hunterDamage(e,base*(1+hunter.resource/180),'W · WHIRLWIND'));h.hp=Math.min(h.maxHp,h.hp+55+hunter.resource*.5);hunter.resource=Math.min(100,hunter.resource+12);
-    }else if(hunter.job==='Gunner'){
-      // Grenade: delayed secondary blast, bigger reward for grouping.
-      list.forEach(e=>hunterDamage(e,base,'W · GRENADE'));hunter.resource=Math.min(100,hunter.resource+18);hunter.ammo=Math.max(0,hunter.ammo-2);
-    }
-    hunter.w=Math.max(5.0,7.8-hunter.upgrades.skill*.3);hunter.rings.push({x:h.x,y:h.y,r:20,max:radius,life:.4});hunter.shake=12;return;
-  }
-  if(k==='e'&&hunter.e<=0){
-    const t=hunterNearest(c.e);if(!t){hunterFloat('E · NO TARGET',h.x,h.y-30,'#9ab0b8',.5);return}
-    let base=hunter.job==='Ranger'?220:hunter.job==='Gunner'?250:hunter.job==='Mage'?190:hunter.job==='Knight'?165:hunter.job==='Barbarian'?200:175;
-    base*=hunter.stats.damage*(1+hunter.upgrades.skill*.15);
-    if(hunter.job==='Gunner'){
-      const shots=Math.min(4,Math.max(1,hunter.ammo));for(let i=0;i<shots;i++)setTimeout(()=>{if(hunter.active&&!t.dead)hunterDamage(t,base*.34,'E · BURST')},i*65);hunter.ammo=Math.max(0,hunter.ammo-shots);
-    }else if(hunter.job==='Ranger'){
-      hunterDamage(t,base*(1+hunter.resource/180),'E · HEADSHOT');hunter.resource=Math.max(0,hunter.resource-35);
-      let victims=hunter.enemies.filter(e=>!e.dead&&e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<105).slice(0,3);victims.forEach((e,i)=>hunterDamage(e,base*(.55-i*.1),'PIERCE'));
-    }else if(hunter.job==='Mage'){
-      hunterDamage(t,base*(1+(hunter.marks.get(t.id)||0)*.16),'E · ARCANE LANCE');hunter.marks.set(t.id,3);hunter.resource=Math.min(100,hunter.resource+20);
-    }else if(hunter.job==='Knight'){
-      hunterDamage(t,base*(1+hunter.resource/140),'E · EXECUTION');h.hp=Math.min(h.maxHp,h.hp+Math.min(45,hunter.resource*.45));hunter.resource=0;
-    }else if(hunter.job==='Summoner'){
-      hunterDamage(t,base*(1+(hunter.marks.get(t.id)||0)*.12),'E · SOUL BIND');hunter.marks.set(t.id,6);hunter.minions.forEach(m=>m.focus=t.id);
-    }else if(hunter.job==='Barbarian'){
-      const dx=t.x-h.x,dy=t.y-h.y,d=Math.hypot(dx,dy)||1;h.x=clamp(t.x-dx/d*52,25,WORLD.w-25);h.y=clamp(t.y-dy/d*52,25,WORLD.h-25);hunterDamage(t,base*(1+hunter.resource/100),'E · LEAP');hunter.resource=Math.max(0,hunter.resource-45);hunter.invuln=.35;
-    }
-    hunter.e=Math.max(2.5,4.4-hunter.upgrades.skill*.18);hunter.shake=7;
-  }
-}
-function hunterAutoAttack(dt){
-  const h=hunter.hero,c=HUNTER_CLASSES[hunter.job];if(!h||h.dead)return;
-  if(hunter.job==='Gunner'&&hunter.reload>0){hunter.reload-=dt;if(hunter.reload<=0)hunter.ammo=hunter.maxAmmo;return}
-  h.attack-=dt;if(h.attack>0)return;const t=hunterNearest(c.range);if(!t)return;
-  let dmg=9*hunter.stats.damage;
-  if(hunter.job==='Mage'){dmg*=1.05;hunter.resource=Math.min(100,hunter.resource+9);hunter.marks.set(t.id,Math.min(5,(hunter.marks.get(t.id)||0)+1))}
-  if(hunter.job==='Gunner'){if(hunter.ammo<=0){hunter.reload=1.15;hunterFloat('RELOADING',h.x,h.y-35,'#facc15',.6);return}dmg*=1.55;hunter.ammo-- ;if(hunter.ammo<=0)hunter.reload=1.15;hunter.resource=Math.min(100,hunter.resource+7)}
-  if(hunter.job==='Knight'){dmg*=1.22;hunter.resource=Math.min(100,hunter.resource+Math.min(12,2+(h.maxHp-h.hp)/35))}
-  if(hunter.job==='Ranger'){const moving=Math.hypot(h.vx,h.vy)>40;dmg*=1+(moving?hunter.resource/160:0);hunter.resource=Math.min(100,hunter.resource+(moving?7:2))}
-  if(hunter.job==='Barbarian'){dmg*=1.18*(1+hunter.resource/220);hunter.resource=Math.min(100,hunter.resource+8)}
-  if(hunter.job==='Summoner'){dmg*=.92;hunter.resource=Math.min(100,hunter.resource+5)}
-  if(Math.random()<hunter.stats.crit)dmg*=2;hunterDamage(t,dmg,'AUTO');hunter.projectiles.push({x:h.x,y:h.y,tx:t.x,ty:t.y,life:.12,heavy:hunter.job==='Gunner'});
-  h.attack=hunter.job==='Gunner'?.16:hunter.job==='Ranger'?.38:hunter.job==='Mage'?.58:.70;
-}
-function hunterMove(dt){
-  const h=hunter.hero;if(!h||h.dead)return;
-  let ax=0,ay=0;if(hunter.key.arrowup)ay--;if(hunter.key.arrowdown)ay++;if(hunter.key.a||hunter.key.arrowleft)ax--;if(hunter.key.d||hunter.key.arrowright)ax++;
-  if(ax||ay){const l=Math.hypot(ax,ay);h.vx=lerp(h.vx,ax/l*hunter.stats.speed,dt*8);h.vy=lerp(h.vy,ay/l*hunter.stats.speed,dt*8)}
-  else if(hunter.target){let dx=hunter.target.x-h.x,dy=hunter.target.y-h.y,d=Math.hypot(dx,dy)||1;h.vx=lerp(h.vx,dx/d*hunter.stats.speed,dt*4);h.vy=lerp(h.vy,dy/d*hunter.stats.speed,dt*4)}
-  else {h.vx=lerp(h.vx,0,dt*6);h.vy=lerp(h.vy,0,dt*6)}
-  h.x=clamp(h.x+h.vx*dt,25,WORLD.w-25);h.y=clamp(h.y+h.vy*dt,25,WORLD.h-25);if(Math.hypot(h.vx,h.vy)>3)h.angle=Math.atan2(h.vy,h.vx);
-  if(hunter.job==='Barbarian'&&Math.hypot(h.vx,h.vy)>150){hunter.resource=Math.min(100,hunter.resource+18*dt);for(const e of hunter.enemies){if(!e.dead&&Math.hypot(e.x-h.x,e.y-h.y)<34)hunterDamage(e,8+hunter.stats.moveDmg*20*(1+hunter.resource/100),'CHARGE')}}
-  if(hunter.job==='Ranger'&&!Math.hypot(h.vx,h.vy))hunter.resource=Math.max(0,hunter.resource-18*dt);
-  if(hunter.job==='Knight'&&hunter.invuln>0)hunter.resource=Math.min(100,hunter.resource+12*dt);
-  if(hunter.job==='Barbarian'&&h.hp<h.maxHp*.35)hunter.resource=Math.min(100,hunter.resource+10*dt);
-}
-function hunterEnemyAI(dt){
-  const h=hunter.hero;if(!h)return;
-  for(const e of hunter.enemies){if(e.dead)continue;e.hit=Math.max(0,e.hit-dt);e.anim+=dt*5;if(e.slowT>0)e.slowT-=dt;else e.slow=1;
-    let dx=h.x-e.x,dy=h.y-e.y,d=Math.hypot(dx,dy)||1;
-    if(e.kind==='shooter'){
-      if(d>280){e.x+=dx/d*e.spd*dt;e.y+=dy/d*e.spd*dt}else if(d<190){e.x-=dx/d*e.spd*.65*dt;e.y-=dy/d*e.spd*.65*dt}
-      e.attack-=dt;if(e.attack<=0&&d<560){e.attack=1.65;hunter.projectiles.push({enemy:true,x:e.x,y:e.y,tx:h.x,ty:h.y,life:1.1,speed:260,damage:e.dmg})}
-    }else{
-      const speed=e.spd*(e.slowT>0?e.slow:1);if(d>e.radius+h.radius+5){e.x+=dx/d*speed*dt;e.y+=dy/d*speed*dt}
-      if(d<e.radius+h.radius+8){e.attack-=dt;if(e.attack<=0){e.attack=e.kind==='boss'?1.05:1.25;let dmg=e.dmg*(1-hunter.stats.armor);if(hunter.invuln<=0)h.hp-=dmg;h.hit=.18;if(h.hp<=0)hunterDeath()}}
-    }
-    e.x=clamp(e.x,20,WORLD.w-20);e.y=clamp(e.y,20,WORLD.h-20);e.angle=Math.atan2(dy,dx);
-  }
-}
-function hunterSummoner(dt){if(hunter.job!=='Summoner'||!hunter.hero)return;for(const m of hunter.minions){m.angle+=dt*.9;m.cd-=dt;if(m.cd<=0){const a=hunter.hero;const x=a.x+Math.cos(m.angle)*52,y=a.y+Math.sin(m.angle)*52;let t=null,bd=310;for(const e of hunter.enemies){if(e.dead)continue;const d=Math.hypot(e.x-x,e.y-y);if(m.focus&&e.id===m.focus){t=e;bd=-1;break}if(d<bd){bd=d;t=e}}if(t){hunterDamage(t,12*hunter.stats.damage,'ARCANE');hunter.projectiles.push({x,y,tx:t.x,ty:t.y,life:.14});m.cd=.65}}}}
-function hunterUpdateGems(dt){const h=hunter.hero;for(const g of hunter.gems){g.life-=dt;g.spin+=dt*4;const d=Math.hypot(g.x-h.x,g.y-h.y);if(d<hunter.stats.magnet){g.x+=((h.x-g.x)/(d||1))*170*dt;g.y+=((h.y-g.y)/(d||1))*170*dt}if(d<24){hunterGainXP(g.xp);g.life=0}}hunter.gems=hunter.gems.filter(g=>g.life>0)}
-function hunterUpdate(dt){
-  if(!hunter.active||isPaused)return;const h=hunter.hero;if(!h)return;
-  hunter.elapsed+=dt;hunter.q=Math.max(0,hunter.q-dt);hunter.w=Math.max(0,hunter.w-dt);hunter.e=Math.max(0,hunter.e-dt);hunter.invuln=Math.max(0,hunter.invuln-dt);if((hunter.comboTimer||0)>0){hunter.comboTimer-=dt}else hunter.combo=0;
-  if(hunter.stats.regen)h.hp=Math.min(h.maxHp,h.hp+hunter.stats.regen*dt);
-  hunterMove(dt);hunterAutoAttack(dt);hunterSummoner(dt);hunterEnemyAI(dt);hunterUpdateGems(dt);updateHunterZone();
-  hunter.spawnTimer-=dt;if(hunter.spawnTimer<=0){const pressure=Math.max(.72,1.65-hunter.level*.028);hunter.spawnTimer=pressure;for(let i=0;i<(hunter.level>8?2:1);i++)hunterSpawnEnemy()}
-  if(hunter.bossIndex<4&&!hunter.boss&&hunter.elapsed>=hunter.bossTimer&&hunter.zone>=HUNTER_BOSSES[hunter.bossIndex].zone){hunterSpawnBoss()}
-  for(const r of hunter.rings)r.life-=dt;hunter.rings=hunter.rings.filter(r=>r.life>0);
-  for(const t of hunter.texts){t.life-=dt;t.y-=12*dt}hunter.texts=hunter.texts.filter(t=>t.life>0);
-  for(const p of hunter.projectiles){if(p.enemy){const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy)||1;p.x+=dx/d*p.speed*dt;p.y+=dy/d*p.speed*dt;p.life-=dt;if(Math.hypot(p.x-h.x,p.y-h.y)<18){if(hunter.invuln<=0)h.hp-=p.damage*(1-hunter.stats.armor);p.life=0;if(h.hp<=0){hunterDeath();return}}}else p.life-=dt}hunter.projectiles=hunter.projectiles.filter(p=>p.life>0);
-  if(hpZero(h)){hunterDeath();return}
-  camera.x=lerp(camera.x,h.x,.12);camera.y=lerp(camera.y,h.y,.12);clampCamera();hunter.shake*=.88;updateHunterHUD();
-}
-function hpZero(h){return h.hp<=0}
-function hunterWin(){hunter.active=false;running=false;document.getElementById('result').style.display='flex';document.getElementById('resultTitle').textContent='FRONTIER CLEARED';document.getElementById('resultTitle').style.color='#63efff';document.getElementById('resultSub').textContent=`${HUNTER_CLASSES[hunter.job].name} · LEVEL ${hunter.level} · KILLS ${hunter.kills} · ALL BOSSES DEFEATED`;document.getElementById('btnNext').style.display='none';document.getElementById('btnRetry').style.display='inline-block';document.getElementById('btnRetry').textContent='PLAY AGAIN'}
-function hunterDeath(){if(hunter.hero.dead)return;hunter.hero.dead=true;hunter.active=false;running=false;document.getElementById('result').style.display='flex';document.getElementById('resultTitle').textContent='HUNTER DOWN';document.getElementById('resultTitle').style.color='#ff607b';document.getElementById('resultSub').textContent=`${HUNTER_CLASSES[hunter.job].name} · LEVEL ${hunter.level} · KILLS ${hunter.kills}`;document.getElementById('btnNext').style.display='none';document.getElementById('btnRetry').style.display='inline-block';document.getElementById('btnRetry').textContent='RETRY';burst(hunter.hero.x,hunter.hero.y,'#ff3e72',45)}
-function hunterShowLevel(){
-  const modal=document.getElementById('arcadeEvo'),cards=document.getElementById('evoCards');cards.innerHTML='';
-  const pool=[
-   ['damage','PLASMA CORE','기본 공격력 +18%'],['speed','OVERDRIVE','이동속도 +10%'],['hp','CARAPACE','최대 HP +65 · 즉시 회복'],['armor','BARRIER','받는 피해 10% 감소'],['skill','SKILL MASTER','Q/W/E 쿨다운 단축 + 스킬 피해 증가'],['magnet','PSIONIC MAGNET','XP 흡수 범위 +45'],['regen','REGEN','초당 HP 회복 +0.45'],['aoe','WIDE FIELD','W 범위 +22'],['crit','CRITICAL','치명타 확률 +7%']
-  ];
-  let choices=[];while(choices.length<3){const x=pool[Math.floor(Math.random()*pool.length)];if(!choices.some(v=>v[0]===x[0]))choices.push(x)}
-  choices.forEach((v,i)=>{const b=document.createElement('button');b.className='evo';b.innerHTML=`<span class="num">${i+1}</span><strong>${v[1]}</strong><span>${v[2]}</span>`;b.onclick=()=>hunterPickUpgrade(v[0]);cards.appendChild(b)});
-  document.getElementById('evoTitle').textContent=`LEVEL ${hunter.level}`;document.getElementById('evoSub').textContent=`${HUNTER_CLASSES[hunter.job].name} 성장 선택 · 하나만 선택`;
-  modal.style.display='flex';
-}
-function hunterPickUpgrade(type){hunter.upgrades[type]=(hunter.upgrades[type]||0)+1;const h=hunter.hero;switch(type){case'damage':hunter.stats.damage*=1.18;break;case'speed':hunter.stats.speed*=1.10;break;case'hp':hunter.stats.maxHp+=65;h.maxHp=hunter.stats.maxHp;h.hp=h.maxHp;break;case'armor':hunter.stats.armor=Math.min(.65,hunter.stats.armor+.10);break;case'skill':hunter.stats.skill+=1;break;case'magnet':hunter.stats.magnet+=45;break;case'regen':hunter.stats.regen+=.45;break;case'aoe':hunter.stats.aoe+=1;break;case'crit':hunter.stats.crit=Math.min(.6,hunter.stats.crit+.07);break}hunter.pendingLevel=false;document.getElementById('arcadeEvo').style.display='none';updateHunterHUD();hunterFloat('UPGRADE COMPLETE',h.x,h.y-55,'#ffe06b',.8)}
-function updateHunterHUD(){
-  const h=hunter.hero;if(!h)return;document.getElementById('aMode').textContent=HUNTER_CLASSES[hunter.job].name;document.getElementById('aPassive').textContent=HUNTER_CLASSES[hunter.job].passive+(hunter.job==='Gunner'?` ${hunter.ammo}/${hunter.maxAmmo}`:` ${Math.floor(hunter.resource)}%`);document.getElementById('aLevel').textContent=hunter.level;document.getElementById('aKills').textContent=hunter.kills;document.getElementById('aCombo').textContent=Math.max(0,hunter.combo||0);document.getElementById('aScore').textContent=hunter.score;
-  const xpPct=clamp(hunter.xp/hunter.nextXp,0,1),hpPct=clamp(h.hp/h.maxHp,0,1);document.getElementById('aXp').style.width=(xpPct*100)+'%';document.getElementById('aHp').style.width=(hpPct*100)+'%';document.getElementById('aXpText').textContent=`${Math.floor(hunter.xp)} / ${hunter.nextXp}  (${Math.floor(xpPct*100)}%)`;document.getElementById('aHpText').textContent=`${Math.ceil(Math.max(0,h.hp))} / ${Math.ceil(h.maxHp)}  (${Math.floor(hpPct*100)}%)`;
-  [['aQ',hunter.q],['aW',hunter.w],['aE',hunter.e]].forEach(([id,v])=>{const b=document.getElementById(id);b.classList.toggle('cd',v>0);b.querySelector('small').textContent=v>0?v.toFixed(1)+'s':'READY'});
-}
-function renderHunter(t){
-  ctx.fillStyle='#02060b';ctx.fillRect(0,0,W,H);ctx.save();ctx.translate(W/2-camera.x*camera.zoom,H/2-camera.y*camera.zoom);ctx.scale(camera.zoom,camera.zoom);
-  ctx.fillStyle='#07130f';ctx.fillRect(0,0,WORLD.w,WORLD.h);
-  for(const z of HUNTER_ZONES){ctx.fillStyle=z.color+'0b';ctx.fillRect(z.x,0,z.w,WORLD.h);ctx.strokeStyle=z.color+'28';ctx.lineWidth=3;ctx.strokeRect(z.x,0,z.w,WORLD.h);ctx.fillStyle=z.color+'99';ctx.font='900 20px system-ui';ctx.textAlign='center';ctx.fillText(z.name,z.x+z.w/2,55)}
-  for(let x=0;x<WORLD.w;x+=90){ctx.strokeStyle='#ffffff09';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,WORLD.h);ctx.stroke()}for(let y=0;y<WORLD.h;y+=90){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(WORLD.w,y);ctx.stroke()}
-  // 지역 관문
-  for(let x=650;x<WORLD.w;x+=650){ctx.strokeStyle='#ffffff18';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,WORLD.h);ctx.stroke()}
-  // 보스 아레나
-  for(let i=1;i<5;i++){const x=i*650+325;ctx.strokeStyle='#ff557722';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,750,230,0,TAU);ctx.stroke()}
-  for(const g of hunter.gems){ctx.save();ctx.translate(g.x,g.y);ctx.rotate(g.spin);ctx.fillStyle=HUNTER_CLASSES[hunter.job].color;ctx.shadowBlur=14;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(6,0);ctx.lineTo(0,7);ctx.lineTo(-6,0);ctx.closePath();ctx.fill();ctx.restore()}
-  for(const e of hunter.enemies){if(e.dead)continue;const c=e.kind==='boss'?'#ff456d':e.kind==='tank'?'#94a3b8':e.kind==='shooter'?'#facc15':e.kind==='assassin'?'#c084fc':'#ef536f';ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.angle);ctx.fillStyle=c;ctx.beginPath();ctx.arc(0,0,e.radius,0,TAU);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(e.radius*.5,-e.radius*.55);ctx.lineTo(e.radius*1.2,0);ctx.lineTo(e.radius*.5,e.radius*.55);ctx.fill();if(e.kind==='boss'){ctx.strokeStyle='#ff5577';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,e.radius+12,0,TAU);ctx.stroke()}ctx.restore();const hp=clamp(e.hp/e.maxHp,0,1);ctx.fillStyle='#000b';ctx.fillRect(e.x-e.radius,e.y-e.radius-9,e.radius*2,4);ctx.fillStyle=c;ctx.fillRect(e.x-e.radius,e.y-e.radius-9,e.radius*2*hp,4)}
-  const h=hunter.hero;if(h&&!h.dead){const c=HUNTER_CLASSES[hunter.job],art=hunterLoadArt(hunter.job);ctx.save();ctx.translate(h.x,h.y);ctx.rotate(h.angle);ctx.shadowBlur=20;ctx.shadowColor=c.color;ctx.fillStyle=c.color;ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(0,0,31,0,TAU);ctx.fill();ctx.globalAlpha=1;if(art&&art.complete&&art.naturalWidth){const a=HUNTER_ART[hunter.job];const scale=hunter.job==='Mage'||hunter.job==='Summoner'?2.35:1.65;ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0,a.sw,a.sh,-a.sw*scale/2,-a.sh*scale/2,a.sw*scale,a.sh*scale)}else{ctx.fillStyle=c.color;ctx.beginPath();ctx.arc(0,0,22,0,TAU);ctx.fill()}ctx.shadowBlur=0;ctx.strokeStyle=c.color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,31,0,TAU);ctx.stroke();ctx.restore();const hp=clamp(h.hp/h.maxHp,0,1);ctx.fillStyle='#000d';ctx.fillRect(h.x-36,h.y-52,72,7);ctx.fillStyle=c;ctx.fillRect(h.x-36,h.y-52,72*hp,7);ctx.strokeStyle='#fff8';ctx.strokeRect(h.x-36,h.y-52,72,7);ctx.fillStyle=c;ctx.font='900 11px system-ui';ctx.textAlign='center';ctx.fillText(c.name,h.x,h.y+43)}
-  // 직업 패시브 게이지
-  if(hunter.hero&&!hunter.hero.dead&&hunter.job!=='Gunner'){const h=hunter.hero,c=HUNTER_CLASSES[hunter.job];ctx.strokeStyle=c.color+'66';ctx.lineWidth=4;ctx.beginPath();ctx.arc(h.x,h.y,37,-Math.PI/2,-Math.PI/2+TAU*(hunter.resource/hunter.resourceMax));ctx.stroke()}
-  // Summoner orbitals
-  if(hunter.job==='Summoner'&&h&&!h.dead)for(const m of hunter.minions){const x=h.x+Math.cos(m.angle)*52,y=h.y+Math.sin(m.angle)*52;ctx.save();ctx.translate(x,y);ctx.rotate(m.angle*1.7);ctx.fillStyle='#e9d5ff';ctx.beginPath();ctx.moveTo(0,-11);ctx.lineTo(8,0);ctx.lineTo(0,11);ctx.lineTo(-8,0);ctx.closePath();ctx.fill();ctx.strokeStyle='#c084fc';ctx.lineWidth=2;ctx.stroke();ctx.restore()}
-  for(const r of hunter.rings){ctx.strokeStyle=HUNTER_CLASSES[hunter.job].color;ctx.globalAlpha=r.life/.4;ctx.lineWidth=4;ctx.beginPath();ctx.arc(r.x,r.y,r.r+(r.max-r.r)*(1-r.life/.4),0,TAU);ctx.stroke()}ctx.globalAlpha=1;
-  for(const p of hunter.projectiles){ctx.strokeStyle=p.enemy?'#ff4d6d':HUNTER_CLASSES[hunter.job].color;ctx.lineWidth=p.heavy?7:3;ctx.globalAlpha=Math.min(1,p.life*8);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.tx,p.ty);ctx.stroke()}ctx.globalAlpha=1;
-  for(const tx of hunter.texts){ctx.globalAlpha=clamp(tx.life/tx.max,0,1);ctx.fillStyle=tx.color;ctx.font='900 14px system-ui';ctx.textAlign='center';ctx.fillText(tx.txt,tx.x,tx.y)}ctx.globalAlpha=1;ctx.restore();
-}
-function hunterInput(){
-  window.addEventListener('keydown',e=>{if(!hunter.active)return;const k=e.key.toLowerCase();if(['a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(k))hunter.key[k]=true;if(k==='q'||k==='w'||k==='e'){e.preventDefault();hunterUseSkill(k)}if(k==='1'||k==='2'||k==='3'){if(hunter.pendingLevel){const cards=document.querySelectorAll('.evo');if(cards[+k-1])cards[+k-1].click()}}});
-  window.addEventListener('keyup',e=>{if(hunter.active)hunter.key[e.key.toLowerCase()]=false});
-  canvas.addEventListener('pointerdown',e=>{if(!hunter.active)return;hunter.target=screenToWorld(e.clientX,e.clientY);pointer.x=e.clientX;pointer.y=e.clientY});
-  canvas.addEventListener('pointermove',e=>{if(!hunter.active)return;pointer.x=e.clientX;pointer.y=e.clientY});
-}
-hunterInput();
-function retryGame(){document.getElementById('result').style.display='none';if(activeGameMode==='DOMINATION'){startChapter(curChapterIdx)}else if(activeGameMode==='ARCADE'){startHunterGame()}running=true;isPaused=false}
 let last = performance.now();
-function loop(now){const dt=Math.min(0.035,(now-last)/1000);last=now;if(activeGameMode==='ARCADE'){hunterUpdate(dt);renderHunter(now)}else{updateGameBase(dt);render(now)}requestAnimationFrame(loop)}
+function loop(now) {
+  const dt = Math.min(0.035, (now - last) / 1000);
+  last = now;
+  updateGame(dt);
+  render(now);
+  requestAnimationFrame(loop);
+}
+
 requestAnimationFrame(loop);
 </script>
-
 </body>
 </html>
