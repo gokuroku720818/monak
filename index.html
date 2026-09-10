@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 14.0 // FAIR WARFRONT</title>
+<title>FRONTIER FLUX 14.1 // FAIR WARFRONT</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -230,7 +230,6 @@ function startChapter(idx) {
   const otherJobs = Object.keys(JOBS).filter(x => x !== selectedJob);
   const jobs = [selectedJob, ...otherJobs];
 
-  // 총 활성화 진영 수 (플레이어 1 + 적 N)
   const totalFactions = 1 + chap.enemies;
   for (let i = 0; i < totalFactions; i++) {
     factions.push({
@@ -255,14 +254,14 @@ function startChapter(idx) {
     });
   }
 
-  // ⭐ 넓게 퍼진 대칭 본진 좌표 (서로 겹치지 않게 외곽 배치)
+  // 대칭 본진 좌표
   const coreSpots = [
-    [300, 300],   // 0: 플레이어 (좌상단)
-    [2300, 1200], // 1: 적 (우하단)
-    [2300, 300],  // 2: 적 (우상단)
-    [300, 1200],  // 3: 적 (좌하단)
-    [1300, 200],  // 4: 적 (상단 중앙)
-    [1300, 1300]  // 5: 적 (하단 중앙)
+    [300, 300],   // 0: 플레이어
+    [2300, 1200], // 1
+    [2300, 300],  // 2
+    [300, 1200],  // 3
+    [1300, 200],  // 4
+    [1300, 1300]  // 5
   ];
 
   for (let i = 0; i < totalFactions; i++) {
@@ -281,13 +280,13 @@ function startChapter(idx) {
     });
   }
 
-  // ⭐ 완벽한 간격(최소 400px 이격)의 전초기지 스팟
+  // 중립 확장 거점
   const outpostSpots = [
-    [700, 450], [1900, 450],   // 상단 앞마당
-    [700, 1050], [1900, 1050], // 하단 앞마당
-    [1300, 550], [1300, 950],  // 상/하 중앙
-    [1000, 750], [1600, 750],  // 좌/우 중앙
-    [1300, 750]                // 맵 정중앙 넥서스
+    [700, 450], [1900, 450],
+    [700, 1050], [1900, 1050],
+    [1300, 550], [1300, 950],
+    [1000, 750], [1600, 750],
+    [1300, 750]
   ];
 
   for (let i = 0; i < outpostSpots.length; i++) {
@@ -309,7 +308,6 @@ function startChapter(idx) {
     if (b.team >= 0) produce(b, 6);
   }
 
-  // 플레이어 본진 카메라 포커스
   const pBase = bases[0];
   camera.x = pBase.x;
   camera.y = pBase.y;
@@ -338,7 +336,7 @@ function produce(base, count = 1) {
       tier: 1,
       attack: rand(0, 0.5),
       targetBase: assignedRoute, 
-      home: base, // ⭐ 복귀할 소속 기지
+      home: base, 
       target: null,
       angle: rand(0, TAU),
       anim: rand(0, TAU),
@@ -365,6 +363,12 @@ function handleAI() {
           .sort((a, c) => Math.hypot(a.x - b.x, a.y - b.y) - Math.hypot(c.x - b.x, c.y - b.y));
         if (targets.length) {
           b.routes = [targets[0]];
+          // AI 병력 일제 진격
+          for (const u of units) {
+            if (u.team === b.team && Math.hypot(u.x - b.x, u.y - b.y) < 150 && (!u.targetBase || u.targetBase === b)) {
+              u.targetBase = targets[0];
+            }
+          }
         }
       }
     }
@@ -430,7 +434,6 @@ function updateUnits(dt) {
   for (const u of units) {
     if (u.dead) continue;
 
-    // 소속 기지가 빼앗기면 새로운 소속을 찾음
     if (u.home && u.home.team !== u.team) {
       u.home = bases.find(b => b.team === u.team) || null;
     }
@@ -476,21 +479,19 @@ function updateUnits(dt) {
           u.targetBase.hp -= j.dmg * mult * dt;
           if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
         } else {
-          // 릴레이 보급선 연쇄 전송 
+          // 릴레이 보급선
           if (u.targetBase.routes && u.targetBase.routes.length > 0) {
             u.targetBase = u.targetBase.routes[Math.floor(Math.random() * u.targetBase.routes.length)];
           } else {
-            // ⭐ 보급선이 없으면 아군 기지에 무사히 안착하여 소속 갱신 및 대기
             u.home = u.targetBase;
             u.targetBase = null;
           }
         }
       }
     } else if (u.home) {
-      // ⭐ [대기 상태] 목표가 없고 소속 기지가 있으면 기지 근처로 집결 (산개 방지)
+      // 기지 주둔 (산개 방지 집결)
       tx = u.home.x; ty = u.home.y;
       if (Math.hypot(tx - u.x, ty - u.y) < 60) {
-        // 너무 가까우면 이동 멈춤 (근처 맴돌기)
         tx = u.x; ty = u.y;
       }
     }
@@ -504,7 +505,6 @@ function updateUnits(dt) {
     const dd = Math.hypot(dx, dy) || 1;
     let ax = dx / dd, ay = dy / dd;
 
-    // 밀어내기 반발력
     let sepX = 0, sepY = 0;
     for (const v of nearby) {
       if (v === u || v.dead) continue;
@@ -519,7 +519,6 @@ function updateUnits(dt) {
     const al = Math.hypot(ax, ay) || 1;
     ax /= al; ay /= al;
 
-    // 대기 중 멈춤 조건
     const moveD = Math.hypot(tx - u.x, ty - u.y);
     if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
       const speed = j.spd * (1 + (u.tier - 1) * 0.08);
@@ -577,7 +576,6 @@ function captureBase(b, team) {
   b.routes = [];
   burst(b.x, b.y, factions[team].color, 35);
 
-  // 점령 완료 시 목적지 달성한 유닛들의 소속을 새 기지로 지정
   for (const u of units) {
     if (u.targetBase === b) {
       u.targetBase = null;
@@ -604,7 +602,7 @@ function handleAutoMerge() {
       const near = [];
       for (let k = i + 1; k < arr.length; k++) {
         const b = arr[k];
-        // ⭐ 합체 인식 범위 대폭 완화 (100px)
+        // ⭐ 합체 반경 100px 대폭 상향
         if (!b.dead && Math.hypot(a.x - b.x, a.y - b.y) < 100) near.push(b);
         if (near.length >= 9) break;
       }
@@ -666,7 +664,6 @@ function updateEffects(dt) {
   explosions = explosions.filter(e => e.life > 0);
 }
 
-// ⭐ 생산 템포 안정화: 2.0초마다 1마리씩
 function updateBases(dt) {
   const chap = CHAPTERS[curChapterIdx];
   spawnTimer += dt;
@@ -873,7 +870,6 @@ function drawBase(b, t) {
     ctx.rotate(-t * 0.002);
   }
 
-  // ⭐ 거점 주둔 병력 수 표시 개선
   ctx.fillStyle = teamColor;
   ctx.font = "bold 14px sans-serif";
   ctx.textAlign = "center";
@@ -889,7 +885,6 @@ function drawBase(b, t) {
     ctx.fillText("NEUTRAL", 0, 5);
   }
 
-  // ⭐ 대형 HP 바 
   const bw = b.core ? 76 : 60;
   const hp = clamp(b.hp / b.maxHp, 0, 1);
   ctx.fillStyle = "rgba(0,0,0,0.85)";
@@ -903,9 +898,6 @@ function drawBase(b, t) {
   ctx.restore();
 }
 
-/* =========================================================
-   직업별 스킬 특징 전면 리마스터 (고화질 스프라이트)
-========================================================= */
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
   const j = JOBS[u.job];
@@ -917,7 +909,6 @@ function drawUnit(u) {
   ctx.save();
   ctx.translate(s.x, s.y + bob);
 
-  // ⭐ 티어 번호 배지
   ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
   ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
   ctx.textAlign = "center";
@@ -931,7 +922,6 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 1.5, 0, TAU); ctx.stroke();
   }
 
-  // 1. 마법사: 2개의 회전하는 마력 구체 추가
   if (u.job === "Mage") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -940,13 +930,11 @@ function drawUnit(u) {
     ctx.strokeStyle = j.color; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(size * 2.5, 0); ctx.stroke();
     
-    // 회전 구체
     const tRot = performance.now() * 0.005;
     ctx.fillStyle = j.color;
     ctx.beginPath(); ctx.arc(Math.cos(tRot)*size*2, Math.sin(tRot)*size*2, size*0.4, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.arc(Math.cos(tRot+Math.PI)*size*2, Math.sin(tRot+Math.PI)*size*2, size*0.4, 0, TAU); ctx.fill();
   } 
-  // 2. 기사: 전방 강철 타워실드 집중
   else if (u.job === "Knight") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -955,7 +943,6 @@ function drawUnit(u) {
     ctx.strokeStyle = j.color; ctx.lineWidth = 2;
     ctx.strokeRect(size * 0.5, -size * 1.5, size * 0.8, size * 3.0);
   } 
-  // 3. 레인저: 곡선형 롱보우
   else if (u.job === "Ranger") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -964,7 +951,6 @@ function drawUnit(u) {
     ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(-size, 0); ctx.lineTo(size * 2.5, 0); ctx.stroke();
   } 
-  // 4. 서머너: 공전하는 암흑 룬
   else if (u.job === "Summoner") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -973,7 +959,6 @@ function drawUnit(u) {
     ctx.fillRect(Math.cos(tRot)*size*1.5, Math.sin(tRot)*size*1.5, size*0.8, size*0.8);
     ctx.fillRect(Math.cos(tRot+Math.PI)*size*1.5, Math.sin(tRot+Math.PI)*size*1.5, size*0.8, size*0.8);
   } 
-  // 5. 바바리안: 무자비한 쌍날 배틀액스
   else if (u.job === "Barbarian") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size * 1.2, 0, TAU); ctx.fill();
@@ -983,7 +968,6 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.moveTo(size * 1.4, -size * 1.2); ctx.lineTo(size * 2.8, -size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
     ctx.beginPath(); ctx.moveTo(size * 1.4, size * 1.2); ctx.lineTo(size * 2.8, size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
   } 
-  // 6. 거너: 붉은색 전방 조준 레이저 & 쌍열 기관총
   else if (u.job === "Gunner") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -1111,7 +1095,22 @@ window.addEventListener("pointerup", e => {
       if (!dragBase.routes.includes(target)) {
         dragBase.routes.push(target);
       }
+      
+      // ⭐ 주둔 대기 유닛들도 즉시 출발명령 하달
+      for (const u of units) {
+        if (u.team === dragBase.team && Math.hypot(u.x - dragBase.x, u.y - dragBase.y) < 150) {
+          if (!u.targetBase || u.targetBase === dragBase) {
+            u.targetBase = target;
+          }
+        }
+      }
     } else if (!dragMoved || target === dragBase) {
+      // 기존 출격 명령 취소 및 기지로 소환
+      for (const u of units) {
+        if (u.team === dragBase.team && dragBase.routes.includes(u.targetBase)) {
+          u.targetBase = null;
+        }
+      }
       dragBase.routes = [];
     }
     dragBase = null;
