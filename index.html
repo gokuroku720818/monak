@@ -162,7 +162,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   .game-grid{grid-template-columns:1fr}
   #classes,#hunterClasses{grid-template-columns:repeat(2,1fr)}
   .bar{width:140px!important}
-  .arcSkill{min-width:54px;height:52px}
+  .arcSkill{min-width:56px;height:52px}
   .evoCards{grid-template-columns:1fr}
 }
 </style>
@@ -206,7 +206,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
       <div class="game-card" onclick="selectGameMode('HUNTER')">
         <span class="tag" style="background:#3b164f;color:#e18aff">MODE 2</span>
         <h3>프론티어 헌터 (생존 사냥)</h3>
-        <p>바닥 드랍물 없는 100% 즉시 경험치 흡수! 6개 직업별 12종 고유 스킬(QWERASDFZXCV)로 수백 마리의 몬스터를 쓸어 담으세요.</p>
+        <p>5Lv 단위 진화 선택! 15Lv부터는 1레벨당 스킬과 진화가 폭발적으로 해금되는 쾌속 성장 서바이벌입니다.</p>
       </div>
     </div>
   </div>
@@ -283,7 +283,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 <div id="arcadeEvo">
   <div class="box">
     <div style="font-size:10px;letter-spacing:.2em;color:#63efff">LEVEL UP MUTATION</div>
-    <h2 style="margin:8px 0 4px">진화 능력을 선택하세요</h2>
+    <h2 id="evoTitle" style="margin:8px 0 4px">진화 능력을 선택하세요</h2>
     <div style="font-size:12px;color:#94a3b8">키보드 1 / 2 / 3 또는 클릭</div>
     <div class="evoCards" id="evoCards"></div>
   </div>
@@ -486,7 +486,7 @@ let lastPointer = { x: 0, y: 0 };
 let dragMoved = false;
 
 /* =========================================================
-   게임 1: 프론티어 플럭스 (기존 로직 보존)
+   게임 1: 프론티어 플럭스 (땅따먹기 점령전)
 ========================================================= */
 function startNewDomination() {
   document.getElementById("classModal").style.display = "none";
@@ -572,7 +572,7 @@ function initThemeParticles(theme) {
 }
 
 /* =========================================================
-   게임 2: 프론티어 헌터 (즉시 경험치 흡수 & 12개 스킬 완전 차별화)
+   게임 2: 프론티어 헌터 (개편된 레벨업 & 순차 해금 로직)
 ========================================================= */
 const SKILL_KEYS = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
@@ -742,13 +742,12 @@ function startHunterGame(job) {
   initThemeParticles("INFERNO");
 
   document.getElementById("title").textContent = "FRONTIER HUNTER";
-  document.getElementById("sub").textContent = "생존 몰이사냥 (바닥 드랍물 없는 100% 즉시 흡수)";
-  document.getElementById("guide").textContent = "방향키 이동 · Q, W, E 기본 장착 (직업별 완전 차별화 스킬) · 5Lv마다 추가 해금!";
+  document.getElementById("sub").textContent = "생존 몰이사냥 (개편된 성장 공식)";
+  document.getElementById("guide").textContent = "방향키 이동 · QWE 기본 장착 · 5Lv 단위 진화 / 15Lv 이후 1렙당 폭풍 스킬 해금!";
 
   document.getElementById("arcadeHUD").style.display = "block";
   document.getElementById("arcadeSkills").style.display = "flex";
 
-  // 회복 상자 배치
   for (let i = 0; i < 6; i++) spawnChest();
 
   hunter.hero = {
@@ -764,11 +763,18 @@ function startHunterGame(job) {
   running = true;
   isPaused = false;
   updateHunterHUD();
-  hunterFloat(`${JOBS[job].name} 출격! (즉시 경험치 흡수 모드)`, 1300, 700, JOBS[job].color, 2.0);
+  hunterFloat(`${JOBS[job].name} 출격! (Q, W, E 기본 해금)`, 1300, 700, JOBS[job].color, 2.0);
 }
 
+// ⭐ 개편된 해금 공식:
+// Lv 1~14: 1렙(3개 QWE) -> 5렙(4개 R) -> 10렙(5개 A)
+// Lv 15 이상: 15렙(6개 S) -> 16렙(7개 D) -> 17렙(8개 F)... 1렙당 1개씩 고속 해금!
 function getUnlockedSkillCount() {
-  return clamp(3 + Math.floor(hunter.level / 5), 3, SKILL_KEYS.length);
+  const lvl = hunter.level;
+  if (lvl < 5) return 3;       // Q, W, E
+  if (lvl < 10) return 4;      // + R
+  if (lvl < 15) return 5;      // + A
+  return clamp(6 + (lvl - 15), 6, SKILL_KEYS.length); // 15Lv(S), 16Lv(D), 17Lv(F)...
 }
 
 function buildDynamicSkillBar() {
@@ -805,7 +811,7 @@ function hunterSpawnWave() {
   const h = hunter.hero;
   if (!h) return;
 
-  const count = rand(3, 5); // 4배 폭증 스폰
+  const count = rand(3, 5);
   for (let k = 0; k < count; k++) {
     const ang = rand(0, TAU);
     const dist = rand(550, 750);
@@ -848,18 +854,15 @@ function hunterSpawnBoss() {
   hunter.shake = 20;
 }
 
-// ⭐ 바닥에 보석을 전혀 떨구지 않고 100% 즉시 경험치 다이렉트 흡수
 function hunterKillMob(e) {
   if (e.dead) return;
   e.dead = true;
   hunter.kills++;
   hunter.score += e.isBoss ? 5000 : (e.isElite ? 200 : 50);
 
-  // 즉시 경험치 획득!
   const xpVal = e.isBoss ? 200 : (e.isElite ? 25 : 10);
   hunterGainXP(xpVal);
 
-  // 시각적 피드백: 몹 사망 위치에서 영웅 쪽으로 흡수되는 빛 입자 생성
   burst(e.x, e.y, "#38bdf8", e.isBoss ? 20 : 4);
 
   if (e.isBoss) {
@@ -875,25 +878,38 @@ function hunterKillMob(e) {
   }
 }
 
+// ⭐ 개편된 레벨업 진화창 & 스킬 해금 처리
 function hunterGainXP(val) {
   hunter.xp += val;
   if (hunter.xp >= hunter.nextXp) {
     hunter.xp -= hunter.nextXp;
     hunter.level++;
     hunter.nextXp = Math.floor(hunter.nextXp * 1.25 + 30);
-    hunter.pendingLevel = true;
     sfxLevelUp();
 
-    if (hunter.level % 5 === 0) {
-      buildDynamicSkillBar();
-      const count = getUnlockedSkillCount();
-      const newSkill = CLASS_SKILLS[hunter.job][count - 1];
+    // 1. 스킬 해금 검사
+    const prevCount = document.querySelectorAll("#arcadeSkills .arcSkill").length;
+    buildDynamicSkillBar();
+    const newCount = getUnlockedSkillCount();
+    if (newCount > prevCount) {
+      const newSkill = CLASS_SKILLS[hunter.job][newCount - 1];
       if (newSkill) {
         toast(`✨ 새로운 스킬 [${newSkill.key.toUpperCase()} - ${newSkill.name}] 해금!`);
       }
     }
 
-    showHunterEvo();
+    // 2. 진화창 팝업 규칙:
+    // 5레벨 이전: 안 뜸 (사냥 템포 집중)
+    // 5, 10레벨: 5단위로 팝업
+    // 15레벨 이상: 매 레벨마다 팝업 (15, 16, 17...)
+    const shouldEvolve = (hunter.level >= 5 && hunter.level < 15 && hunter.level % 5 === 0) || (hunter.level >= 15);
+    
+    if (shouldEvolve) {
+      hunter.pendingLevel = true;
+      showHunterEvo();
+    } else {
+      hunterFloat(`LEVEL UP! (Lv.${hunter.level})`, hunter.hero.x, hunter.hero.y - 50, "#ffe06b", 1.0);
+    }
   }
 }
 
@@ -915,6 +931,7 @@ function showHunterEvo() {
     cards.appendChild(d);
   });
 
+  document.getElementById("evoTitle").textContent = `LEVEL ${hunter.level} 진화 선택`;
   document.getElementById("arcadeEvo").style.display = "flex";
 }
 
@@ -933,9 +950,6 @@ function selectHunterEvo(type) {
   updateHunterHUD();
 }
 
-/* =========================================================
-   직업별 완전 차별화된 12종 스킬 실행 엔진
-========================================================= */
 function hunterUseSkill(key) {
   if (!hunter.active || isPaused || hunter.pendingLevel || !hunter.hero || hunter.hero.dead) return;
   const h = hunter.hero;
@@ -954,7 +968,7 @@ function hunterUseSkill(key) {
   const dmgMult = hunter.upgrades.damage;
   const aoeMult = hunter.upgrades.aoe;
 
-  // --- 1. 바바리안 (지속 회전, 부메랑 도끼, 대지분쇄) ---
+  // 1. 바바리안
   if (sInfo.type === 'barb_whirlwind') {
     hunter.whirlwindTimer = 3.0;
     hunterFloat("★ 3초 휠윈드 회전!", h.x, h.y - 50, "#fb923c", 1.2);
@@ -981,7 +995,6 @@ function hunterUseSkill(key) {
     hunterFloat("부메랑 톱날도끼!", h.x, h.y - 40, "#fb923c", 0.8);
   }
   else if (sInfo.type === 'barb_earthquake') {
-    // 3방향 대지분쇄 용암 분출
     for (let i = -1; i <= 1; i++) {
       fireBeam(h.x, h.y, h.angle + i * 0.25, 800, 60 * aoeMult, 220 * dmgMult, '#fb923c');
     }
@@ -989,7 +1002,6 @@ function hunterUseSkill(key) {
     hunterFloat("대지 분쇄참!", h.x, h.y - 50, "#fb923c", 1.0);
   }
   else if (sInfo.type === 'barb_shout') {
-    // 적 공포(뒤로 밀려남)
     dealAreaDamage(h.x, h.y, 300 * aoeMult, 60 * dmgMult, 200);
     hunter.shake = 14;
     sfxBoom();
@@ -1001,7 +1013,7 @@ function hunterUseSkill(key) {
     hunterFloat("★ 피의 분노 버서커!", h.x, h.y - 40, "#ef4444", 1.2);
   }
 
-  // --- 2. 마법사 (시공간 왜곡, 메테오, 체인 레이저) ---
+  // 2. 마법사
   else if (sInfo.type === 'mage_blink') {
     const dist = 280;
     burst(h.x, h.y, '#38bdf8', 12);
@@ -1039,7 +1051,7 @@ function hunterUseSkill(key) {
   else if (sInfo.type === 'mage_freeze') {
     dealAreaDamage(h.x, h.y, 250 * aoeMult, 120 * dmgMult, 0);
     for (const e of hunter.enemies) {
-      if (!e.dead && Math.hypot(e.x - h.x, e.y - h.y) < 250 * aoeMult) e.spd = 20; // 동결
+      if (!e.dead && Math.hypot(e.x - h.x, e.y - h.y) < 250 * aoeMult) e.spd = 20;
     }
     sfxHit();
     hunterFloat("절대영도 빙결!", h.x, h.y - 40, "#7dd3fc", 1.0);
@@ -1057,7 +1069,7 @@ function hunterUseSkill(key) {
     hunterFloat("체인 썬더스트라이크!", h.x, h.y - 40, "#facc15", 0.8);
   }
 
-  // --- 3. 거너 (자동 포탑, 레일건, 융단폭격) ---
+  // 3. 거너
   else if (sInfo.type === 'gunner_tumble') {
     const dist = 240;
     hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: 140 * aoeMult, life: 0.35, maxLife: 0.35, color: '#facc15' });
@@ -1097,7 +1109,7 @@ function hunterUseSkill(key) {
     hunterFloat("★ 개틀링 오버드라이브 난사!", h.x, h.y - 40, "#facc15", 1.2);
   }
 
-  // --- 4. 기사 (성스러운 회전검, 십자검기, 천벌) ---
+  // 4. 기사
   else if (sInfo.type === 'knight_charge') {
     const dist = 340;
     h.x = clamp(h.x + Math.cos(h.angle) * dist, 40, WORLD.w - 40);
@@ -1129,7 +1141,7 @@ function hunterUseSkill(key) {
     hunterFloat("★ 천벌의 대형 방패 강타!", h.x, h.y - 50, "#818cf8", 1.2);
   }
 
-  // --- 5. 레인저 (은신, 덫, 산탄, 화살폭풍) ---
+  // 5. 레인저
   else if (sInfo.type === 'ranger_step') {
     h.spd = 380;
     hunter.invuln = 1.2;
@@ -1156,7 +1168,7 @@ function hunterUseSkill(key) {
     hunterFloat("★ 화살 폭풍 소나기!", h.x, h.y - 50, "#34d399", 1.2);
   }
 
-  // --- 6. 서머너 (유도 망령, 심연 흡입, 골렘) ---
+  // 6. 서머너
   else if (sInfo.type === 'summoner_swap') {
     if (hunter.ghosts.length > 0) {
       const g = hunter.ghosts[0];
@@ -1197,7 +1209,6 @@ function hunterUseSkill(key) {
     hunterFloat("★ 심연의 거인 강림!", h.x, h.y - 50, "#c084fc", 1.2);
   }
   else {
-    // 범용 폭격
     const r = 350 * aoeMult, dmg = 420 * dmgMult;
     const tx = h.x + Math.cos(h.angle) * 220, ty = h.y + Math.sin(h.angle) * 220;
     hunter.novas.push({ x: tx, y: ty, r: 20, maxR: r, life: 0.6, maxLife: 0.6, color: '#ffd700' });
@@ -1560,7 +1571,7 @@ function updateHunter(dt) {
     }
   }
 
-  // 4배 스폰 타이머
+  // 스폰 타이머
   hunter.spawnTimer -= dt;
   if (hunter.spawnTimer <= 0) {
     hunter.spawnTimer = Math.max(0.20, 0.35 - hunter.level * 0.008);
@@ -2501,7 +2512,6 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
     ctx.fillStyle = "#3f3f46";
     ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
-    ctx.fillRect(size * 0.3, -size * 0.18, size * 2.3, size * 0.35);
     ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
     ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
