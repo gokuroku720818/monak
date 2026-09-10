@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 15.0 // UNIFIED BALANCE</title>
+<title>FRONTIER FLUX 16.0 // CYBER-FANTASY REBORN</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -19,11 +19,11 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   pointer-events:none;z-index:5;
 }
 .panel{
-  background:linear-gradient(180deg,rgba(5,16,27,.92),rgba(3,9,16,.82));
-  border:1px solid rgba(99,220,255,.28);
-  box-shadow:0 0 22px rgba(0,180,255,.08);
+  background:linear-gradient(180deg,rgba(5,16,27,.94),rgba(3,9,16,.85));
+  border:1px solid rgba(99,220,255,.3);
+  box-shadow:0 0 25px rgba(0,180,255,.12);
   backdrop-filter:blur(8px);
-  border-radius:10px;padding:8px 12px;
+  border-radius:10px;padding:8px 14px;
 }
 #title{font-weight:900;letter-spacing:2px;font-size:14px}
 #sub{font-size:10px;color:#7ba5b7;margin-top:3px}
@@ -38,22 +38,23 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 #guide{
   position:fixed;left:50%;bottom:12px;transform:translateX(-50%);
   z-index:5;pointer-events:none;
-  background:rgba(3,10,16,.88);
-  border:1px solid rgba(80,200,255,.22);
-  border-radius:999px;padding:7px 16px;
+  background:rgba(3,10,16,.9);
+  border:1px solid rgba(80,200,255,.3);
+  border-radius:999px;padding:7px 18px;
   font-size:11px;color:#89b4c6;white-space:nowrap;
+  box-shadow:0 0 15px rgba(0,150,255,.15);
 }
 #modal{
   position:fixed;inset:0;z-index:20;
   display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at center,rgba(8,31,48,.45),rgba(0,3,7,.94));
+  background:radial-gradient(circle at center,rgba(8,31,48,.5),rgba(0,3,7,.96));
 }
 #card{
-  width:min(720px,92vw);
-  border:1px solid rgba(90,220,255,.35);
+  width:min(740px,92vw);
+  border:1px solid rgba(90,220,255,.4);
   border-radius:18px;padding:24px;
   background:linear-gradient(180deg,rgba(5,17,28,.98),rgba(2,7,13,.98));
-  box-shadow:0 0 80px rgba(0,170,255,.15);
+  box-shadow:0 0 90px rgba(0,170,255,.2);
 }
 #card h1{margin:0;font-size:26px;letter-spacing:4px;text-align:center;color:#dffaff}
 #card p{text-align:center;color:#7295a5;font-size:12px;margin:8px 0 18px}
@@ -64,13 +65,13 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   color:#dffaff;cursor:pointer;transition:.15s;text-align:center;
 }
 .classBtn:hover{transform:translateY(-2px);border-color:#75e6ff;background:#081923}
-.classBtn.active{border-color:#75e6ff;background:#0d2838;box-shadow:0 0 14px rgba(99,220,255,.25)}
+.classBtn.active{border-color:#75e6ff;background:#0d2838;box-shadow:0 0 16px rgba(99,220,255,.3)}
 .classBtn .icon{font-size:24px;display:block;margin-bottom:6px}
 .classBtn strong{display:block;font-size:12px}
 .classBtn small{display:block;margin-top:4px;color:#6e95a6;font-size:9px}
 #start{
   display:block;margin:18px auto 0;
-  padding:12px 36px;border:1px solid #55ddff;
+  padding:12px 38px;border:1px solid #55ddff;
   background:#072333;color:#dffaff;border-radius:9px;
   font-weight:900;letter-spacing:2px;cursor:pointer;
 }
@@ -78,12 +79,12 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 #result{
   position:fixed;inset:0;z-index:30;display:none;
   align-items:center;justify-content:center;
-  background:rgba(0,3,7,.84);
+  background:rgba(0,3,7,.85);
 }
 #resultBox{
   text-align:center;padding:35px 50px;
   background:#06111a;border:1px solid #4bdcff;
-  border-radius:18px;box-shadow:0 0 70px rgba(0,190,255,.18);
+  border-radius:18px;box-shadow:0 0 70px rgba(0,190,255,.2);
 }
 #resultTitle{font-size:32px;font-weight:900;letter-spacing:3px}
 .btn-res{
@@ -104,7 +105,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
 <div id="hud">
   <div class="panel">
-    <div id="title">FRONTIER FLUX // UNIFIED</div>
+    <div id="title">FRONTIER FLUX // REBORN</div>
     <div id="sub" style="color:#62eaff">CHAPTER 1: THE AWAKENING</div>
   </div>
   <div id="stats">
@@ -116,12 +117,12 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<div id="guide">기지 드래그 → 보급선 개설 · 2단계(10기) → 3단계(5기) → 4단계(3기) → 5단계(2기) 고속 합체!</div>
+<div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10마리, 3~5단계는 단 2마리씩 고속 합체!</div>
 
 <div id="modal">
   <div id="card">
     <h1>FRONTIER FLUX</h1>
-    <p>모든 영웅은 완전히 동일한 공평 스펙을 지닙니다 · 선호하는 외형을 선택하십시오</p>
+    <p>완전 균형 전투 스펙 · 진영의 고유 비주얼 엠블럼을 선택하십시오</p>
     <div id="classes"></div>
     <button id="start">CAMPAIGN DEPLOY</button>
   </div>
@@ -160,28 +161,28 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-// ⭐ 모든 직업의 전투 스펙을 100% 동일화 (외형 비주얼만 차별화)
+// 모든 직업의 전투 스펙은 100% 동일 (완전 균형)
 const BASE_STATS = {
-  hp: 130, dmg: 20, rng: 75, spd: 40, rate: 1.0
+  hp: 130, dmg: 20, rng: 80, spd: 40, rate: 1.0
 };
 
 const JOBS = {
-  Mage:      { icon: "✦", name: "MAGE",      color: "#62eaff", desc: "비전 마력 구체" },
-  Knight:    { icon: "♜", name: "KNIGHT",    color: "#9fb8ff", desc: "강철 타워실드" },
-  Ranger:    { icon: "➶", name: "RANGER",    color: "#69f59a", desc: "정밀 롱보우" },
-  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#d078ff", desc: "공전 암흑룬" },
-  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#ff9a4d", desc: "쌍날 배틀액스" },
-  Gunner:    { icon: "▣", name: "GUNNER",    color: "#ffe45c", desc: "레이저 기관총" }
+  Mage:      { icon: "✦", name: "MAGE",      color: "#38bdf8", desc: "비전 룬 & 궤도 오브" },
+  Knight:    { icon: "♜", name: "KNIGHT",    color: "#818cf8", desc: "역장 실드 & 광검" },
+  Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "에어로 활 & 레이저 조준" },
+  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#c084fc", desc: "공전 수정 & 부유 마도서" },
+  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 배틀액스" },
+  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 회전 개틀링 & 탄띠" }
 };
 
-const FACTION_COLORS = ["#57ddff", "#ff5574", "#62ef91", "#d36cff", "#ff984c", "#ffe05b"];
+const FACTION_COLORS = ["#38bdf8", "#f43f5e", "#10b981", "#a855f7", "#f97316", "#eab308"];
 
-// ⭐ 3단계부터 합치기 쉬운 단계별 필요 마릿수 설정
+// ⭐ 2단계부터는 2마리씩 고속 진화 공식!
 const MERGE_REQ = {
   1: 10, // 1단계 10마리 -> 2단계
-  2: 5,  // 2단계 5마리  -> 3단계 (초고속 완화)
-  3: 3,  // 3단계 3마리  -> 4단계 (초고속 완화)
-  4: 2   // 4단계 2마리  -> 5단계 신화 탄생!
+  2: 2,  // 2단계 2마리  -> 3단계
+  3: 2,  // 3단계 2마리  -> 4단계
+  4: 2   // 4단계 2마리  -> 5단계 신화
 };
 
 const CHAPTERS = [
@@ -538,7 +539,6 @@ function updateUnits(dt) {
   }
 }
 
-// ⭐ 완전 동일화된 기본 공격 (스플래시/흡혈/감면 제거로 완벽한 대칭)
 function attack(a, b) {
   const mult = Math.pow(2.2, a.tier - 1);
   let dmg = BASE_STATS.dmg * mult;
@@ -575,7 +575,7 @@ function captureBase(b, team) {
   }
 }
 
-// ⭐ 티어별 결집 조건 대폭 완화 로직 (10 -> 5 -> 3 -> 2)
+// ⭐ 2단계부터는 2마리씩 고속 진화 실행!
 function handleAutoMerge() {
   const groups = new Map();
   for (const u of units) {
@@ -588,7 +588,7 @@ function handleAutoMerge() {
   for (const arr of groups.values()) {
     if (!arr.length) continue;
     const curTier = arr[0].tier;
-    const req = MERGE_REQ[curTier] || 10;
+    const req = MERGE_REQ[curTier] || 2;
 
     if (arr.length < req) continue;
 
@@ -893,95 +893,194 @@ function drawBase(b, t) {
 }
 
 /* =========================================================
-   외형 개성은 완벽히 유지된 스프라이트 (스펙은 동일)
+   ⭐ 사이버-판타지 메카닉 리마스터 그래픽 (입체 레이어 & 네온 효과)
 ========================================================= */
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
   const j = JOBS[u.job];
   const c = factions[u.team] ? factions[u.team].color : "#ffffff";
-  const sc = Math.max(0.8, camera.zoom * 1.25);
-  const size = (u.tier >= 4 ? 14 : u.tier >= 2 ? 10.5 : 7.5) * sc;
+  const sc = Math.max(0.85, camera.zoom * 1.3);
+  const size = (u.tier >= 4 ? 15 : u.tier >= 2 ? 11 : 8) * sc;
   const bob = Math.sin(u.anim) * 1.5 * sc;
+  const t = performance.now();
 
   ctx.save();
   ctx.translate(s.x, s.y + bob);
 
+  // 티어 번호 배지
   ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
   ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
   ctx.textAlign = "center";
   ctx.fillText(`★${u.tier}`, 0, -size - 13);
 
-  ctx.rotate(u.angle);
+  // ⭐ 티어 4~5단계 에너지 날개 / 신화 룬 링
+  if (u.tier >= 4) {
+    ctx.save();
+    ctx.rotate(t * 0.001);
+    ctx.strokeStyle = u.tier === 5 ? "#ffd700" : c;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.arc(0, 0, size * 2.2, 0, TAU); ctx.stroke();
+    ctx.restore();
 
-  if (u.tier >= 2) {
-    ctx.strokeStyle = u.tier >= 4 ? "#ffd700" : j.color;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(0, 0, size * 1.5, 0, TAU); ctx.stroke();
+    // 에너지 윙
+    ctx.fillStyle = c;
+    ctx.globalAlpha = 0.25;
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.5, 0); ctx.lineTo(-size * 2.4, -size * 1.4); ctx.lineTo(-size * 1.2, 0);
+    ctx.moveTo(-size * 0.5, 0); ctx.lineTo(-size * 2.4, size * 1.4); ctx.lineTo(-size * 1.2, 0);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
   }
 
-  // 1. 마법사: 2개의 회전하는 마력 구체
+  ctx.rotate(u.angle);
+
+  // 입체 섀도우 베이스
+  ctx.fillStyle = "rgba(0,0,0,0.4)";
+  ctx.beginPath(); ctx.arc(size * 0.2, size * 0.2, size * 1.1, 0, TAU); ctx.fill();
+
+  // 티어 2 이상 네온 펄스 아우라
+  if (u.tier >= 2) {
+    ctx.strokeStyle = u.tier >= 4 ? "#ffd700" : c;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, size * 1.4, 0, TAU); ctx.stroke();
+  }
+
+  // 1. 마법사: 비전 룬 링 + 고깔 투구 + 2중 공전 오브
   if (u.job === "Mage") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#fff";
-    ctx.beginPath(); ctx.arc(0, 0, size*0.5, 0, TAU); ctx.fill();
-    ctx.strokeStyle = j.color; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(size * 2.5, 0); ctx.stroke();
-    
-    const tRot = performance.now() * 0.005;
-    ctx.fillStyle = j.color;
-    ctx.beginPath(); ctx.arc(Math.cos(tRot)*size*2, Math.sin(tRot)*size*2, size*0.4, 0, TAU); ctx.fill();
-    ctx.beginPath(); ctx.arc(Math.cos(tRot+Math.PI)*size*2, Math.sin(tRot+Math.PI)*size*2, size*0.4, 0, TAU); ctx.fill();
-  } 
-  // 2. 기사: 강철 타워실드
+    // 룬 서클
+    ctx.strokeStyle = "rgba(56,189,248,0.4)"; ctx.lineWidth = 1;
+    ctx.strokeRect(-size, -size, size * 2, size * 2);
+
+    // 본체 코어 로브
+    ctx.fillStyle = "#0c2438";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+
+    // 마력 지팡이 샤프트
+    ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
+    ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
+
+    // 지팡이 헤드 보석
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
+
+    // 2개의 궤도 공전 오브
+    const rot = t * 0.004;
+    ctx.fillStyle = "#7dd3fc";
+    ctx.beginPath(); ctx.arc(Math.cos(rot) * size * 1.8, Math.sin(rot) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(Math.cos(rot + Math.PI) * size * 1.8, Math.sin(rot + Math.PI) * size * 1.8, size * 0.35, 0, TAU); ctx.fill();
+  }
+  // 2. 기사: 헥사곤 역장 타워실드 + 네온 에너지 광검
   else if (u.job === "Knight") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#cbd5e1"; 
-    ctx.fillRect(size * 0.5, -size * 1.5, size * 0.8, size * 3.0);
-    ctx.strokeStyle = j.color; ctx.lineWidth = 2;
-    ctx.strokeRect(size * 0.5, -size * 1.5, size * 0.8, size * 3.0);
-  } 
-  // 3. 레인저: 곡선형 롱보우
+    // 중장갑 풀 플레이트 바디
+    ctx.fillStyle = "#1e1b4b";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
+
+    // 전방 헥사곤 타워 실드
+    ctx.fillStyle = "rgba(129,140,248,0.85)";
+    ctx.beginPath();
+    ctx.moveTo(size * 0.6, -size * 1.6);
+    ctx.lineTo(size * 1.3, -size * 1.2);
+    ctx.lineTo(size * 1.3, size * 1.2);
+    ctx.lineTo(size * 0.6, size * 1.6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // 에너지 광검
+    ctx.strokeStyle = "#c7d2fe"; ctx.lineWidth = 2.5 * sc;
+    ctx.beginPath(); ctx.moveTo(-size * 0.2, size * 0.6); ctx.lineTo(size * 2.1, size * 0.6); ctx.stroke();
+  }
+  // 3. 레인저: 기계식 에어로 컴파운드 롱보우 + 레이저 조준경
   else if (u.job === "Ranger") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
-    ctx.strokeStyle = j.color; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.5, -Math.PI * 0.4, Math.PI * 0.4); ctx.stroke();
-    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(-size, 0); ctx.lineTo(size * 2.5, 0); ctx.stroke();
-  } 
-  // 4. 서머너: 공전 암흑 룬
+    // 본체
+    ctx.fillStyle = "#064e3b";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+
+    // 에어로 롱보우 활몸
+    ctx.strokeStyle = c; ctx.lineWidth = 3 * sc;
+    ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
+
+    // 활시위
+    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(size * 0.5, -size * 1.5); ctx.lineTo(-size * 0.4, 0); ctx.lineTo(size * 0.5, size * 1.5); ctx.stroke();
+
+    // 장전된 화살
+    ctx.strokeStyle = "#ecfdf5"; ctx.lineWidth = 2 * sc;
+    ctx.beginPath(); ctx.moveTo(-size * 0.4, 0); ctx.lineTo(size * 2.4, 0); ctx.stroke();
+
+    // 그린 레이저 포인터
+    ctx.strokeStyle = "rgba(52,211,153,0.5)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(size * 2.4, 0); ctx.lineTo(size * 12, 0); ctx.stroke();
+  }
+  // 4. 서머너: 부유 흑요석 마도서 + 3점 삼각 공전 룬
   else if (u.job === "Summoner") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#8b5cf6";
-    const tRot = performance.now() * 0.006;
-    ctx.fillRect(Math.cos(tRot)*size*1.5, Math.sin(tRot)*size*1.5, size*0.8, size*0.8);
-    ctx.fillRect(Math.cos(tRot+Math.PI)*size*1.5, Math.sin(tRot+Math.PI)*size*1.5, size*0.8, size*0.8);
-  } 
-  // 5. 바바리안: 쌍날 배틀액스
+    // 본체
+    ctx.fillStyle = "#3b0764";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+
+    // 부유 마도서
+    ctx.fillStyle = "#f3e8ff";
+    ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
+    ctx.strokeStyle = "#c084fc"; ctx.lineWidth = 1.5;
+    ctx.strokeRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
+
+    // 3각 궤도 암흑 수정체
+    const rot = t * 0.0035;
+    ctx.fillStyle = "#a855f7";
+    for (let k = 0; k < 3; k++) {
+      const a = rot + (k * TAU) / 3;
+      ctx.fillRect(Math.cos(a) * size * 1.7 - 2, Math.sin(a) * size * 1.7 - 2, size * 0.5, size * 0.5);
+    }
+  }
+  // 5. 바바리안: 열선 플라즈마 양날 배틀액스
   else if (u.job === "Barbarian") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size * 1.2, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#78350f"; 
-    ctx.fillRect(size, -size * 1.6, size * 0.4, size * 3.2);
-    ctx.fillStyle = j.color;
-    ctx.beginPath(); ctx.moveTo(size * 1.4, -size * 1.2); ctx.lineTo(size * 2.8, -size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(size * 1.4, size * 1.2); ctx.lineTo(size * 2.8, size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
-  } 
-  // 6. 거너: 붉은색 전방 조준 레이저 & 쌍열 기관총
+    // 근육질 파워 코어
+    ctx.fillStyle = "#431407";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
+
+    // 도끼 자루
+    ctx.fillStyle = "#78350f";
+    ctx.fillRect(size * 0.8, -size * 1.8, size * 0.35, size * 3.6);
+
+    // 달아오른 열선 양날 도끼날
+    ctx.fillStyle = "#fb923c";
+    ctx.beginPath();
+    ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
+    ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
+    ctx.fill();
+    ctx.strokeStyle = "#fff7ed"; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+  // 6. 거너: 3연장 회전식 헤비 개틀링 + 전술 레이저 조준선
   else if (u.job === "Gunner") {
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#1e293b";
-    ctx.fillRect(size * 0.5, -size * 0.8, size * 2, size * 0.4);
-    ctx.fillRect(size * 0.5, size * 0.4, size * 2, size * 0.4);
-    ctx.strokeStyle = "rgba(255,50,50,0.6)"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(size * 2.5, 0); ctx.lineTo(size * 15, 0); ctx.stroke(); 
+    // 기계식 코어 바디
+    ctx.fillStyle = "#18181b";
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+
+    // 3연장 중화기 회전 배럴
+    ctx.fillStyle = "#3f3f46";
+    ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
+    ctx.fillRect(size * 0.3, -size * 0.18, size * 2.3, size * 0.35);
+    ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
+
+    // 탄띠 공급 체인
+    ctx.strokeStyle = "#facc15"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(-size * 0.2, size * 0.6, size * 0.6, 0, Math.PI * 0.8); ctx.stroke();
+
+    // 붉은색 레이저 타겟팅 조준선
+    ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
   }
 
   ctx.rotate(-u.angle);
+
+  // 체력바
   const hp = clamp(u.hp / u.maxHp, 0, 1);
   ctx.fillStyle = "rgba(0,0,0,.75)";
   ctx.fillRect(-size - 2, -size - 8, size * 2 + 4, 3);
@@ -1098,8 +1197,6 @@ window.addEventListener("pointerup", e => {
       if (!dragBase.routes.includes(target)) {
         dragBase.routes.push(target);
       }
-      
-      // 주둔 대기 유닛들도 즉시 출발명령 하달
       for (const u of units) {
         if (u.team === dragBase.team && Math.hypot(u.x - dragBase.x, u.y - dragBase.y) < 150) {
           if (!u.targetBase || u.targetBase === dragBase) {
