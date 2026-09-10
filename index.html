@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER FLUX 14.1 // FAIR WARFRONT</title>
+<title>FRONTIER FLUX 15.0 // UNIFIED BALANCE</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -104,7 +104,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
 <div id="hud">
   <div class="panel">
-    <div id="title">FRONTIER FLUX // CAMPAIGN</div>
+    <div id="title">FRONTIER FLUX // UNIFIED</div>
     <div id="sub" style="color:#62eaff">CHAPTER 1: THE AWAKENING</div>
   </div>
   <div id="stats">
@@ -116,12 +116,12 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   </div>
 </div>
 
-<div id="guide">기지 드래그 → 다중 보급선 개설 · 내 기지 탭 → 보급선 해제 및 수비 복귀</div>
+<div id="guide">기지 드래그 → 보급선 개설 · 2단계(10기) → 3단계(5기) → 4단계(3기) → 5단계(2기) 고속 합체!</div>
 
 <div id="modal">
   <div id="card">
     <h1>FRONTIER FLUX</h1>
-    <p>SELECT YOUR HEROIC CLASS · CONQUER ALL 5 CHAPTERS</p>
+    <p>모든 영웅은 완전히 동일한 공평 스펙을 지닙니다 · 선호하는 외형을 선택하십시오</p>
     <div id="classes"></div>
     <button id="start">CAMPAIGN DEPLOY</button>
   </div>
@@ -158,23 +158,34 @@ const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 
-// 2600 x 1500 광활한 전장
 const WORLD = { w: 2600, h: 1500 };
 
+// ⭐ 모든 직업의 전투 스펙을 100% 동일화 (외형 비주얼만 차별화)
+const BASE_STATS = {
+  hp: 130, dmg: 20, rng: 75, spd: 40, rate: 1.0
+};
+
 const JOBS = {
-  Mage:      { icon: "✦", name: "MAGE",      color: "#62eaff", hp: 80,  dmg: 16, rng: 120, spd: 45, rate: 1.0,  desc: "광역 비전 폭발" },
-  Knight:    { icon: "♜", name: "KNIGHT",    color: "#9fb8ff", hp: 170, dmg: 20, rng: 36,  spd: 32, rate: 0.95, desc: "철벽 타워실드" },
-  Ranger:    { icon: "➶", name: "RANGER",    color: "#69f59a", hp: 90,  dmg: 18, rng: 140, spd: 50, rate: 1.05, desc: "초장거리 저격" },
-  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#d078ff", hp: 100, dmg: 15, rng: 95,  spd: 38, rate: 0.9,  desc: "체력 흡혈 마탄" },
-  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#ff9a4d", hp: 195, dmg: 30, rng: 38,  spd: 38, rate: 0.85, desc: "양날 대형 도끼" },
-  Gunner:    { icon: "▣", name: "GUNNER",    color: "#ffe45c", hp: 85,  dmg: 11, rng: 150, spd: 44, rate: 1.65, desc: "개틀링 고속 연사" }
+  Mage:      { icon: "✦", name: "MAGE",      color: "#62eaff", desc: "비전 마력 구체" },
+  Knight:    { icon: "♜", name: "KNIGHT",    color: "#9fb8ff", desc: "강철 타워실드" },
+  Ranger:    { icon: "➶", name: "RANGER",    color: "#69f59a", desc: "정밀 롱보우" },
+  Summoner:  { icon: "◈", name: "SUMMONER",  color: "#d078ff", desc: "공전 암흑룬" },
+  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#ff9a4d", desc: "쌍날 배틀액스" },
+  Gunner:    { icon: "▣", name: "GUNNER",    color: "#ffe45c", desc: "레이저 기관총" }
 };
 
 const FACTION_COLORS = ["#57ddff", "#ff5574", "#62ef91", "#d36cff", "#ff984c", "#ffe05b"];
 
-// 5개 챕터 구성
+// ⭐ 3단계부터 합치기 쉬운 단계별 필요 마릿수 설정
+const MERGE_REQ = {
+  1: 10, // 1단계 10마리 -> 2단계
+  2: 5,  // 2단계 5마리  -> 3단계 (초고속 완화)
+  3: 3,  // 3단계 3마리  -> 4단계 (초고속 완화)
+  4: 2   // 4단계 2마리  -> 5단계 신화 탄생!
+};
+
 const CHAPTERS = [
-  { num: 1, name: "CHAPTER 1: THE AWAKENING", enemies: 1, spawnMod: 1.6, hpMod: 1.8, desc: "1대1 입문 전투" },
+  { num: 1, name: "CHAPTER 1: THE AWAKENING", enemies: 1, spawnMod: 1.5, hpMod: 1.6, desc: "1대1 입문 전투" },
   { num: 2, name: "CHAPTER 2: EXPANDING FRONT", enemies: 2, spawnMod: 1.2, hpMod: 1.3, desc: "적 진영 2개 · 표준 난이도" },
   { num: 3, name: "CHAPTER 3: TRIPLE THREAT", enemies: 3, spawnMod: 1.0, hpMod: 1.0, desc: "적 진영 3개 · 팽팽한 전선" },
   { num: 4, name: "CHAPTER 4: FULL ONSLAUGHT", enemies: 4, spawnMod: 0.85, hpMod: 0.9, desc: "적 진영 4개 · 빠른 공세" },
@@ -254,7 +265,6 @@ function startChapter(idx) {
     });
   }
 
-  // 대칭 본진 좌표
   const coreSpots = [
     [300, 300],   // 0: 플레이어
     [2300, 1200], // 1
@@ -280,7 +290,6 @@ function startChapter(idx) {
     });
   }
 
-  // 중립 확장 거점
   const outpostSpots = [
     [700, 450], [1900, 450],
     [700, 1050], [1900, 1050],
@@ -303,7 +312,6 @@ function startChapter(idx) {
     });
   }
 
-  // 초기 병력 생산
   for (const b of bases) {
     if (b.team >= 0) produce(b, 6);
   }
@@ -319,7 +327,7 @@ function startChapter(idx) {
 function produce(base, count = 1) {
   if (base.team < 0) return;
   for (let i = 0; i < count; i++) {
-    const f = factions[base.team], j = JOBS[f.job];
+    const f = factions[base.team];
     const a = rand(0, TAU), d = rand(15, 30);
     
     let assignedRoute = null;
@@ -332,7 +340,7 @@ function produce(base, count = 1) {
       x: base.x + Math.cos(a) * d,
       y: base.y + Math.sin(a) * d,
       vx: 0, vy: 0,
-      hp: j.hp, maxHp: j.hp,
+      hp: BASE_STATS.hp, maxHp: BASE_STATS.hp,
       tier: 1,
       attack: rand(0, 0.5),
       targetBase: assignedRoute, 
@@ -363,7 +371,6 @@ function handleAI() {
           .sort((a, c) => Math.hypot(a.x - b.x, a.y - b.y) - Math.hypot(c.x - b.x, c.y - b.y));
         if (targets.length) {
           b.routes = [targets[0]];
-          // AI 병력 일제 진격
           for (const u of units) {
             if (u.team === b.team && Math.hypot(u.x - b.x, u.y - b.y) < 150 && (!u.targetBase || u.targetBase === b)) {
               u.targetBase = targets[0];
@@ -389,7 +396,7 @@ function updateTurrets(dt) {
         }
       }
       if (nearest) {
-        nearest.hp -= 30;
+        nearest.hp -= 26;
         nearest.hit = 0.12;
         projectiles.push({
           x: b.x, y: b.y, tx: nearest.x, ty: nearest.y,
@@ -412,7 +419,7 @@ function updateMythicUltimates(dt) {
       explosions.push({ x: u.x, y: u.y, r: 180, life: 0.4, maxLife: 0.4 });
       for (const target of units) {
         if (target.team !== u.team && !target.dead && Math.hypot(target.x - u.x, target.y - u.y) < 180) {
-          target.hp -= 180 * Math.pow(2.5, 4);
+          target.hp -= 200 * Math.pow(2.2, 4);
           target.hit = 0.2;
           if (target.hp <= 0) killUnit(target, u.team);
         }
@@ -438,7 +445,6 @@ function updateUnits(dt) {
       u.home = bases.find(b => b.team === u.team) || null;
     }
 
-    const j = JOBS[u.job];
     u.anim += dt * 7;
     u.hit = Math.max(0, u.hit - dt);
 
@@ -456,18 +462,18 @@ function updateUnits(dt) {
     for (const v of nearby) {
       if (v.dead || v.team === u.team) continue;
       const d = Math.hypot(v.x - u.x, v.y - u.y);
-      if (d < j.rng + 35 && d < ed) { ed = d; enemy = v; }
+      if (d < BASE_STATS.rng + 35 && d < ed) { ed = d; enemy = v; }
     }
 
     u.target = enemy;
     let tx = null, ty = null;
 
-    if (enemy && ed <= j.rng) {
+    if (enemy && ed <= BASE_STATS.rng) {
       tx = enemy.x; ty = enemy.y;
       u.attack -= dt;
       if (u.attack <= 0) {
         attack(u, enemy);
-        u.attack = 1 / JOBS[u.job].rate;
+        u.attack = 1 / BASE_STATS.rate;
       }
     } else if (u.targetBase) {
       tx = u.targetBase.x; ty = u.targetBase.y;
@@ -476,10 +482,9 @@ function updateUnits(dt) {
       if (distToBase < 30) {
         if (u.targetBase.team !== u.team) {
           const mult = Math.pow(2.2, u.tier - 1);
-          u.targetBase.hp -= j.dmg * mult * dt;
+          u.targetBase.hp -= BASE_STATS.dmg * mult * dt;
           if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
         } else {
-          // 릴레이 보급선
           if (u.targetBase.routes && u.targetBase.routes.length > 0) {
             u.targetBase = u.targetBase.routes[Math.floor(Math.random() * u.targetBase.routes.length)];
           } else {
@@ -489,7 +494,6 @@ function updateUnits(dt) {
         }
       }
     } else if (u.home) {
-      // 기지 주둔 (산개 방지 집결)
       tx = u.home.x; ty = u.home.y;
       if (Math.hypot(tx - u.x, ty - u.y) < 60) {
         tx = u.x; ty = u.y;
@@ -521,7 +525,7 @@ function updateUnits(dt) {
 
     const moveD = Math.hypot(tx - u.x, ty - u.y);
     if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
-      const speed = j.spd * (1 + (u.tier - 1) * 0.08);
+      const speed = BASE_STATS.spd * (1 + (u.tier - 1) * 0.08);
       u.vx = lerp(u.vx, ax * speed, dt * 4);
       u.vy = lerp(u.vy, ay * speed, dt * 4);
       u.x += u.vx * dt;
@@ -534,30 +538,17 @@ function updateUnits(dt) {
   }
 }
 
+// ⭐ 완전 동일화된 기본 공격 (스플래시/흡혈/감면 제거로 완벽한 대칭)
 function attack(a, b) {
-  const ja = JOBS[a.job];
   const mult = Math.pow(2.2, a.tier - 1);
-  let dmg = ja.dmg * mult;
-
-  if (b.job === "Knight") dmg *= 0.65;
-  if (a.job === "Mage") {
-    for (const v of units) {
-      if (v !== b && v.team !== a.team && !v.dead && Math.hypot(v.x - b.x, v.y - b.y) < 45) {
-        v.hp -= dmg * 0.45;
-        v.hit = 0.12;
-        if (v.hp <= 0) killUnit(v, a.team);
-      }
-    }
-  }
-  if (a.job === "Summoner") a.hp = clamp(a.hp + dmg * 0.35, 0, a.maxHp);
-  if (a.job === "Barbarian" && a.hp < a.maxHp * 0.45) dmg *= 1.6;
+  let dmg = BASE_STATS.dmg * mult;
 
   b.hp -= dmg;
   b.hit = 0.12;
 
   projectiles.push({
     x: a.x, y: a.y, tx: b.x, ty: b.y,
-    life: 0.13, color: ja.color, job: a.job, tier: a.tier
+    life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
   });
 
   if (b.hp <= 0) killUnit(b, a.team);
@@ -567,7 +558,7 @@ function killUnit(u, killer) {
   if (u.dead) return;
   u.dead = true;
   if (killer != null && factions[killer]) factions[killer].kills++;
-  burst(u.x, u.y, JOBS[u.job].color, 6 + u.tier * 2);
+  burst(u.x, u.y, factions[u.team].color, 6 + u.tier * 2);
 }
 
 function captureBase(b, team) {
@@ -584,17 +575,22 @@ function captureBase(b, team) {
   }
 }
 
+// ⭐ 티어별 결집 조건 대폭 완화 로직 (10 -> 5 -> 3 -> 2)
 function handleAutoMerge() {
   const groups = new Map();
   for (const u of units) {
     if (u.dead || u.tier >= 5) continue;
-    const k = u.team + "|" + u.job + "|" + u.tier;
+    const k = u.team + "|" + u.tier;
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k).push(u);
   }
 
   for (const arr of groups.values()) {
-    if (arr.length < 10) continue;
+    if (!arr.length) continue;
+    const curTier = arr[0].tier;
+    const req = MERGE_REQ[curTier] || 10;
+
+    if (arr.length < req) continue;
 
     for (let i = 0; i < arr.length; i++) {
       const a = arr[i];
@@ -602,27 +598,25 @@ function handleAutoMerge() {
       const near = [];
       for (let k = i + 1; k < arr.length; k++) {
         const b = arr[k];
-        // ⭐ 합체 반경 100px 대폭 상향
-        if (!b.dead && Math.hypot(a.x - b.x, a.y - b.y) < 100) near.push(b);
-        if (near.length >= 9) break;
+        if (!b.dead && Math.hypot(a.x - b.x, a.y - b.y) < 110) near.push(b);
+        if (near.length >= req - 1) break;
       }
 
-      if (near.length >= 9) {
+      if (near.length >= req - 1) {
         const list = [a, ...near];
-        const x = list.reduce((s, v) => s + v.x, 0) / 10;
-        const y = list.reduce((s, v) => s + v.y, 0) / 10;
+        const x = list.reduce((s, v) => s + v.x, 0) / req;
+        const y = list.reduce((s, v) => s + v.y, 0) / req;
         const target = a.targetBase;
         const homeBase = a.home;
         list.forEach(v => v.dead = true);
 
-        const j = JOBS[a.job];
-        const nextTier = a.tier + 1;
-        const hpMult = Math.pow(2.5, nextTier - 1);
+        const nextTier = curTier + 1;
+        const hpMult = Math.pow(2.3, nextTier - 1);
 
         units.push({
           id: uid++, team: a.team, job: a.job,
           x, y, vx: 0, vy: 0,
-          hp: j.hp * hpMult, maxHp: j.hp * hpMult,
+          hp: BASE_STATS.hp * hpMult, maxHp: BASE_STATS.hp * hpMult,
           tier: nextTier,
           attack: 0, targetBase: target,
           home: homeBase,
@@ -630,7 +624,7 @@ function handleAutoMerge() {
           anim: rand(0, TAU), hit: 0, dead: false
         });
 
-        burst(x, y, j.color, 35);
+        burst(x, y, factions[a.team].color, 35);
         break;
       }
     }
@@ -898,6 +892,9 @@ function drawBase(b, t) {
   ctx.restore();
 }
 
+/* =========================================================
+   외형 개성은 완벽히 유지된 스프라이트 (스펙은 동일)
+========================================================= */
 function drawUnit(u) {
   const s = worldToScreen(u.x, u.y);
   const j = JOBS[u.job];
@@ -922,6 +919,7 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 1.5, 0, TAU); ctx.stroke();
   }
 
+  // 1. 마법사: 2개의 회전하는 마력 구체
   if (u.job === "Mage") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -935,6 +933,7 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(Math.cos(tRot)*size*2, Math.sin(tRot)*size*2, size*0.4, 0, TAU); ctx.fill();
     ctx.beginPath(); ctx.arc(Math.cos(tRot+Math.PI)*size*2, Math.sin(tRot+Math.PI)*size*2, size*0.4, 0, TAU); ctx.fill();
   } 
+  // 2. 기사: 강철 타워실드
   else if (u.job === "Knight") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -943,6 +942,7 @@ function drawUnit(u) {
     ctx.strokeStyle = j.color; ctx.lineWidth = 2;
     ctx.strokeRect(size * 0.5, -size * 1.5, size * 0.8, size * 3.0);
   } 
+  // 3. 레인저: 곡선형 롱보우
   else if (u.job === "Ranger") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -951,6 +951,7 @@ function drawUnit(u) {
     ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(-size, 0); ctx.lineTo(size * 2.5, 0); ctx.stroke();
   } 
+  // 4. 서머너: 공전 암흑 룬
   else if (u.job === "Summoner") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -959,6 +960,7 @@ function drawUnit(u) {
     ctx.fillRect(Math.cos(tRot)*size*1.5, Math.sin(tRot)*size*1.5, size*0.8, size*0.8);
     ctx.fillRect(Math.cos(tRot+Math.PI)*size*1.5, Math.sin(tRot+Math.PI)*size*1.5, size*0.8, size*0.8);
   } 
+  // 5. 바바리안: 쌍날 배틀액스
   else if (u.job === "Barbarian") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size * 1.2, 0, TAU); ctx.fill();
@@ -968,6 +970,7 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.moveTo(size * 1.4, -size * 1.2); ctx.lineTo(size * 2.8, -size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
     ctx.beginPath(); ctx.moveTo(size * 1.4, size * 1.2); ctx.lineTo(size * 2.8, size * 0.5); ctx.lineTo(size * 1.4, 0); ctx.fill();
   } 
+  // 6. 거너: 붉은색 전방 조준 레이저 & 쌍열 기관총
   else if (u.job === "Gunner") {
     ctx.fillStyle = c;
     ctx.beginPath(); ctx.arc(0, 0, size, 0, TAU); ctx.fill();
@@ -1096,7 +1099,7 @@ window.addEventListener("pointerup", e => {
         dragBase.routes.push(target);
       }
       
-      // ⭐ 주둔 대기 유닛들도 즉시 출발명령 하달
+      // 주둔 대기 유닛들도 즉시 출발명령 하달
       for (const u of units) {
         if (u.team === dragBase.team && Math.hypot(u.x - dragBase.x, u.y - dragBase.y) < 150) {
           if (!u.targetBase || u.targetBase === dragBase) {
@@ -1105,7 +1108,6 @@ window.addEventListener("pointerup", e => {
         }
       }
     } else if (!dragMoved || target === dragBase) {
-      // 기존 출격 명령 취소 및 기지로 소환
       for (const u of units) {
         if (u.team === dragBase.team && dragBase.routes.includes(u.targetBase)) {
           u.targetBase = null;
