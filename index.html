@@ -144,7 +144,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .xpbar i{background:linear-gradient(90deg,#b66cff,#ffd76a)!important}
 
 #arcadeSkills{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:31;display:none;gap:8px;pointer-events:auto;max-width:96vw;overflow-x:auto;padding-bottom:4px}
-.arcSkill{min-width:72px;height:60px;padding:4px 6px;border:1px solid #ffffff24;border-radius:12px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008;text-align:center}
+.arcSkill{min-width:68px;height:60px;padding:4px 6px;border:1px solid #ffffff24;border-radius:12px;background:linear-gradient(180deg,#101925f0,#060b13f0);color:#effcff;font-weight:900;cursor:pointer;box-shadow:0 8px 25px #0008;text-align:center}
 .arcSkill b{display:block;font-size:16px;color:#fff}
 .arcSkill span{display:block;font-size:9px;color:#63efff;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .arcSkill small{font-size:8px;color:#91b7c4}
@@ -162,7 +162,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   .game-grid{grid-template-columns:1fr}
   #classes,#hunterClasses{grid-template-columns:repeat(2,1fr)}
   .bar{width:140px!important}
-  .arcSkill{min-width:56px;height:52px}
+  .arcSkill{min-width:54px;height:52px}
   .evoCards{grid-template-columns:1fr}
 }
 </style>
@@ -206,7 +206,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
       <div class="game-card" onclick="selectGameMode('HUNTER')">
         <span class="tag" style="background:#3b164f;color:#e18aff">MODE 2</span>
         <h3>프론티어 헌터 (생존 사냥)</h3>
-        <p>직업별 차별화된 고유 스킬! 바바리안의 3초 휠윈드, 거너의 자동 포탑, 마법사의 유도 체인 레이저 등 개성 넘치는 전투를 즐기세요.</p>
+        <p>바닥 드랍물 없는 100% 즉시 경험치 흡수! 6개 직업별 12종 고유 스킬(QWERASDFZXCV)로 수백 마리의 몬스터를 쓸어 담으세요.</p>
       </div>
     </div>
   </div>
@@ -229,7 +229,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 <div id="hunterClassModal">
   <div id="hunterCard">
     <h1>SELECT YOUR HERO</h1>
-    <p>사냥에 출격할 영웅을 선택하십시오 · 직업마다 완전히 차별화된 스킬 메커니즘을 가집니다</p>
+    <p>사냥에 출격할 영웅을 선택하십시오 · 12개 스킬이 직업별 메커니즘에 맞게 완전히 차별화되어 있습니다</p>
     <div id="hunterClasses"></div>
     <div class="modal-actions">
       <button id="hunterStart" onclick="confirmHunterDeploy()">HUNT START</button>
@@ -572,7 +572,7 @@ function initThemeParticles(theme) {
 }
 
 /* =========================================================
-   게임 2: 프론티어 헌터 (직업별 고유 스킬 & 자석 흡수 강화)
+   게임 2: 프론티어 헌터 (즉시 경험치 흡수 & 12개 스킬 완전 차별화)
 ========================================================= */
 const SKILL_KEYS = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
 
@@ -582,85 +582,85 @@ const CLASS_SKILLS = {
     { key: 'q', name: '시공간 점멸', cd: 3.0, type: 'mage_blink' },
     { key: 'w', name: '메테오 폭격', cd: 4.5, type: 'mage_meteor' },
     { key: 'e', name: '체인 아케인 레이저', cd: 3.5, type: 'mage_laser' },
-    { key: 'r', name: '비전 폭풍', cd: 9.0, type: 'storm' },
-    { key: 'a', name: '프로스트 노바', cd: 5.0, type: 'freeze' },
-    { key: 's', name: '체인 라이트닝', cd: 4.2, type: 'chain' },
-    { key: 'd', name: '마력 보호막', cd: 12.0, type: 'shield' },
-    { key: 'f', name: '블랙홀 왜곡', cd: 10.0, type: 'blackhole' },
-    { key: 'z', name: '비전 오브', cd: 6.0, type: 'orb' },
-    { key: 'x', name: '마력 충격파', cd: 5.5, type: 'wave' },
-    { key: 'c', name: '차원 폭풍', cd: 14.0, type: 'storm' },
-    { key: 'v', name: '초월적 비전핵', cd: 18.0, type: 'nuke' }
+    { key: 'r', name: '초신성 아케인 폭풍', cd: 9.0, type: 'mage_storm' },
+    { key: 'a', name: '절대영도 빙결', cd: 5.0, type: 'mage_freeze' },
+    { key: 's', name: '체인 썬더스트라이크', cd: 4.2, type: 'mage_thunder' },
+    { key: 'd', name: '시간 왜곡 결계', cd: 10.0, type: 'mage_slow' },
+    { key: 'f', name: '블랙홀 왜곡', cd: 8.5, type: 'mage_blackhole' },
+    { key: 'z', name: '비전 마력구체', cd: 5.0, type: 'mage_orb' },
+    { key: 'x', name: '염화 대폭발', cd: 5.5, type: 'mage_fire' },
+    { key: 'c', name: '차원 균열', cd: 12.0, type: 'mage_rift' },
+    { key: 'v', name: '궁극의 메테오 하일', cd: 18.0, type: 'mage_nuke' }
   ],
   Knight: [
     { key: 'q', name: '실드 차지', cd: 3.2, type: 'knight_charge' },
     { key: 'w', name: '심판의 회전검', cd: 5.5, type: 'knight_swords' },
     { key: 'e', name: '신성 십자검기', cd: 3.0, type: 'knight_cross' },
-    { key: 'r', name: '천벌의 방패', cd: 8.5, type: 'meteor' },
-    { key: 'a', name: '성역 결계', cd: 10.0, type: 'shield' },
-    { key: 's', name: '심판의 벼락', cd: 4.8, type: 'chain' },
-    { key: 'd', name: '용기의 함성', cd: 8.0, type: 'freeze' },
-    { key: 'f', name: '거대 회전참', cd: 6.0, type: 'wave' },
-    { key: 'z', name: '정의의 일격', cd: 5.0, type: 'orb' },
-    { key: 'x', name: '철벽 방진', cd: 11.0, type: 'blackhole' },
-    { key: 'c', name: '성검 강림', cd: 15.0, type: 'storm' },
-    { key: 'v', name: '불멸의 기사도', cd: 20.0, type: 'nuke' }
+    { key: 'r', name: '천벌의 대형 방패', cd: 8.5, type: 'knight_shielddrop' },
+    { key: 'a', name: '성스러운 정화', cd: 6.0, type: 'knight_purify' },
+    { key: 's', name: '심판의 빛기둥', cd: 4.8, type: 'knight_pillars' },
+    { key: 'd', name: '불멸의 수호', cd: 10.0, type: 'knight_invuln' },
+    { key: 'f', name: '회전 성검진', cd: 6.0, type: 'knight_spin' },
+    { key: 'z', name: '십자 단죄', cd: 4.5, type: 'knight_punish' },
+    { key: 'x', name: '천사의 날개 돌진', cd: 7.0, type: 'knight_wings' },
+    { key: 'c', name: '신성 폭발', cd: 11.0, type: 'knight_holyblast' },
+    { key: 'v', name: '성전사의 권능', cd: 18.0, type: 'knight_nuke' }
   ],
   Ranger: [
     { key: 'q', name: '은신 윈드스텝', cd: 3.0, type: 'ranger_step' },
     { key: 'w', name: '칼날 속박 덫', cd: 4.2, type: 'ranger_trap' },
     { key: 'e', name: '산탄 스나이핑', cd: 2.8, type: 'ranger_spread' },
-    { key: 'r', name: '폭풍 궤도 사격', cd: 8.0, type: 'meteor' },
-    { key: 'a', name: '얼음 화살', cd: 4.5, type: 'freeze' },
-    { key: 's', name: '도탄 쐐기', cd: 3.8, type: 'chain' },
-    { key: 'd', name: '위장 은신', cd: 9.0, type: 'shield' },
-    { key: 'f', name: '태풍 화살', cd: 7.0, type: 'wave' },
-    { key: 'z', name: '독가스 화살', cd: 5.2, type: 'orb' },
-    { key: 'x', name: '집속 사격', cd: 6.0, type: 'blackhole' },
-    { key: 'c', name: '바람의 폭풍', cd: 13.0, type: 'storm' },
-    { key: 'v', name: '일격필살 저격', cd: 16.0, type: 'nuke' }
+    { key: 'r', name: '화살 폭풍 소나기', cd: 8.0, type: 'ranger_arrowrain' },
+    { key: 'a', name: '냉기 빙결 화살', cd: 4.2, type: 'ranger_ice' },
+    { key: 's', name: '튕기는 도탄 쐐기', cd: 3.5, type: 'ranger_ricochet' },
+    { key: 'd', name: '페이킹 분신술', cd: 8.0, type: 'ranger_decoy' },
+    { key: 'f', name: '폭풍우 회오리', cd: 6.5, type: 'ranger_tornado' },
+    { key: 'z', name: '맹독 확산 화살', cd: 4.8, type: 'ranger_poison' },
+    { key: 'x', name: '연발 일제사격', cd: 5.5, type: 'ranger_rapid' },
+    { key: 'c', name: '폭발형 화살', cd: 9.0, type: 'ranger_explosive' },
+    { key: 'v', name: '심장 관통 저격', cd: 16.0, type: 'ranger_nuke' }
   ],
   Summoner: [
-    { key: 'q', name: '영혼 교환', cd: 3.2, type: 'summoner_swap' },
+    { key: 'q', name: '영혼 위치교환', cd: 3.2, type: 'summoner_swap' },
     { key: 'w', name: '심연 흡입홀', cd: 6.0, type: 'summoner_vortex' },
     { key: 'e', name: '유도 망령 사출', cd: 3.4, type: 'summoner_ghosts' },
-    { key: 'r', name: '고대수호신 강림', cd: 9.5, type: 'meteor' },
-    { key: 'a', name: '영혼 결빙', cd: 5.0, type: 'freeze' },
-    { key: 's', name: '영혼 사슬', cd: 4.2, type: 'chain' },
-    { key: 'd', name: '흡혈 룬', cd: 9.0, type: 'shield' },
-    { key: 'f', name: '사령 파동', cd: 6.5, type: 'wave' },
-    { key: 'z', name: '공전 구체', cd: 5.5, type: 'orb' },
-    { key: 'x', name: '심연 소용돌이', cd: 8.5, type: 'blackhole' },
-    { key: 'c', name: '황천의 폭풍', cd: 14.0, type: 'storm' },
-    { key: 'v', name: '종말의 소환진', cd: 19.0, type: 'nuke' }
+    { key: 'r', name: '심연의 거인 소환', cd: 10.0, type: 'summoner_golem' },
+    { key: 'a', name: '영혼 결빙 저주', cd: 5.0, type: 'summoner_curse' },
+    { key: 's', name: '사령 연쇄 사슬', cd: 4.2, type: 'summoner_chains' },
+    { key: 'd', name: '생명력 착취 룬', cd: 8.5, type: 'summoner_drain' },
+    { key: 'f', name: '암흑 회오리', cd: 6.0, type: 'summoner_darkvortex' },
+    { key: 'z', name: '해골 폭탄', cd: 4.5, type: 'summoner_skulls' },
+    { key: 'x', name: '유령 칼날진', cd: 7.0, type: 'summoner_blades' },
+    { key: 'c', name: '명계의 문', cd: 12.0, type: 'summoner_gate' },
+    { key: 'v', name: '종말의 사령진', cd: 19.0, type: 'summoner_nuke' }
   ],
   Barbarian: [
     { key: 'q', name: '헤비 리프', cd: 3.0, type: 'barb_leap' },
     { key: 'w', name: '3초 무한 휠윈드', cd: 5.0, type: 'barb_whirlwind' },
     { key: 'e', name: '부메랑 톱날도끼', cd: 3.0, type: 'barb_boomerang' },
-    { key: 'r', name: '대지 분쇄', cd: 8.0, type: 'meteor' },
-    { key: 'a', name: '광폭 포효', cd: 6.0, type: 'freeze' },
-    { key: 's', name: '도끼 튕기기', cd: 4.0, type: 'chain' },
-    { key: 'd', name: '피의 갑주', cd: 9.0, type: 'shield' },
-    { key: 'f', name: '충격 파쇄', cd: 5.5, type: 'wave' },
-    { key: 'z', name: '분노 폭발', cd: 5.0, type: 'orb' },
-    { key: 'x', name: '지진 소용돌이', cd: 7.5, type: 'blackhole' },
-    { key: 'c', name: '광전사의 분노', cd: 12.0, type: 'storm' },
-    { key: 'v', name: '천지개벽 참격', cd: 17.0, type: 'nuke' }
+    { key: 'r', name: '대지 분쇄참', cd: 8.0, type: 'barb_earthquake' },
+    { key: 'a', name: '광폭 포효', cd: 6.0, type: 'barb_shout' },
+    { key: 's', name: '피의 분노 버서커', cd: 7.5, type: 'barb_bloodrage' },
+    { key: 'd', name: '지진 격돌', cd: 8.0, type: 'barb_slam' },
+    { key: 'f', name: '무쌍 회전톱', cd: 5.5, type: 'barb_saw' },
+    { key: 'z', name: '광전사의 도약', cd: 4.2, type: 'barb_frenzyjump' },
+    { key: 'x', name: '피의 참격파', cd: 6.0, type: 'barb_bloodwave' },
+    { key: 'c', name: '분노 폭발', cd: 11.0, type: 'barb_rageburst' },
+    { key: 'v', name: '천지개벽 파멸강타', cd: 18.0, type: 'barb_nuke' }
   ],
   Gunner: [
     { key: 'q', name: '회피 롤 & C4', cd: 2.8, type: 'gunner_tumble' },
     { key: 'w', name: '자동사격 포탑', cd: 6.5, type: 'gunner_turret' },
     { key: 'e', name: '초음속 레일건', cd: 3.0, type: 'gunner_railgun' },
-    { key: 'r', name: '궤도 융단폭격', cd: 9.0, type: 'meteor' },
-    { key: 'a', name: '냉동 유탄', cd: 4.8, type: 'freeze' },
-    { key: 's', name: '도탄 연사', cd: 3.6, type: 'chain' },
-    { key: 'd', name: '전자기 방벽', cd: 10.0, type: 'shield' },
-    { key: 'f', name: '초토화 일제사격', cd: 6.0, type: 'wave' },
-    { key: 'z', name: '추적 미사일', cd: 5.0, type: 'orb' },
-    { key: 'x', name: '중력 지뢰', cd: 8.0, type: 'blackhole' },
-    { key: 'c', name: '폭격 레이저포', cd: 13.0, type: 'storm' },
-    { key: 'v', name: '핵탄두 투하', cd: 20.0, type: 'nuke' }
+    { key: 'r', name: '궤도 융단폭격', cd: 9.0, type: 'gunner_carpet' },
+    { key: 'a', name: '냉동 크라이오 유탄', cd: 4.5, type: 'gunner_cryo' },
+    { key: 's', name: '개틀링 오버드라이브', cd: 6.0, type: 'gunner_gatling' },
+    { key: 'd', name: '전자기 EMP 펄스', cd: 7.5, type: 'gunner_emp' },
+    { key: 'f', name: '유도 미사일 폭풍', cd: 6.0, type: 'gunner_missiles' },
+    { key: 'z', name: '중력 흡착지뢰', cd: 5.0, type: 'gunner_mine' },
+    { key: 'x', name: '화염방사기 분사', cd: 6.5, type: 'gunner_flame' },
+    { key: 'c', name: '플라즈마 캐논', cd: 10.0, type: 'gunner_plasma' },
+    { key: 'v', name: '전술 핵폭탄 투하', cd: 20.0, type: 'gunner_nuke' }
   ]
 };
 
@@ -681,23 +681,24 @@ const hunter = {
   target: null,
   key: {},
   enemies: [],
-  gems: [],
   chests: [],
   beams: [],
   novas: [],
   zones: [],
-  turrets: [],   // 거너 설치 포탑
-  swords: [],    // 기사 심판의 회전검
-  boomerangs: [],// 바바리안 부메랑 도끼
-  traps: [],     // 레인저 덫
-  ghosts: [],    // 서머너 유도 망령
+  turrets: [],
+  swords: [],
+  boomerangs: [],
+  traps: [],
+  ghosts: [],
   texts: [],
   spawnTimer: 0,
   bossTimer: 45,
   bossIndex: 0,
   boss: null,
   upgrades: { damage: 1, speed: 1, aoe: 1, cd: 1 },
-  whirlwindTimer: 0
+  whirlwindTimer: 0,
+  gatlingTimer: 0,
+  bloodrageTimer: 0
 };
 
 const HUNTER_BOSS_NAMES = ["GROVE BEHEMOTH", "DUNE COLOSSUS", "INFERNAL LORD", "VOID REAPER"];
@@ -717,7 +718,6 @@ function startHunterGame(job) {
   hunter.shake = 0;
   hunter.pendingLevel = false;
   hunter.enemies = [];
-  hunter.gems = [];
   hunter.chests = [];
   hunter.beams = [];
   hunter.novas = [];
@@ -733,6 +733,8 @@ function startHunterGame(job) {
   hunter.bossIndex = 0;
   hunter.boss = null;
   hunter.whirlwindTimer = 0;
+  hunter.gatlingTimer = 0;
+  hunter.bloodrageTimer = 0;
   hunter.upgrades = { damage: 1, speed: 1, aoe: 1, cd: 1 };
   hunter.key = {};
 
@@ -740,13 +742,14 @@ function startHunterGame(job) {
   initThemeParticles("INFERNO");
 
   document.getElementById("title").textContent = "FRONTIER HUNTER";
-  document.getElementById("sub").textContent = "대규모 생존 몰이사냥 (물량 4배 폭증)";
-  document.getElementById("guide").textContent = "방향키 이동 · Q, W, E 기본 장착 (직업별 고유 스킬셋) · 5Lv마다 추가 해금!";
+  document.getElementById("sub").textContent = "생존 몰이사냥 (바닥 드랍물 없는 100% 즉시 흡수)";
+  document.getElementById("guide").textContent = "방향키 이동 · Q, W, E 기본 장착 (직업별 완전 차별화 스킬) · 5Lv마다 추가 해금!";
 
   document.getElementById("arcadeHUD").style.display = "block";
   document.getElementById("arcadeSkills").style.display = "flex";
 
-  for (let i = 0; i < 8; i++) spawnChest();
+  // 회복 상자 배치
+  for (let i = 0; i < 6; i++) spawnChest();
 
   hunter.hero = {
     id: 9999, team: 0, job: job,
@@ -761,7 +764,7 @@ function startHunterGame(job) {
   running = true;
   isPaused = false;
   updateHunterHUD();
-  hunterFloat(`${JOBS[job].name} 출격! (특화 스킬 탑재)`, 1300, 700, JOBS[job].color, 2.0);
+  hunterFloat(`${JOBS[job].name} 출격! (즉시 경험치 흡수 모드)`, 1300, 700, JOBS[job].color, 2.0);
 }
 
 function getUnlockedSkillCount() {
@@ -789,7 +792,7 @@ function spawnChest() {
   hunter.chests.push({
     x: rand(150, WORLD.w - 150),
     y: rand(150, WORLD.h - 150),
-    type: Math.random() < 0.4 ? 'magnet' : 'heal',
+    type: 'heal',
     r: 18, dead: false
   });
 }
@@ -845,26 +848,19 @@ function hunterSpawnBoss() {
   hunter.shake = 20;
 }
 
-// ⭐ 보석 압축 드랍 (화면 보석 수 80개 제한으로 무한 누적 원천 차단)
+// ⭐ 바닥에 보석을 전혀 떨구지 않고 100% 즉시 경험치 다이렉트 흡수
 function hunterKillMob(e) {
   if (e.dead) return;
   e.dead = true;
   hunter.kills++;
   hunter.score += e.isBoss ? 5000 : (e.isElite ? 200 : 50);
 
-  // 보석이 80개 이상 쌓이면 새로 뿌리지 않고 기존 보석 가치를 합산
-  if (hunter.gems.length > 80) {
-    const g = hunter.gems[Math.floor(Math.random() * hunter.gems.length)];
-    g.val += e.isBoss ? 50 : 10;
-    g.big = true;
-  } else {
-    hunter.gems.push({
-      x: e.x,
-      y: e.y,
-      val: e.isBoss ? 45 : (e.isElite ? 18 : 8),
-      big: e.isBoss
-    });
-  }
+  // 즉시 경험치 획득!
+  const xpVal = e.isBoss ? 200 : (e.isElite ? 25 : 10);
+  hunterGainXP(xpVal);
+
+  // 시각적 피드백: 몹 사망 위치에서 영웅 쪽으로 흡수되는 빛 입자 생성
+  burst(e.x, e.y, "#38bdf8", e.isBoss ? 20 : 4);
 
   if (e.isBoss) {
     hunter.boss = null;
@@ -877,8 +873,6 @@ function hunterKillMob(e) {
       hunterWin();
     }
   }
-
-  burst(e.x, e.y, e.color, e.isBoss ? 45 : 6);
 }
 
 function hunterGainXP(val) {
@@ -940,7 +934,7 @@ function selectHunterEvo(type) {
 }
 
 /* =========================================================
-   직업별 완전 분리된 고유 스킬 엔진
+   직업별 완전 차별화된 12종 스킬 실행 엔진
 ========================================================= */
 function hunterUseSkill(key) {
   if (!hunter.active || isPaused || hunter.pendingLevel || !hunter.hero || hunter.hero.dead) return;
@@ -960,7 +954,7 @@ function hunterUseSkill(key) {
   const dmgMult = hunter.upgrades.damage;
   const aoeMult = hunter.upgrades.aoe;
 
-  // 1. 바바리안
+  // --- 1. 바바리안 (지속 회전, 부메랑 도끼, 대지분쇄) ---
   if (sInfo.type === 'barb_whirlwind') {
     hunter.whirlwindTimer = 3.0;
     hunterFloat("★ 3초 휠윈드 회전!", h.x, h.y - 50, "#fb923c", 1.2);
@@ -977,23 +971,38 @@ function hunterUseSkill(key) {
     hunterFloat("도약 강타!", h.x, h.y - 40, "#fb923c", 0.8);
   }
   else if (sInfo.type === 'barb_boomerang') {
-    // 날아갔다 되돌아오는 부메랑 도끼 투척
     hunter.boomerangs.push({
       x: h.x, y: h.y,
-      vx: Math.cos(h.angle) * 600,
-      vy: Math.sin(h.angle) * 600,
-      returning: false,
-      timer: 0.6,
-      dmg: 140 * dmgMult,
-      r: 32 * aoeMult
+      vx: Math.cos(h.angle) * 600, vy: Math.sin(h.angle) * 600,
+      returning: false, timer: 0.6,
+      dmg: 140 * dmgMult, r: 32 * aoeMult
     });
     sfxHit();
     hunterFloat("부메랑 톱날도끼!", h.x, h.y - 40, "#fb923c", 0.8);
   }
+  else if (sInfo.type === 'barb_earthquake') {
+    // 3방향 대지분쇄 용암 분출
+    for (let i = -1; i <= 1; i++) {
+      fireBeam(h.x, h.y, h.angle + i * 0.25, 800, 60 * aoeMult, 220 * dmgMult, '#fb923c');
+    }
+    sfxBoom();
+    hunterFloat("대지 분쇄참!", h.x, h.y - 50, "#fb923c", 1.0);
+  }
+  else if (sInfo.type === 'barb_shout') {
+    // 적 공포(뒤로 밀려남)
+    dealAreaDamage(h.x, h.y, 300 * aoeMult, 60 * dmgMult, 200);
+    hunter.shake = 14;
+    sfxBoom();
+    hunterFloat("광폭 포효!", h.x, h.y - 40, "#fb923c", 0.8);
+  }
+  else if (sInfo.type === 'barb_bloodrage') {
+    hunter.bloodrageTimer = 5.0;
+    h.spd = 240 * hunter.upgrades.speed;
+    hunterFloat("★ 피의 분노 버서커!", h.x, h.y - 40, "#ef4444", 1.2);
+  }
 
-  // 2. 마법사
+  // --- 2. 마법사 (시공간 왜곡, 메테오, 체인 레이저) ---
   else if (sInfo.type === 'mage_blink') {
-    // 점멸 + 이동 지점에 2초간 슬로우 왜곡 장판
     const dist = 280;
     burst(h.x, h.y, '#38bdf8', 12);
     h.x = clamp(h.x + Math.cos(h.angle) * dist, 40, WORLD.w - 40);
@@ -1015,13 +1024,80 @@ function hunterUseSkill(key) {
     hunterFloat("메테오 폭격!", tx, ty - 50, "#38bdf8", 1.0);
   }
   else if (sInfo.type === 'mage_laser') {
-    // 굴절 체인 아케인 레이저
     fireBeam(h.x, h.y, h.angle, 1100, 36 * aoeMult, 260 * dmgMult, '#38bdf8');
     sfxLaser();
     hunterFloat("체인 아케인 빔!", h.x, h.y - 40, "#38bdf8", 0.8);
   }
+  else if (sInfo.type === 'mage_storm') {
+    hunter.zones.push({
+      x: h.x + Math.cos(h.angle) * 180, y: h.y + Math.sin(h.angle) * 180,
+      r: 320 * aoeMult, life: 4.5, maxLife: 4.5, color: '#38bdf8'
+    });
+    sfxBoom();
+    hunterFloat("초신성 아케인 폭풍!", h.x, h.y - 50, "#38bdf8", 1.2);
+  }
+  else if (sInfo.type === 'mage_freeze') {
+    dealAreaDamage(h.x, h.y, 250 * aoeMult, 120 * dmgMult, 0);
+    for (const e of hunter.enemies) {
+      if (!e.dead && Math.hypot(e.x - h.x, e.y - h.y) < 250 * aoeMult) e.spd = 20; // 동결
+    }
+    sfxHit();
+    hunterFloat("절대영도 빙결!", h.x, h.y - 40, "#7dd3fc", 1.0);
+  }
+  else if (sInfo.type === 'mage_thunder') {
+    for (let i = 0; i < 6; i++) {
+      const target = hunter.enemies[Math.floor(Math.random() * hunter.enemies.length)];
+      if (target && !target.dead) {
+        target.hp -= 150 * dmgMult;
+        burst(target.x, target.y, '#facc15', 8);
+        if (target.hp <= 0) hunterKillMob(target);
+      }
+    }
+    sfxLaser();
+    hunterFloat("체인 썬더스트라이크!", h.x, h.y - 40, "#facc15", 0.8);
+  }
 
-  // 3. 기사
+  // --- 3. 거너 (자동 포탑, 레일건, 융단폭격) ---
+  else if (sInfo.type === 'gunner_tumble') {
+    const dist = 240;
+    hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: 140 * aoeMult, life: 0.35, maxLife: 0.35, color: '#facc15' });
+    dealAreaDamage(h.x, h.y, 140 * aoeMult, 140 * dmgMult, 80);
+    h.x = clamp(h.x - Math.cos(h.angle) * dist, 40, WORLD.w - 40);
+    h.y = clamp(h.y - Math.sin(h.angle) * dist, 40, WORLD.h - 40);
+    hunter.invuln = 0.6;
+    sfxBoom();
+    hunterFloat("회피 롤 & C4!", h.x, h.y - 40, "#facc15", 0.8);
+  }
+  else if (sInfo.type === 'gunner_turret') {
+    hunter.turrets.push({
+      x: h.x, y: h.y, life: 6.0, attackCd: 0.2, dmg: 35 * dmgMult
+    });
+    sfxBoom();
+    hunterFloat("자동사격 포탑 거치!", h.x, h.y - 40, "#facc15", 1.0);
+  }
+  else if (sInfo.type === 'gunner_railgun') {
+    fireBeam(h.x, h.y, h.angle, 1300, 32 * aoeMult, 340 * dmgMult, '#facc15');
+    sfxLaser();
+    hunterFloat("초음속 관통 레일건!", h.x, h.y - 40, "#facc15", 0.8);
+  }
+  else if (sInfo.type === 'gunner_carpet') {
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        if (!hunter.active || !h) return;
+        const tx = h.x + rand(-300, 300), ty = h.y + rand(-300, 300);
+        hunter.novas.push({ x: tx, y: ty, r: 10, maxR: 160 * aoeMult, life: 0.4, maxLife: 0.4, color: '#facc15' });
+        sfxBoom();
+        dealAreaDamage(tx, ty, 160 * aoeMult, 180 * dmgMult, 90);
+      }, i * 150);
+    }
+    hunterFloat("★ 궤도 융단폭격!", h.x, h.y - 50, "#facc15", 1.2);
+  }
+  else if (sInfo.type === 'gunner_gatling') {
+    hunter.gatlingTimer = 4.0;
+    hunterFloat("★ 개틀링 오버드라이브 난사!", h.x, h.y - 40, "#facc15", 1.2);
+  }
+
+  // --- 4. 기사 (성스러운 회전검, 십자검기, 천벌) ---
   else if (sInfo.type === 'knight_charge') {
     const dist = 340;
     h.x = clamp(h.x + Math.cos(h.angle) * dist, 40, WORLD.w - 40);
@@ -1032,7 +1108,6 @@ function hunterUseSkill(key) {
     hunterFloat("실드 돌격!", h.x, h.y - 40, "#818cf8", 0.8);
   }
   else if (sInfo.type === 'knight_swords') {
-    // 영웅 주위를 5초간 회전하는 신성한 칼날 4자루 소환
     hunter.swords = [];
     for (let i = 0; i < 4; i++) {
       hunter.swords.push({ angle: (i / 4) * TAU, life: 5.0, dmg: 45 * dmgMult, r: 120 * aoeMult });
@@ -1041,15 +1116,20 @@ function hunterUseSkill(key) {
     hunterFloat("심판의 회전검 소환!", h.x, h.y - 50, "#818cf8", 1.0);
   }
   else if (sInfo.type === 'knight_cross') {
-    // 십자가 검기 방출 (가로+세로 2개 빔)
     fireBeam(h.x, h.y, h.angle, 700, 80 * aoeMult, 190 * dmgMult, '#818cf8');
     fireBeam(h.x, h.y, h.angle + Math.PI / 2, 400, 80 * aoeMult, 190 * dmgMult, '#818cf8');
     fireBeam(h.x, h.y, h.angle - Math.PI / 2, 400, 80 * aoeMult, 190 * dmgMult, '#818cf8');
     sfxLaser();
     hunterFloat("신성 십자검기!", h.x, h.y - 40, "#818cf8", 0.8);
   }
+  else if (sInfo.type === 'knight_shielddrop') {
+    hunter.novas.push({ x: h.x, y: h.y, r: 20, maxR: 320 * aoeMult, life: 0.5, maxLife: 0.5, color: '#818cf8' });
+    dealAreaDamage(h.x, h.y, 320 * aoeMult, 320 * dmgMult, 150);
+    sfxBoom();
+    hunterFloat("★ 천벌의 대형 방패 강타!", h.x, h.y - 50, "#818cf8", 1.2);
+  }
 
-  // 4. 레인저
+  // --- 5. 레인저 (은신, 덫, 산탄, 화살폭풍) ---
   else if (sInfo.type === 'ranger_step') {
     h.spd = 380;
     hunter.invuln = 1.2;
@@ -1062,17 +1142,22 @@ function hunterUseSkill(key) {
     hunterFloat("칼날 속박 덫 설치!", h.x, h.y - 40, "#34d399", 0.8);
   }
   else if (sInfo.type === 'ranger_spread') {
-    // 5갈래 산탄 저격
     for (let i = -2; i <= 2; i++) {
       fireBeam(h.x, h.y, h.angle + i * 0.15, 900, 20 * aoeMult, 160 * dmgMult, '#34d399');
     }
     sfxLaser();
     hunterFloat("산탄 스나이핑!", h.x, h.y - 40, "#34d399", 0.8);
   }
+  else if (sInfo.type === 'ranger_arrowrain') {
+    hunter.zones.push({
+      x: h.x, y: h.y, r: 340 * aoeMult, life: 3.5, maxLife: 3.5, color: '#34d399'
+    });
+    sfxHit();
+    hunterFloat("★ 화살 폭풍 소나기!", h.x, h.y - 50, "#34d399", 1.2);
+  }
 
-  // 5. 서머너
+  // --- 6. 서머너 (유도 망령, 심연 흡입, 골렘) ---
   else if (sInfo.type === 'summoner_swap') {
-    // 유도 망령이 있으면 망령 위치로 교환, 없으면 점멸
     if (hunter.ghosts.length > 0) {
       const g = hunter.ghosts[0];
       h.x = g.x; h.y = g.y;
@@ -1095,50 +1180,24 @@ function hunterUseSkill(key) {
     hunterFloat("심연 흡입홀!", tx, ty - 40, "#c084fc", 1.0);
   }
   else if (sInfo.type === 'summoner_ghosts') {
-    // 3체의 스스로 적을 찾아가는 유도 망령 발사
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       hunter.ghosts.push({
         x: h.x, y: h.y,
-        angle: h.angle + (i - 1) * 0.4,
-        speed: 380,
-        dmg: 120 * dmgMult,
-        life: 3.0
+        angle: h.angle + (i - 1.5) * 0.4,
+        speed: 400, dmg: 130 * dmgMult, life: 3.0
       });
     }
     sfxHit();
     hunterFloat("자폭 망령 사출!", h.x, h.y - 40, "#c084fc", 0.8);
   }
-
-  // 6. 거너
-  else if (sInfo.type === 'gunner_tumble') {
-    const dist = 240;
-    // 뒤로 구르며 C4 매설
-    hunter.novas.push({ x: h.x, y: h.y, r: 10, maxR: 140 * aoeMult, life: 0.35, maxLife: 0.35, color: '#facc15' });
-    dealAreaDamage(h.x, h.y, 140 * aoeMult, 140 * dmgMult, 80);
-    h.x = clamp(h.x - Math.cos(h.angle) * dist, 40, WORLD.w - 40);
-    h.y = clamp(h.y - Math.sin(h.angle) * dist, 40, WORLD.h - 40);
-    hunter.invuln = 0.6;
+  else if (sInfo.type === 'summoner_golem') {
+    dealAreaDamage(h.x, h.y, 350 * aoeMult, 350 * dmgMult, 140);
+    hunter.shake = 20;
     sfxBoom();
-    hunterFloat("회피 롤 & C4!", h.x, h.y - 40, "#facc15", 0.8);
-  }
-  else if (sInfo.type === 'gunner_turret') {
-    // 6초 지속 자동 사격 포탑 설치
-    hunter.turrets.push({
-      x: h.x, y: h.y,
-      life: 6.0,
-      attackCd: 0.22,
-      dmg: 35 * dmgMult
-    });
-    sfxBoom();
-    hunterFloat("자동사격 포탑 거치!", h.x, h.y - 40, "#facc15", 1.0);
-  }
-  else if (sInfo.type === 'gunner_railgun') {
-    fireBeam(h.x, h.y, h.angle, 1300, 32 * aoeMult, 340 * dmgMult, '#facc15');
-    sfxLaser();
-    hunterFloat("초음속 관통 레일건!", h.x, h.y - 40, "#facc15", 0.8);
+    hunterFloat("★ 심연의 거인 강림!", h.x, h.y - 50, "#c084fc", 1.2);
   }
   else {
-    // 5Lv 이후 범용 궁극기 폭격
+    // 범용 폭격
     const r = 350 * aoeMult, dmg = 420 * dmgMult;
     const tx = h.x + Math.cos(h.angle) * 220, ty = h.y + Math.sin(h.angle) * 220;
     hunter.novas.push({ x: tx, y: ty, r: 20, maxR: r, life: 0.6, maxLife: 0.6, color: '#ffd700' });
@@ -1241,13 +1300,33 @@ function updateHunter(dt) {
     burst(h.x + rand(-r, r), h.y + rand(-r, r), '#fb923c', 2);
   }
 
+  // 바바리안 피의 분노
+  if (hunter.bloodrageTimer > 0) {
+    hunter.bloodrageTimer -= dt;
+    if (hunter.bloodrageTimer <= 0) h.spd = 175 * hunter.upgrades.speed;
+  }
+
+  // 거너 개틀링 오버드라이브 난사
+  if (hunter.gatlingTimer > 0) {
+    hunter.gatlingTimer -= dt;
+    for (let i = 0; i < 2; i++) {
+      const a = h.angle + rand(-0.4, 0.4);
+      projectiles.push({
+        x: h.x, y: h.y,
+        vx: Math.cos(a) * 650, vy: Math.sin(a) * 650,
+        dmg: 18 * hunter.upgrades.damage, life: 0.6, color: '#facc15'
+      });
+    }
+    sfxHit();
+  }
+
   // 거너 자동 포탑 사격
   for (let i = hunter.turrets.length - 1; i >= 0; i--) {
     const t = hunter.turrets[i];
     t.life -= dt;
     t.attackCd -= dt;
     if (t.attackCd <= 0) {
-      t.attackCd = 0.22;
+      t.attackCd = 0.2;
       const target = hunter.enemies.find(e => !e.dead && Math.hypot(e.x - t.x, e.y - t.y) < 320);
       if (target) {
         target.hp -= t.dmg;
@@ -1281,7 +1360,6 @@ function updateHunter(dt) {
     const b = hunter.boomerangs[i];
     b.timer -= dt;
     if (b.timer <= 0) {
-      // 되돌아오기 모드
       const ang = Math.atan2(h.y - b.y, h.x - b.x);
       b.vx = Math.cos(ang) * 700;
       b.vy = Math.sin(ang) * 700;
@@ -1296,7 +1374,6 @@ function updateHunter(dt) {
       if (!e.dead && Math.hypot(e.x - b.x, e.y - b.y) < b.r + e.r) {
         e.hp -= b.dmg * dt * 5;
         e.hit = 0.1;
-        // 되돌아올 땐 적을 영웅 앞으로 끌어당김!
         if (b.timer <= 0) {
           e.x += b.vx * dt * 0.8;
           e.y += b.vy * dt * 0.8;
@@ -1336,7 +1413,7 @@ function updateHunter(dt) {
     for (const e of hunter.enemies) {
       if (!e.dead && Math.hypot(e.x - t.x, e.y - t.y) < t.r + e.r) {
         e.hp -= t.dmg;
-        e.spd *= 0.3; // 속박
+        e.spd *= 0.3;
         burst(t.x, t.y, '#34d399', 8);
         hunter.traps.splice(i, 1);
         if (e.hp <= 0) hunterKillMob(e);
@@ -1439,7 +1516,7 @@ function updateHunter(dt) {
     } else if (z.isSlow) {
       for (const e of hunter.enemies) {
         if (!e.dead && Math.hypot(e.x - z.x, e.y - z.y) < z.r) {
-          e.spd = 40; // 강력 슬로우
+          e.spd = 40;
         }
       }
     }
@@ -1467,47 +1544,23 @@ function updateHunter(dt) {
     }
   }
 
-  // ⭐ 초강력 자석 흡수 & 즉각 삭제 (반경 520px, 속도 1200)
-  for (let i = hunter.gems.length - 1; i >= 0; i--) {
-    const g = hunter.gems[i];
-    const d = Math.hypot(g.x - h.x, g.y - h.y);
-    if (d < 520) {
-      g.x += ((h.x - g.x) / d) * 1200 * dt;
-      g.y += ((h.y - g.y) / d) * 1200 * dt;
-    }
-    // 닿자마자 화면에서 완전히 삭제
-    if (d < 42) {
-      hunterGainXP(g.val);
-      burst(g.x, g.y, g.big ? "#ffd700" : "#38bdf8", g.big ? 6 : 3);
-      hunter.gems.splice(i, 1);
-    }
-  }
-
-  // 상자 오브젝트
+  // 상자 오브젝트 (회복)
   for (let i = hunter.chests.length - 1; i >= 0; i--) {
     const c = hunter.chests[i];
     const d = Math.hypot(c.x - h.x, c.y - h.y);
-    if (d < 450) {
-      c.x += ((h.x - c.x) / d) * 850 * dt;
-      c.y += ((h.y - c.y) / d) * 850 * dt;
+    if (d < 300) {
+      c.x += ((h.x - c.x) / d) * 750 * dt;
+      c.y += ((h.y - c.y) / d) * 750 * dt;
     }
-    if (d < 40) {
-      if (c.type === 'heal') {
-        h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.4);
-        hunterFloat("체력 회복 +40%!", h.x, h.y - 40, "#4ade80", 1.2);
-      } else {
-        hunter.gems.forEach(g => {
-          g.x = h.x + rand(-15, 15);
-          g.y = h.y + rand(-15, 15);
-        });
-        hunterFloat("마그넷 코어 흡수!", h.x, h.y - 40, "#38bdf8", 1.5);
-      }
+    if (d < 35) {
+      h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.4);
+      hunterFloat("체력 회복 +40%!", h.x, h.y - 40, "#4ade80", 1.2);
       sfxLevelUp();
       hunter.chests.splice(i, 1);
     }
   }
 
-  // 스폰 타이머 (0.28초마다 군집 스폰)
+  // 4배 스폰 타이머
   hunter.spawnTimer -= dt;
   if (hunter.spawnTimer <= 0) {
     hunter.spawnTimer = Math.max(0.20, 0.35 - hunter.level * 0.008);
@@ -1520,7 +1573,7 @@ function updateHunter(dt) {
     hunterSpawnBoss();
   }
 
-  // 이펙트 타이머
+  // 이펙트 타이머 정리
   for (let i = hunter.novas.length - 1; i >= 0; i--) {
     const n = hunter.novas[i];
     n.life -= dt;
@@ -1646,20 +1699,13 @@ function renderHunter(t) {
   // 7. 상자
   for (const c of hunter.chests) {
     const s = worldToScreen(c.x, c.y);
-    ctx.fillStyle = c.type === 'heal' ? "#22c55e" : "#06b6d4";
+    ctx.fillStyle = "#22c55e";
     ctx.fillRect(s.x - 12 * camera.zoom, s.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom);
     ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5;
     ctx.strokeRect(s.x - 12 * camera.zoom, s.y - 12 * camera.zoom, 24 * camera.zoom, 24 * camera.zoom);
   }
 
-  // 8. 경험치 보석 (대형 황금 보석 구분)
-  for (const g of hunter.gems) {
-    const s = worldToScreen(g.x, g.y);
-    ctx.fillStyle = g.big ? "#ffd700" : "#38bdf8";
-    ctx.beginPath(); ctx.arc(s.x, s.y, (g.big ? 7 : 4.5) * camera.zoom, 0, TAU); ctx.fill();
-  }
-
-  // 9. 노바
+  // 8. 노바
   for (const n of hunter.novas) {
     const s = worldToScreen(n.x, n.y);
     const alpha = n.life / n.maxLife;
@@ -1671,7 +1717,7 @@ function renderHunter(t) {
     ctx.restore();
   }
 
-  // 10. 빔
+  // 9. 빔
   for (const b of hunter.beams) {
     const s1 = worldToScreen(b.x1, b.y1);
     const s2 = worldToScreen(b.x2, b.y2);
@@ -1684,7 +1730,7 @@ function renderHunter(t) {
     ctx.restore();
   }
 
-  // 11. 투사체
+  // 10. 투사체
   for (const p of projectiles) {
     const s = worldToScreen(p.x, p.y);
     const sx2 = p.tx ? worldToScreen(p.tx, p.ty).x : s.x;
@@ -1696,7 +1742,7 @@ function renderHunter(t) {
     ctx.restore();
   }
 
-  // 12. 몬스터
+  // 11. 몬스터
   for (const e of hunter.enemies) {
     if (e.dead) continue;
     const s = worldToScreen(e.x, e.y);
@@ -1722,7 +1768,7 @@ function renderHunter(t) {
     ctx.restore();
   }
 
-  // 13. 영웅 본체
+  // 12. 영웅 본체
   if (h && !h.dead) {
     drawUnit(h);
     if (hunter.whirlwindTimer > 0) {
@@ -1740,7 +1786,7 @@ function renderHunter(t) {
     }
   }
 
-  // 14. 텍스트
+  // 13. 텍스트
   for (const tx of hunter.texts) {
     const s = worldToScreen(tx.x, tx.y);
     ctx.globalAlpha = clamp(tx.life / tx.max, 0, 1);
