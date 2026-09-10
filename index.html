@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>FRONTIER ARCADE // 3-IN-1 PACK</title>
+<title>FRONTIER ARCADE // 3-IN-1 SUITE</title>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -14,7 +14,6 @@ html,body{
 }
 canvas{display:block;width:100%;height:100%;cursor:crosshair}
 
-/* HUD */
 #hud{
   position:fixed;left:12px;right:12px;top:10px;
   display:flex;justify-content:space-between;align-items:flex-start;
@@ -32,19 +31,21 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 #stats{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .badge{
   min-width:70px;text-align:center;
-  padding:5px 8px;border-radius:8px;
+  padding:6px 9px;border-radius:8px;
   background:#07131d;border:1px solid rgba(255,255,255,.08);
   font-size:10px;color:#9cb7c3;
 }
 .badge b{display:block;font-size:13px;color:#e8fbff;margin-top:2px}
+
 .hud-btn{
   pointer-events:auto;cursor:pointer;
-  padding:7px 12px;border-radius:8px;
+  padding:7px 13px;border-radius:8px;
   background:#0b2636;border:1px solid #48b8d0;
   color:#dff8ff;font-weight:800;font-size:11px;
   transition:.15s;
 }
 .hud-btn:hover{background:#133c54;border-color:#71e5ff}
+
 #guide{
   position:fixed;left:50%;bottom:12px;transform:translateX(-50%);
   z-index:5;pointer-events:none;
@@ -59,10 +60,9 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
   background:rgba(5,20,30,.94);border:1px solid #5bc2dc;
   color:#e8faff;padding:7px 18px;border-radius:8px;font-size:11px;
   pointer-events:none;z-index:45;opacity:0;transition:opacity .2s;
-  box-shadow:0 0 20px rgba(0,180,255,.2);
 }
 
-/* 1. ARCADE SELECTOR HUB */
+/* ARCADE SELECTOR HUB */
 #hubModal{
   position:fixed;inset:0;z-index:30;
   display:flex;align-items:center;justify-content:center;
@@ -71,22 +71,22 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 }
 .hubBox{
   width:min(860px,96vw);background:#071420;
-  border:1px solid #4ebcdb;border-radius:20px;padding:28px 24px;
+  border:1px solid #4ebcdb;border-radius:20px;padding:26px;
   text-align:center;box-shadow:0 0 90px rgba(0,190,255,.25);
 }
 .hubBox h1{margin:0 0 6px;font-size:26px;letter-spacing:4px;color:#dffaff}
-.hubBox p{margin:0 0 22px;color:#7aa2b5;font-size:12px}
-.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.hubBox p{margin:0 0 20px;color:#7aa2b5;font-size:12px}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
 .game-card{
   background:#091d2c;border:1px solid #234f69;border-radius:14px;
   padding:20px 16px;cursor:pointer;transition:.2s;text-align:left;
 }
-.game-card:hover{transform:translateY(-4px);border-color:#5ee2ff;background:#0e2d44;box-shadow:0 0 20px rgba(94,226,255,.25)}
+.game-card:hover{transform:translateY(-4px);border-color:#5ee2ff;background:#0e2d44;box-shadow:0 0 20px rgba(94,226,255,.2)}
 .game-card .tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:900;margin-bottom:8px}
 .game-card h3{margin:0 0 6px;font-size:16px;color:#fff}
 .game-card p{margin:0;font-size:11px;color:#96b8c8;line-height:1.5}
 
-/* 2. CLASS SELECT MODAL (GAME 1) */
+/* CLASS SELECT MODAL (모드 1용) */
 #classModal{
   position:fixed;inset:0;z-index:25;display:none;
   align-items:center;justify-content:center;
@@ -116,7 +116,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 #start{border:1px solid #55ddff;background:#072333;color:#dffaff}
 #btnLoad{border:1px solid #38d39f;background:#062b21;color:#bdfce7;display:none}
 
-/* 3. PAUSE & RESULT MODALS */
+/* PAUSE & RESULT MODAL */
 #pauseModal,#result{
   position:fixed;inset:0;z-index:40;display:none;
   align-items:center;justify-content:center;
@@ -145,58 +145,56 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
 <canvas id="game"></canvas>
 <div id="toast"></div>
 
-<!-- 상단 종합 HUD -->
+<!-- 상단 HUD -->
 <div id="hud">
   <div class="panel">
     <div id="title">FRONTIER FLUX</div>
-    <div id="sub" style="color:#62eaff">CHAPTER 1: THE AWAKENING</div>
+    <div id="sub" style="color:#62eaff">CHAPTER 1: GRASSLAND</div>
   </div>
   <div id="stats">
-    <div class="badge" id="hudBadge1">CHAPTER<b id="chapBadge">1/5</b></div>
-    <div class="badge" id="hudBadge2">TIME<b id="time">10:00</b></div>
-    <div class="badge" id="hudBadge3">BASES<b id="bases">0</b></div>
-    <div class="badge" id="hudBadge4">ARMY<b id="army">0</b></div>
-    <div class="badge" id="hudBadge5">ENEMIES<b id="enemy">0</b></div>
-    <button class="hud-btn" id="btnPause" onclick="togglePause()">❚❚ PAUSE</button>
-    <button class="hud-btn" style="background:#281033;border-color:#b44be8" onclick="openHub()">🎮 아케이드</button>
+    <div class="badge"><span id="lblBadge1">CHAPTER</span><b id="chapBadge">1/5</b></div>
+    <div class="badge">TIME<b id="time">10:00</b></div>
+    <div class="badge"><span id="lblBadge2">BASES</span><b id="bases">0</b></div>
+    <div class="badge"><span id="lblBadge3">ARMY</span><b id="army">0</b></div>
+    <div class="badge">ENEMIES<b id="enemy">0</b></div>
+
+    <button class="hud-btn" onclick="togglePause()">❚❚ PAUSE</button>
+    <button class="hud-btn" style="background:#281033;border-color:#b44be8" onclick="openHub()">🎮 모드 선택</button>
   </div>
 </div>
 
-<div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10마리, 3~5단계는 단 2마리씩 고속 합체</div>
+<div id="guide">기지 드래그 → 보급선 개설 · 2단계는 10기, 3~5단계는 2기씩 고속 합체!</div>
 
-<!-- 1. 아케이드 게임 선택 허브 -->
+<!-- 1. 아케이드 허브 -->
 <div id="hubModal">
   <div class="hubBox">
-    <h1>FRONTIER ARCADE</h1>
-    <p>플레이할 게임 모드를 선택하십시오. 상단 [아케이드] 버튼으로 언제든 다시 선택할 수 있습니다.</p>
+    <h1>FRONTIER ARCADE HUB</h1>
+    <p>플레이할 게임 모드를 선택하세요. 언제든지 상단 [모드 선택] 버튼으로 돌아올 수 있습니다.</p>
     <div class="game-grid">
-      <!-- 게임 1: 정통 땅따먹기 (17버전 롤백) -->
       <div class="game-card" onclick="selectGameMode('DOMINATION')">
-        <span class="tag" style="background:#034458;color:#55dfff">GAME 1</span>
+        <span class="tag" style="background:#034458;color:#55dfff">MODE 1</span>
         <h3>프론티어 플럭스 (땅따먹기)</h3>
-        <p>복잡한 자원 없이 순수한 전략 승부! 5개 챕터 테마(초원/사막/지옥/천국/우주), 보급선 연결, 5단계 고속 합체 진화.</p>
+        <p>초원/사막/지옥/천국/우주 5대 챕터 정복전! 보급선을 이어 대규모 병력을 결집하고 5단계 신화 유닛으로 진화시키며 전장을 지배합니다.</p>
       </div>
-      <!-- 게임 2: 저글링 블러드 -->
       <div class="game-card" onclick="selectGameMode('ZERGLING')">
-        <span class="tag" style="background:#552805;color:#ff984d">GAME 2</span>
+        <span class="tag" style="background:#552805;color:#ff984d">MODE 2</span>
         <h3>저글링 블러드 (무한 난투)</h3>
-        <p>수백 마리의 저글링 무리가 격돌하는 초고속 아레나! 화면 탭으로 어택땅 돌격, 킬 수 비례 발업/영웅/디파일러 진화!</p>
+        <p>스타 유즈맵 감성의 초고속 난투! 0.25초마다 쏟아지는 물량전을 펼치며 킬 수를 올려 영웅 맹독수/울트라로 자동 진화합니다.</p>
       </div>
-      <!-- 게임 3: 뮤탈 블러드 -->
       <div class="game-card" onclick="selectGameMode('MUTALISK')">
-        <span class="tag" style="background:#421152;color:#d873ff">GAME 3</span>
-        <h3>뮤탈 블러드 (3쿠션 대전)</h3>
-        <p>화면을 터치해 공중 편대를 자유자재로 컨트롤! 적 사이를 3번 연쇄 폭발하며 튕기는 쐐기 탄환 난사 & 융단폭격.</p>
+        <span class="tag" style="background:#421152;color:#d873ff">MODE 3</span>
+        <h3>뮤탈 블러드 (공중 3쿠션)</h3>
+        <p>공중 편대를 조작하며 적들 사이를 3번 연쇄로 튕겨 다니는 쐐기 탄환(글레이브 웜)을 퍼붓는 공중전입니다.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 2. 직업 선택 모달 (게임 1 전용) -->
+<!-- 2. 직업 선택 모달 (모드 1용) -->
 <div id="classModal">
   <div id="card">
-    <h1>CHOOSE YOUR HERO</h1>
-    <p>완전 균형 전투 스펙 · 선호하는 고유 스프라이트를 선택하십시오</p>
+    <h1>CHOOSE YOUR CLASS</h1>
+    <p>모든 영웅은 완전히 동일한 공평 스펙을 지닙니다 · 선호하는 외형을 선택하십시오</p>
     <div id="classes"></div>
     <div class="modal-actions">
       <button id="start" onclick="startNewDomination()">CAMPAIGN DEPLOY</button>
@@ -211,8 +209,8 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
     <h2>GAME PAUSED</h2>
     <div class="menu-btns">
       <button onclick="togglePause()">CONTINUE (계속하기)</button>
-      <button id="btnSaveInPause" onclick="saveCurrentGame()">SAVE GAME (저장하기)</button>
-      <button onclick="openHub()">ARCADE HUB (게임 선택)</button>
+      <button id="btnSave" onclick="saveCurrentGame()">SAVE GAME (저장하기)</button>
+      <button onclick="openHub()">ARCADE HUB (모드 선택)</button>
     </div>
   </div>
 </div>
@@ -224,7 +222,7 @@ canvas{display:block;width:100%;height:100%;cursor:crosshair}
     <div id="resultSub" style="margin-top:8px;font-size:12px;color:#7ba5b7"></div>
     <div style="margin-top:16px">
       <button class="btn-res" id="btnNext" onclick="nextChapter()">NEXT CHAPTER</button>
-      <button class="btn-res" id="btnRetry" onclick="retryCurrentGame()">RETRY</button>
+      <button class="btn-res" id="btnRetry" onclick="retryGame()">RETRY</button>
       <button class="btn-res" onclick="openHub()">ARCADE HUB</button>
     </div>
   </div>
@@ -252,29 +250,26 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const WORLD = { w: 2600, h: 1500 };
 
-/* =========================================================
-   공통 게임 상태
-========================================================= */
-let activeGameMode = "DOMINATION"; // "DOMINATION" | "ZERGLING" | "MUTALISK"
+let activeGameMode = "DOMINATION";
 let running = false;
 let isPaused = false;
 
-// 유닛 기본 속도 (76: 빠르고 시원한 기동)
+// 모드 1 공평 스탯 (시원한 이동속도 76)
 const BASE_STATS = { hp: 130, dmg: 20, rng: 80, spd: 76, rate: 1.0 };
 
 const JOBS = {
   Mage:      { icon: "✦", name: "MAGE",      color: "#38bdf8", desc: "비전 룬 & 궤도 오브" },
   Knight:    { icon: "♜", name: "KNIGHT",    color: "#818cf8", desc: "역장 실드 & 광검" },
-  Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "에어로 활 & 레이저 조준" },
+  Ranger:    { icon: "➶", name: "RANGER",    color: "#34d399", desc: "에어로 활 & 레이저" },
   Summoner:  { icon: "◈", name: "SUMMONER",  color: "#c084fc", desc: "공전 수정 & 부유 마도서" },
-  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 배틀액스" },
-  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 회전 개틀링" }
+  Barbarian: { icon: "✚", name: "BARBARIAN", color: "#fb923c", desc: "플라즈마 양날 도끼" },
+  Gunner:    { icon: "▣", name: "GUNNER",    color: "#facc15", desc: "3연장 개틀링 & 탄띠" }
 };
 
 const FACTION_COLORS = ["#38bdf8", "#f43f5e", "#10b981", "#a855f7", "#f97316", "#eab308"];
 const MERGE_REQ = { 1: 10, 2: 2, 3: 2, 4: 2 };
 
-// 5개 챕터별 테마 환경
+// 5대 챕터별 테마 환경
 const CHAPTERS = [
   { num: 1, name: "CHAPTER 1: GRASSLAND (초원)", theme: "GRASS", bg: "#06170d", grid: "#123b20", enemies: 1, spawnMod: 1.5, hpMod: 1.6 },
   { num: 2, name: "CHAPTER 2: DESERT (사막)", theme: "DESERT", bg: "#1a1205", grid: "#3a2c0c", enemies: 2, spawnMod: 1.2, hpMod: 1.3 },
@@ -286,7 +281,6 @@ const CHAPTERS = [
 let curChapterIdx = 0;
 let selectedJob = "Mage";
 
-// 클래스 버튼 UI
 const classesDiv = document.getElementById("classes");
 for (const [key, j] of Object.entries(JOBS)) {
   const b = document.createElement("div");
@@ -324,15 +318,17 @@ function selectGameMode(mode) {
   document.getElementById("hubModal").style.display = "none";
 
   if (mode === "DOMINATION") {
+    document.getElementById("btnSave").style.display = "block";
+    document.getElementById("lblBadge1").textContent = "CHAPTER";
+    document.getElementById("lblBadge2").textContent = "BASES";
+    document.getElementById("lblBadge3").textContent = "ARMY";
     document.getElementById("classModal").style.display = "flex";
-    document.getElementById("title").textContent = "FRONTIER FLUX";
-    document.getElementById("btnSaveInPause").style.display = "block";
     checkSaveData();
   } else if (mode === "ZERGLING") {
-    document.getElementById("btnSaveInPause").style.display = "none";
+    document.getElementById("btnSave").style.display = "none";
     startZerglingBlood();
   } else if (mode === "MUTALISK") {
-    document.getElementById("btnSaveInPause").style.display = "none";
+    document.getElementById("btnSave").style.display = "none";
     startMutaliskBlood();
   }
 }
@@ -356,7 +352,7 @@ let lastPointer = { x: 0, y: 0 };
 let dragMoved = false;
 
 /* =========================================================
-   GAME 1: 정통 프론티어 플럭스 (17버전 완벽 복원)
+   게임 1: 프론티어 플럭스 (땅따먹기 점령전)
 ========================================================= */
 function startNewDomination() {
   document.getElementById("classModal").style.display = "none";
@@ -372,13 +368,8 @@ function startChapter(idx) {
 
   document.getElementById("title").textContent = "FRONTIER FLUX";
   document.getElementById("sub").textContent = chap.name;
-  document.getElementById("guide").textContent = "기지 드래그 → 보급선 개설 · 2단계(10기), 3~5단계(단 2기) 고속 합체";
-  
-  document.getElementById("hudBadge1").innerHTML = `CHAPTER<b id="chapBadge">${chap.num}/5</b>`;
-  document.getElementById("hudBadge2").innerHTML = `TIME<b id="time">10:00</b>`;
-  document.getElementById("hudBadge3").innerHTML = `BASES<b id="bases">0</b>`;
-  document.getElementById("hudBadge4").innerHTML = `ARMY<b id="army">0</b>`;
-  document.getElementById("hudBadge5").innerHTML = `ENEMIES<b id="enemy">0</b>`;
+  document.getElementById("chapBadge").textContent = `${chap.num}/5`;
+  document.getElementById("guide").textContent = "기지 드래그 → 보급선 개설 · 2단계는 10기, 3~5단계는 2기씩 고속 합체!";
 
   uid = 1; mission = 600; spawnTimer = 0; aiTimer = 0;
   dragBase = null;
@@ -444,6 +435,100 @@ function startChapter(idx) {
   updateHUD();
 }
 
+/* =========================================================
+   게임 2: 저글링 블러드 (ZERGLING BLOOD)
+========================================================= */
+let zergKills = 0;
+function startZerglingBlood() {
+  document.getElementById("title").textContent = "ZERGLING BLOOD";
+  document.getElementById("sub").textContent = "무한 근접 물량 난투 아레나";
+  document.getElementById("lblBadge1").textContent = "KILLS";
+  document.getElementById("chapBadge").textContent = "0";
+  document.getElementById("lblBadge2").textContent = "TIER";
+  document.getElementById("lblBadge3").textContent = "SWARM";
+  document.getElementById("guide").textContent = "화면 드래그로 시점 이동 · 양 기지에서 쏟아지는 저글링 군단으로 적 본진을 파괴하세요!";
+
+  uid = 1; mission = 400; spawnTimer = 0; aiTimer = 0;
+  zergKills = 0;
+
+  factions = [
+    { id: 0, job: "Barbarian", color: "#38bdf8", kills: 0 },
+    { id: 1, job: "Barbarian", color: "#f43f5e", kills: 0 }
+  ];
+
+  bases = [
+    { id: uid++, x: 500, y: 750, team: 0, core: true, hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0 },
+    { id: uid++, x: 2100, y: 750, team: 1, core: true, hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0 }
+  ];
+
+  bases[0].routes = [bases[1]];
+  bases[1].routes = [bases[0]];
+
+  units = [];
+  projectiles = [];
+  particles = [];
+  explosions = [];
+  stars = [];
+  initThemeParticles("INFERNO");
+
+  // 초기 저글링 12기 즉시 투입
+  produce(bases[0], 12);
+  produce(bases[1], 12);
+
+  camera.x = 1300; camera.y = 750;
+  camera.zoom = clamp(Math.min(W / 1500, H / 850), 0.6, 1.1);
+
+  running = true;
+  isPaused = false;
+  updateHUD();
+}
+
+/* =========================================================
+   게임 3: 뮤탈 블러드 (MUTALISK BLOOD)
+========================================================= */
+function startMutaliskBlood() {
+  document.getElementById("title").textContent = "MUTALISK BLOOD";
+  document.getElementById("sub").textContent = "3쿠션 글레이브 웜 공중 혈투";
+  document.getElementById("lblBadge1").textContent = "KILLS";
+  document.getElementById("chapBadge").textContent = "0";
+  document.getElementById("lblBadge2").textContent = "FLEET";
+  document.getElementById("lblBadge3").textContent = "MUTAS";
+  document.getElementById("guide").textContent = "공중 편대가 마주치면 3쿠션 쐐기탄을 난사합니다! 적 본진을 파괴하세요.";
+
+  uid = 1; mission = 400; spawnTimer = 0; aiTimer = 0;
+
+  factions = [
+    { id: 0, job: "Gunner", color: "#38bdf8", kills: 0 },
+    { id: 1, job: "Gunner", color: "#f43f5e", kills: 0 }
+  ];
+
+  bases = [
+    { id: uid++, x: 450, y: 750, team: 0, core: true, hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0 },
+    { id: uid++, x: 2150, y: 750, team: 1, core: true, hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0 }
+  ];
+
+  bases[0].routes = [bases[1]];
+  bases[1].routes = [bases[0]];
+
+  units = [];
+  projectiles = [];
+  particles = [];
+  explosions = [];
+  stars = [];
+  initThemeParticles("COSMOS");
+
+  // 초기 뮤탈 8기 즉시 투입
+  produce(bases[0], 8);
+  produce(bases[1], 8);
+
+  camera.x = 1300; camera.y = 750;
+  camera.zoom = clamp(Math.min(W / 1500, H / 850), 0.6, 1.1);
+
+  running = true;
+  isPaused = false;
+  updateHUD();
+}
+
 function initThemeParticles(theme) {
   stars = [];
   for (let i = 0; i < 260; i++) {
@@ -456,6 +541,9 @@ function initThemeParticles(theme) {
   }
 }
 
+/* =========================================================
+   생산, 전투 및 이동 연산
+========================================================= */
 function produce(base, count = 1) {
   if (base.team < 0) return;
   for (let i = 0; i < count; i++) {
@@ -466,12 +554,19 @@ function produce(base, count = 1) {
       assignedRoute = base.routes[Math.floor(Math.random() * base.routes.length)];
     }
 
+    let hp = BASE_STATS.hp, spd = BASE_STATS.spd;
+    if (activeGameMode === "ZERGLING") {
+      hp = 65; spd = 95;
+    } else if (activeGameMode === "MUTALISK") {
+      hp = 110; spd = 85;
+    }
+
     units.push({
       id: uid++, team: base.team, job: f.job,
       x: base.x + Math.cos(a) * d,
       y: base.y + Math.sin(a) * d,
       vx: 0, vy: 0,
-      hp: BASE_STATS.hp, maxHp: BASE_STATS.hp,
+      hp: hp, maxHp: hp,
       tier: 1,
       attack: rand(0, 0.5),
       targetBase: assignedRoute, 
@@ -481,236 +576,12 @@ function produce(base, count = 1) {
   }
 }
 
-/* =========================================================
-   GAME 2: 저글링 블러드 (ZERGLING BLOOD)
-========================================================= */
-let zergKillCount = 0;
-let zergWaveTimer = 0;
-let playerHeroTier = 1;
-
-function startZerglingBlood() {
-  document.getElementById("title").textContent = "ZERGLING BLOOD";
-  document.getElementById("sub").textContent = "초고속 무한 근접 아레나";
-  document.getElementById("guide").textContent = "화면을 탭/드래그하여 전군 어택땅! 킬 수에 따라 발업/영웅/디파일러로 진화합니다.";
-  
-  document.getElementById("hudBadge1").innerHTML = `HERO<b id="chapBadge">★${playerHeroTier}</b>`;
-  document.getElementById("hudBadge2").innerHTML = `KILLS<b id="time">0</b>`;
-  document.getElementById("hudBadge3").innerHTML = `WAVE<b id="bases">1</b>`;
-  document.getElementById("hudBadge4").innerHTML = `MY PACK<b id="army">0</b>`;
-  document.getElementById("hudBadge5").innerHTML = `FOES<b id="enemy">0</b>`;
-
-  uid = 1; mission = 600; spawnTimer = 0; zergWaveTimer = 0;
-  zergKillCount = 0; playerHeroTier = 1;
-
-  bases = [];
-  units = [];
-  projectiles = [];
-  particles = [];
-  explosions = [];
-  initThemeParticles("INFERNO");
-
-  factions = [
-    { id: 0, job: "Barbarian", color: "#38bdf8", kills: 0 },
-    { id: 1, job: "Barbarian", color: "#f43f5e", kills: 0 }
-  ];
-
-  // 아군 기지
-  bases.push({
-    id: uid++, x: 500, y: 750, team: 0, core: true,
-    hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0
-  });
-  // 적군 스폰 게이트
-  bases.push({
-    id: uid++, x: 2100, y: 750, team: 1, core: true,
-    hp: 8000, maxHp: 8000, routes: [], pulse: 0, turretCd: 0
-  });
-
-  // 초기 저글링 부대 생성
-  for (let i = 0; i < 20; i++) spawnZergUnit(0, 500 + rand(-40, 40), 750 + rand(-40, 40), 1);
-  for (let i = 0; i < 25; i++) spawnZergUnit(1, 2100 + rand(-40, 40), 750 + rand(-40, 40), 1);
-
-  camera.x = 1300; camera.y = 750;
-  camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.65, 1.2);
-
-  running = true;
-  isPaused = false;
-  toast("저글링 블러드 시작! 적을 처치해 영웅으로 승급하십시오!");
-}
-
-function spawnZergUnit(team, x, y, tier) {
-  const hpBase = tier === 1 ? 90 : (tier === 2 ? 220 : (tier === 3 ? 550 : 1400));
-  units.push({
-    id: uid++, team, job: "Barbarian",
-    x, y, vx: 0, vy: 0,
-    hp: hpBase, maxHp: hpBase,
-    tier,
-    attack: rand(0, 0.4),
-    targetBase: null,
-    home: null,
-    target: null,
-    angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false
-  });
-}
-
-function updateZerglingMode(dt) {
-  zergWaveTimer += dt;
-  if (zergWaveTimer >= 2.5) {
-    zergWaveTimer = 0;
-    // 아군 지원군
-    for (let i = 0; i < 4; i++) spawnZergUnit(0, 500 + rand(-30, 30), 750 + rand(-30, 30), playerHeroTier);
-    // 적군 웨이브
-    const enemyTier = zergKillCount > 100 ? 3 : (zergKillCount > 40 ? 2 : 1);
-    for (let i = 0; i < 6; i++) spawnZergUnit(1, 2100 + rand(-30, 30), 750 + rand(-30, 30), enemyTier);
-  }
-
-  // 킬 수에 따른 영웅 진화 체크
-  if (factions[0].kills >= 120 && playerHeroTier < 4) {
-    playerHeroTier = 4;
-    toast("★ 퀸 디파일러 각성! 부식 아우라 발동!");
-    burst(camera.x, camera.y, "#ffd700", 60);
-  } else if (factions[0].kills >= 60 && playerHeroTier < 3) {
-    playerHeroTier = 3;
-    toast("★ 영웅 저글링으로 진화! 체력과 공격력 2.5배!");
-    burst(camera.x, camera.y, "#c084fc", 45);
-  } else if (factions[0].kills >= 25 && playerHeroTier < 2) {
-    playerHeroTier = 2;
-    toast("★ 발업 저글링 승급! 이동속도 폭증!");
-    burst(camera.x, camera.y, "#38bdf8", 30);
-  }
-
-  document.getElementById("chapBadge").textContent = `★${playerHeroTier}`;
-  document.getElementById("time").textContent = `${factions[0].kills} KILLS`;
-  document.getElementById("bases").textContent = Math.floor(factions[0].kills / 20) + 1;
-  document.getElementById("army").textContent = units.filter(u => u.team === 0).length;
-  document.getElementById("enemy").textContent = units.filter(u => u.team === 1).length;
-
-  // 적 코어 파괴 승리 판정
-  const eCore = bases.find(b => b.team === 1);
-  if (eCore && eCore.hp <= 0) {
-    endGame(true, "저글링 아레나 정복 완료! 적 본진을 궤멸시켰습니다!");
-  }
-}
-
-/* =========================================================
-   GAME 3: 뮤탈 블러드 (MUTALISK BLOOD)
-========================================================= */
-let mutalTargetPos = { x: 1300, y: 750 };
-let airstrikeTimer = 0;
-
-function startMutaliskBlood() {
-  document.getElementById("title").textContent = "MUTALISK BLOOD";
-  document.getElementById("sub").textContent = "3쿠션 글레이브 웜 공중전";
-  document.getElementById("guide").textContent = "화면을 터치/드래그하여 공중 편대를 조종하십시오! 탄환이 적 3마리를 연쇄 타격합니다.";
-  
-  document.getElementById("hudBadge1").innerHTML = `FLOCK<b id="chapBadge">AIR</b>`;
-  document.getElementById("hudBadge2").innerHTML = `KILLS<b id="time">0</b>`;
-  document.getElementById("hudBadge3").innerHTML = `STRIKE<b id="bases">READY</b>`;
-  document.getElementById("hudBadge4").innerHTML = `MUTAS<b id="army">0</b>`;
-  document.getElementById("hudBadge5").innerHTML = `FOES<b id="enemy">0</b>`;
-
-  uid = 1; mission = 600; spawnTimer = 0; airstrikeTimer = 0;
-  mutalTargetPos = { x: 700, y: 750 };
-
-  bases = [];
-  units = [];
-  projectiles = [];
-  particles = [];
-  explosions = [];
-  initThemeParticles("COSMOS");
-
-  factions = [
-    { id: 0, job: "Gunner", color: "#38bdf8", kills: 0 },
-    { id: 1, job: "Gunner", color: "#f43f5e", kills: 0 }
-  ];
-
-  // 상공 대칭 기지
-  bases.push({
-    id: uid++, x: 400, y: 750, team: 0, core: true,
-    hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0
-  });
-  bases.push({
-    id: uid++, x: 2200, y: 750, team: 1, core: true,
-    hp: 6000, maxHp: 6000, routes: [], pulse: 0, turretCd: 0
-  });
-
-  // 초기 뮤탈리스크 편대
-  for (let i = 0; i < 12; i++) spawnMutalUnit(0, 400 + rand(-50, 50), 750 + rand(-50, 50));
-  for (let i = 0; i < 16; i++) spawnMutalUnit(1, 2200 + rand(-50, 50), 750 + rand(-50, 50));
-
-  camera.x = 1300; camera.y = 750;
-  camera.zoom = clamp(Math.min(W / 1400, H / 800), 0.6, 1.2);
-
-  running = true;
-  isPaused = false;
-  toast("뮤탈 블러드 출격! 3쿠션 튕김 쐐기탄으로 적 편대를 격추하십시오!");
-}
-
-function spawnMutalUnit(team, x, y) {
-  units.push({
-    id: uid++, team, job: "Gunner",
-    x, y, vx: 0, vy: 0,
-    hp: 140, maxHp: 140, tier: 1,
-    attack: rand(0, 0.4),
-    targetBase: null, home: null, target: null,
-    angle: rand(0, TAU), anim: rand(0, TAU), hit: 0, dead: false
-  });
-}
-
-function updateMutaliskMode(dt) {
-  spawnTimer += dt;
-  if (spawnTimer >= 2.0) {
-    spawnTimer = 0;
-    spawnMutalUnit(0, 400 + rand(-30, 30), 750 + rand(-30, 30));
-    spawnMutalUnit(1, 2200 + rand(-30, 30), 750 + rand(-30, 30));
-    spawnMutalUnit(1, 2200 + rand(-30, 30), 750 + rand(-30, 30));
-  }
-
-  // 아군 편대 컨트롤 (목표 지점으로 집중 이동)
-  for (const u of units) {
-    if (u.team === 0 && !u.dead) {
-      const dx = mutalTargetPos.x - u.x;
-      const dy = mutalTargetPos.y - u.y;
-      const d = Math.hypot(dx, dy) || 1;
-      if (d > 40) {
-        u.vx = lerp(u.vx, (dx / d) * 95, dt * 4);
-        u.vy = lerp(u.vy, (dy / d) * 95, dt * 4);
-      }
-    }
-  }
-
-  // 50킬 달성 시 가디언 공중 융단폭격
-  if (factions[0].kills > 0 && factions[0].kills % 40 === 0 && airstrikeTimer <= 0) {
-    airstrikeTimer = 10;
-    toast("🚀 킬스트릭 달성! 가디언 융단 폭격 투하!");
-    for (const eu of units) {
-      if (eu.team === 1 && !eu.dead) {
-        explosions.push({ x: eu.x, y: eu.y, r: 80, life: 0.5, maxLife: 0.5 });
-        eu.hp -= 150;
-        if (eu.hp <= 0) killUnit(eu, 0);
-      }
-    }
-  }
-  if (airstrikeTimer > 0) airstrikeTimer -= dt;
-
-  document.getElementById("time").textContent = `${factions[0].kills} KILLS`;
-  document.getElementById("bases").textContent = airstrikeTimer > 0 ? `${Math.ceil(airstrikeTimer)}s` : "READY";
-  document.getElementById("army").textContent = units.filter(u => u.team === 0).length;
-  document.getElementById("enemy").textContent = units.filter(u => u.team === 1).length;
-
-  const eCore = bases.find(b => b.team === 1);
-  if (eCore && eCore.hp <= 0) {
-    endGame(true, "적 공중 모함을 격침시켰습니다! 공중전 제패!");
-  }
-}
-
-/* =========================================================
-   공통 전투 및 물리 연산
-========================================================= */
 function handleAI() {
-  if (activeGameMode !== "DOMINATION") return;
   aiTimer += 1 / 60;
   if (aiTimer < 3.0) return;
   aiTimer = 0;
+
+  if (activeGameMode !== "DOMINATION") return;
 
   for (const f of factions.slice(1)) {
     const own = bases.filter(b => b.team === f.id);
@@ -732,25 +603,179 @@ function handleAI() {
   }
 }
 
+function updateTurrets(dt) {
+  if (activeGameMode !== "DOMINATION") return;
+  for (const b of bases) {
+    if (b.team < 0 || b.core) continue;
+    b.turretCd -= dt;
+    if (b.turretCd <= 0) {
+      b.turretCd = 0.8;
+      let nearest = null, minDist = 150;
+      for (const u of units) {
+        if (u.team !== b.team && !u.dead) {
+          const d = Math.hypot(u.x - b.x, u.y - b.y);
+          if (d < minDist) { minDist = d; nearest = u; }
+        }
+      }
+      if (nearest) {
+        nearest.hp -= 26;
+        nearest.hit = 0.12;
+        projectiles.push({
+          x: b.x, y: b.y, tx: nearest.x, ty: nearest.y,
+          life: 0.1, color: factions[b.team].color, job: "Turret", tier: 1
+        });
+        if (nearest.hp <= 0) killUnit(nearest, b.team);
+      }
+    }
+  }
+}
+
+function updateMythicUltimates(dt) {
+  for (const u of units) {
+    if (!u.dead && u.tier === 5) {
+      explosions.push({ x: u.x, y: u.y, r: 180, life: 0.4, maxLife: 0.4 });
+      for (const target of units) {
+        if (target.team !== u.team && !target.dead && Math.hypot(target.x - u.x, target.y - u.y) < 180) {
+          target.hp -= 180 * Math.pow(2.2, 4);
+          target.hit = 0.2;
+          if (target.hp <= 0) killUnit(target, u.team);
+        }
+      }
+    }
+  }
+}
+
+function updateUnits(dt) {
+  const cell = 120;
+  const grid = new Map();
+
+  for (const u of units) {
+    const k = Math.floor(u.x / cell) + "," + Math.floor(u.y / cell);
+    if (!grid.has(k)) grid.set(k, []);
+    grid.get(k).push(u);
+  }
+
+  for (const u of units) {
+    if (u.dead) continue;
+
+    if (u.home && u.home.team !== u.team) {
+      u.home = bases.find(b => b.team === u.team) || null;
+    }
+
+    u.anim += dt * 7;
+    u.hit = Math.max(0, u.hit - dt);
+
+    const cx = Math.floor(u.x / cell), cy = Math.floor(u.y / cell);
+    let nearby = [];
+
+    for (let gx = -1; gx <= 1; gx++) {
+      for (let gy = -1; gy <= 1; gy++) {
+        const arr = grid.get((cx + gx) + "," + (cy + gy));
+        if (arr) nearby.push(...arr);
+      }
+    }
+
+    let enemy = null, ed = Infinity;
+    const rng = activeGameMode === "ZERGLING" ? 40 : (activeGameMode === "MUTALISK" ? 120 : BASE_STATS.rng);
+    for (const v of nearby) {
+      if (v.dead || v.team === u.team) continue;
+      const d = Math.hypot(v.x - u.x, v.y - u.y);
+      if (d < rng + 35 && d < ed) { ed = d; enemy = v; }
+    }
+
+    u.target = enemy;
+    let tx = null, ty = null;
+
+    if (enemy && ed <= rng) {
+      tx = enemy.x; ty = enemy.y;
+      u.attack -= dt;
+      if (u.attack <= 0) {
+        attack(u, enemy);
+        const rate = activeGameMode === "ZERGLING" ? 1.6 : (activeGameMode === "MUTALISK" ? 1.2 : BASE_STATS.rate);
+        u.attack = 1 / rate;
+      }
+    } else if (u.targetBase) {
+      tx = u.targetBase.x; ty = u.targetBase.y;
+      const distToBase = Math.hypot(u.targetBase.x - u.x, u.targetBase.y - u.y);
+
+      if (distToBase < 30) {
+        if (u.targetBase.team !== u.team) {
+          const mult = Math.pow(2.2, u.tier - 1);
+          const dmg = activeGameMode === "ZERGLING" ? 14 : BASE_STATS.dmg;
+          u.targetBase.hp -= dmg * mult * dt;
+          if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
+        } else {
+          if (u.targetBase.routes && u.targetBase.routes.length > 0) {
+            u.targetBase = u.targetBase.routes[Math.floor(Math.random() * u.targetBase.routes.length)];
+          } else {
+            u.home = u.targetBase;
+            u.targetBase = null;
+          }
+        }
+      }
+    } else if (u.home) {
+      tx = u.home.x; ty = u.home.y;
+      if (Math.hypot(tx - u.x, ty - u.y) < 60) {
+        tx = u.x; ty = u.y;
+      }
+    }
+
+    if (tx == null) {
+      tx = u.x + Math.cos(u.angle) * 50;
+      ty = u.y + Math.sin(u.angle) * 50;
+    }
+
+    const dx = tx - u.x, dy = ty - u.y;
+    const dd = Math.hypot(dx, dy) || 1;
+    let ax = dx / dd, ay = dy / dd;
+
+    let sepX = 0, sepY = 0;
+    for (const v of nearby) {
+      if (v === u || v.dead) continue;
+      const d = Math.hypot(v.x - u.x, v.y - u.y);
+      if (d < 18 && d > 0.01) {
+        sepX += (u.x - v.x) / d * (18 - d) / 18;
+        sepY += (u.y - v.y) / d * (18 - d) / 18;
+      }
+    }
+
+    ax += sepX * 1.5; ay += sepY * 1.5;
+    const al = Math.hypot(ax, ay) || 1;
+    ax /= al; ay /= al;
+
+    const moveD = Math.hypot(tx - u.x, ty - u.y);
+    if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
+      const baseSpd = activeGameMode === "ZERGLING" ? 95 : (activeGameMode === "MUTALISK" ? 85 : BASE_STATS.spd);
+      const speed = baseSpd * (1 + (u.tier - 1) * 0.08);
+      u.vx = lerp(u.vx, ax * speed, dt * 5);
+      u.vy = lerp(u.vy, ay * speed, dt * 5);
+      u.x += u.vx * dt;
+      u.y += u.vy * dt;
+      u.angle = Math.atan2(u.vy, u.vx);
+    }
+
+    u.x = clamp(u.x, 20, WORLD.w - 20);
+    u.y = clamp(u.y, 20, WORLD.h - 20);
+  }
+}
+
 function attack(a, b) {
   const mult = Math.pow(2.2, a.tier - 1);
-  let dmg = BASE_STATS.dmg * mult;
+  const baseDmg = activeGameMode === "ZERGLING" ? 14 : BASE_STATS.dmg;
+  let dmg = baseDmg * mult;
 
   b.hp -= dmg;
   b.hit = 0.12;
 
-  // 뮤탈 블러드: 3쿠션 튕김 탄환
   if (activeGameMode === "MUTALISK") {
     projectiles.push({
       x: a.x, y: a.y, tx: b.x, ty: b.y,
-      life: 0.16, color: factions[a.team] ? factions[a.team].color : "#55dfff",
-      bounces: 2
+      life: 0.14, color: factions[a.team].color, job: a.job, bounces: 2, team: a.team
     });
   } else {
     projectiles.push({
       x: a.x, y: a.y, tx: b.x, ty: b.y,
-      life: 0.13, color: factions[a.team] ? factions[a.team].color : "#55dfff",
-      job: a.job, tier: a.tier
+      life: 0.13, color: factions[a.team].color, job: a.job, tier: a.tier
     });
   }
 
@@ -761,7 +786,19 @@ function killUnit(u, killer) {
   if (u.dead) return;
   u.dead = true;
   if (killer != null && factions[killer]) factions[killer].kills++;
-  burst(u.x, u.y, factions[u.team] ? factions[u.team].color : "#f43f5e", 6 + u.tier * 2);
+
+  if (activeGameMode === "ZERGLING" && killer === 0) {
+    zergKills++;
+    document.getElementById("chapBadge").textContent = zergKills;
+    if (zergKills === 30 || zergKills === 80 || zergKills === 150) {
+      toast(`★ 저글링 군단 진화! (${zergKills} KILLS 달성)`);
+      for (const myU of units) {
+        if (myU.team === 0 && myU.tier < 5) myU.tier++;
+      }
+    }
+  }
+
+  burst(u.x, u.y, factions[u.team].color, 6 + u.tier * 2);
 }
 
 function captureBase(b, team) {
@@ -780,6 +817,7 @@ function captureBase(b, team) {
 
 function handleAutoMerge() {
   if (activeGameMode !== "DOMINATION") return;
+
   const groups = new Map();
   for (const u of units) {
     if (u.dead || u.tier >= 5) continue;
@@ -832,129 +870,11 @@ function handleAutoMerge() {
   }
 }
 
-function updateUnits(dt) {
-  const cell = 120;
-  const grid = new Map();
-
-  for (const u of units) {
-    const k = Math.floor(u.x / cell) + "," + Math.floor(u.y / cell);
-    if (!grid.has(k)) grid.set(k, []);
-    grid.get(k).push(u);
-  }
-
-  for (const u of units) {
-    if (u.dead) continue;
-
-    if (u.home && u.home.team !== u.team) {
-      u.home = bases.find(b => b.team === u.team) || null;
-    }
-
-    u.anim += dt * 7;
-    u.hit = Math.max(0, u.hit - dt);
-
-    const cx = Math.floor(u.x / cell), cy = Math.floor(u.y / cell);
-    let nearby = [];
-
-    for (let gx = -1; gx <= 1; gx++) {
-      for (let gy = -1; gy <= 1; gy++) {
-        const arr = grid.get((cx + gx) + "," + (cy + gy));
-        if (arr) nearby.push(...arr);
-      }
-    }
-
-    let enemy = null, ed = Infinity;
-    for (const v of nearby) {
-      if (v.dead || v.team === u.team) continue;
-      const d = Math.hypot(v.x - u.x, v.y - u.y);
-      if (d < BASE_STATS.rng + 40 && d < ed) { ed = d; enemy = v; }
-    }
-
-    u.target = enemy;
-    let tx = null, ty = null;
-
-    if (enemy && ed <= BASE_STATS.rng) {
-      tx = enemy.x; ty = enemy.y;
-      u.attack -= dt;
-      if (u.attack <= 0) {
-        attack(u, enemy);
-        u.attack = 1 / BASE_STATS.rate;
-      }
-    } else if (u.targetBase) {
-      tx = u.targetBase.x; ty = u.targetBase.y;
-      const distToBase = Math.hypot(u.targetBase.x - u.x, u.targetBase.y - u.y);
-
-      if (distToBase < 30) {
-        if (u.targetBase.team !== u.team) {
-          const mult = Math.pow(2.2, u.tier - 1);
-          u.targetBase.hp -= BASE_STATS.dmg * mult * dt;
-          if (u.targetBase.hp <= 0) captureBase(u.targetBase, u.team);
-        } else {
-          if (u.targetBase.routes && u.targetBase.routes.length > 0) {
-            u.targetBase = u.targetBase.routes[Math.floor(Math.random() * u.targetBase.routes.length)];
-          } else {
-            u.home = u.targetBase;
-            u.targetBase = null;
-          }
-        }
-      }
-    } else if (u.home) {
-      tx = u.home.x; ty = u.home.y;
-      if (Math.hypot(tx - u.x, ty - u.y) < 60) {
-        tx = u.x; ty = u.y;
-      }
-    }
-
-    // 뮤탈/저글링 모드에서 적 본진으로 돌격
-    if (tx == null && (activeGameMode === "ZERGLING" || activeGameMode === "MUTALISK")) {
-      const eCore = bases.find(b => b.team !== u.team);
-      if (eCore) { tx = eCore.x; ty = eCore.y; }
-    }
-
-    if (tx == null) {
-      tx = u.x + Math.cos(u.angle) * 50;
-      ty = u.y + Math.sin(u.angle) * 50;
-    }
-
-    const dx = tx - u.x, dy = ty - u.y;
-    const dd = Math.hypot(dx, dy) || 1;
-    let ax = dx / dd, ay = dy / dd;
-
-    let sepX = 0, sepY = 0;
-    for (const v of nearby) {
-      if (v === u || v.dead) continue;
-      const d = Math.hypot(v.x - u.x, v.y - u.y);
-      if (d < 18 && d > 0.01) {
-        sepX += (u.x - v.x) / d * (18 - d) / 18;
-        sepY += (u.y - v.y) / d * (18 - d) / 18;
-      }
-    }
-
-    ax += sepX * 1.5; ay += sepY * 1.5;
-    const al = Math.hypot(ax, ay) || 1;
-    ax /= al; ay /= al;
-
-    const moveD = Math.hypot(tx - u.x, ty - u.y);
-    if (moveD > (u.targetBase || enemy ? 1.6 : 60)) {
-      const speed = BASE_STATS.spd * (1 + (u.tier - 1) * 0.12);
-      u.vx = lerp(u.vx, ax * speed, dt * 5);
-      u.vy = lerp(u.vy, ay * speed, dt * 5);
-      u.x += u.vx * dt;
-      u.y += u.vy * dt;
-      u.angle = Math.atan2(u.vy, u.vx);
-    }
-
-    u.x = clamp(u.x, 20, WORLD.w - 20);
-    u.y = clamp(u.y, 20, WORLD.h - 20);
-  }
-}
-
 function updateBases(dt) {
-  if (activeGameMode !== "DOMINATION") return;
-  const chap = CHAPTERS[curChapterIdx];
   spawnTimer += dt;
-  const spawnThreshold = 2.0 * (chap.spawnMod || 1.0);
+  const threshold = activeGameMode === "ZERGLING" ? 0.25 : (activeGameMode === "MUTALISK" ? 1.0 : 2.0);
 
-  if (spawnTimer >= spawnThreshold) {
+  if (spawnTimer >= threshold) {
     spawnTimer = 0;
     for (const b of bases) {
       if (b.team >= 0) produce(b, 1);
@@ -972,41 +892,27 @@ function updateGame(dt) {
     return;
   }
 
-  if (activeGameMode === "DOMINATION") {
-    updateBases(dt);
-    handleAI();
-    updateUnits(dt);
-    handleAutoMerge();
+  updateBases(dt);
+  handleAI();
+  updateUnits(dt);
+  handleAutoMerge();
+  updateTurrets(dt);
+  updateMythicUltimates(dt);
 
-    const playerBases = bases.filter(b => b.team === 0);
-    const enemyCores = bases.filter(b => b.team > 0 && b.core);
-    if (!playerBases.length) endGame(false, "COMMAND BASE OVERRUN");
-    else if (!enemyCores.length) endGame(true, "CHAPTER COMPLETED");
-
-    updateHUD();
-  } else if (activeGameMode === "ZERGLING") {
-    updateUnits(dt);
-    updateZerglingMode(dt);
-  } else if (activeGameMode === "MUTALISK") {
-    updateUnits(dt);
-    updateMutaliskMode(dt);
-  }
-
-  // 투사체 처리
   for (let i = projectiles.length - 1; i >= 0; i--) {
     const p = projectiles[i];
     p.life -= dt;
     if (p.life <= 0) {
-      // 3쿠션 튕김 연산 (뮤탈 모드)
       if (p.bounces && p.bounces > 0) {
-        const nextTarget = units.find(u => u.team === 1 && !u.dead && Math.hypot(u.x - p.tx, u.y - p.ty) < 180);
-        if (nextTarget) {
+        const next = units.find(u => u.team !== p.team && !u.dead && Math.hypot(u.x - p.tx, u.y - p.ty) < 170);
+        if (next) {
           projectiles.push({
-            x: p.tx, y: p.ty, tx: nextTarget.x, ty: nextTarget.y,
-            life: 0.14, color: p.color, bounces: p.bounces - 1
+            x: p.tx, y: p.ty, tx: next.x, ty: next.y,
+            life: 0.14, color: p.color, bounces: p.bounces - 1, team: p.team
           });
-          nextTarget.hp -= 20;
-          if (nextTarget.hp <= 0) killUnit(nextTarget, 0);
+          next.hp -= 16;
+          next.hit = 0.12;
+          if (next.hp <= 0) killUnit(next, p.team);
         }
       }
       projectiles.splice(i, 1);
@@ -1020,6 +926,17 @@ function updateGame(dt) {
 
   for (const exp of explosions) exp.life -= dt;
   explosions = explosions.filter(e => e.life > 0);
+
+  const playerBases = bases.filter(b => b.team === 0);
+  const enemyCores = bases.filter(b => b.team > 0 && b.core);
+
+  if (!playerBases.length) {
+    endGame(false, "COMMAND BASE OVERRUN");
+  } else if (!enemyCores.length) {
+    endGame(true, activeGameMode === "DOMINATION" ? "CHAPTER COMPLETED" : "TOTAL VICTORY");
+  }
+
+  updateHUD();
 }
 
 function burst(x, y, color, n) {
@@ -1035,16 +952,29 @@ function endGame(win, reason) {
   running = false;
   document.getElementById("result").style.display = "flex";
   const btnNext = document.getElementById("btnNext");
+  const btnRetry = document.getElementById("btnRetry");
 
-  if (activeGameMode === "DOMINATION") {
-    btnNext.style.display = win && curChapterIdx < CHAPTERS.length - 1 ? "inline-block" : "none";
+  if (win) {
+    document.getElementById("resultTitle").textContent = "VICTORY!";
+    document.getElementById("resultTitle").style.color = "#63efff";
+    if (activeGameMode === "DOMINATION" && curChapterIdx < CHAPTERS.length - 1) {
+      document.getElementById("resultSub").textContent = `${CHAPTERS[curChapterIdx].name} 완료! 다음 챕터로 진격하십시오.`;
+      btnNext.style.display = "inline-block";
+      btnRetry.style.display = "none";
+    } else {
+      document.getElementById("resultSub").textContent = "축하합니다! 전장을 완전히 장악했습니다!";
+      btnNext.style.display = "none";
+      btnRetry.style.display = "inline-block";
+      btnRetry.textContent = "PLAY AGAIN";
+    }
   } else {
+    document.getElementById("resultTitle").textContent = "DEFEAT";
+    document.getElementById("resultTitle").style.color = "#ff607b";
+    document.getElementById("resultSub").textContent = reason;
     btnNext.style.display = "none";
+    btnRetry.style.display = "inline-block";
+    btnRetry.textContent = "RETRY";
   }
-
-  document.getElementById("resultTitle").textContent = win ? "VICTORY!" : "DEFEAT";
-  document.getElementById("resultTitle").style.color = win ? "#63efff" : "#ff607b";
-  document.getElementById("resultSub").textContent = reason;
 }
 
 function nextChapter() {
@@ -1055,7 +985,7 @@ function nextChapter() {
   isPaused = false;
 }
 
-function retryCurrentGame() {
+function retryGame() {
   document.getElementById("result").style.display = "none";
   if (activeGameMode === "DOMINATION") startChapter(curChapterIdx);
   else if (activeGameMode === "ZERGLING") startZerglingBlood();
@@ -1071,10 +1001,7 @@ function togglePause() {
 }
 
 function saveCurrentGame() {
-  if (activeGameMode !== "DOMINATION") {
-    toast("저장은 정통 땅따먹기 모드에서만 지원됩니다.");
-    return;
-  }
+  if (activeGameMode !== "DOMINATION") return;
   try {
     const saveData = {
       curChapterIdx, selectedJob, mission,
@@ -1088,7 +1015,7 @@ function saveCurrentGame() {
       }))
     };
     localStorage.setItem("frontier_flux_save", JSON.stringify(saveData));
-    toast("진행 상황이 안전하게 저장되었습니다!");
+    toast("게임 진행 상황이 저장되었습니다!");
   } catch (e) {
     toast("저장 중 오류가 발생했습니다.");
   }
@@ -1124,24 +1051,20 @@ function loadSavedGame() {
     document.getElementById("pauseModal").style.display = "none";
     running = true;
     isPaused = false;
+    updateHUD();
     toast("저장된 게임을 불러왔습니다!");
   } catch (e) {
-    toast("세이브 파일 손상으로 불러올 수 없습니다.");
+    toast("세이브 파일을 불러올 수 없습니다.");
   }
 }
 
 function updateHUD() {
   const sec = Math.ceil(mission);
-  const timeEl = document.getElementById("time");
-  if (timeEl) {
-    timeEl.textContent = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
-  }
-  const basesEl = document.getElementById("bases");
-  if (basesEl) basesEl.textContent = bases?.filter(b => b.team === 0).length || 0;
-  const armyEl = document.getElementById("army");
-  if (armyEl) armyEl.textContent = units?.filter(u => u.team === 0).length || 0;
-  const enemyEl = document.getElementById("enemy");
-  if (enemyEl) enemyEl.textContent = units?.filter(u => u.team !== 0).length || 0;
+  document.getElementById("time").textContent =
+    String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
+  document.getElementById("bases").textContent = bases?.filter(b => b.team === 0).length || 0;
+  document.getElementById("army").textContent = units?.filter(u => u.team === 0).length || 0;
+  document.getElementById("enemy").textContent = units?.filter(u => u.team !== 0).length || 0;
 }
 
 function worldToScreen(x, y) {
@@ -1156,25 +1079,20 @@ function screenToWorld(x, y) {
 ========================================================= */
 function drawBackground(t) {
   const chap = CHAPTERS[curChapterIdx] || CHAPTERS[0];
-  const theme = (activeGameMode === "ZERGLING") ? "INFERNO" : ((activeGameMode === "MUTALISK") ? "COSMOS" : chap.theme);
+  const theme = activeGameMode === "ZERGLING" ? "INFERNO" : (activeGameMode === "MUTALISK" ? "COSMOS" : chap.theme);
+  const bg = activeGameMode === "ZERGLING" ? "#1a0805" : (activeGameMode === "MUTALISK" ? "#040714" : chap.bg);
 
   ctx.save();
   ctx.translate(W / 2 - camera.x * camera.zoom, H / 2 - camera.y * camera.zoom);
   ctx.scale(camera.zoom, camera.zoom);
 
-  // 1. 테마 지면
-  ctx.fillStyle = (activeGameMode === "ZERGLING") ? "#1f0705" : ((activeGameMode === "MUTALISK") ? "#020712" : chap.bg);
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, WORLD.w, WORLD.h);
 
-  // 2. 테마별 디테일 지형 연출
   if (theme === "GRASS") {
     ctx.strokeStyle = chap.grid; ctx.lineWidth = 1.5;
     for (let x = 0; x < WORLD.w; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD.h); ctx.stroke(); }
     for (let y = 0; y < WORLD.h; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD.w, y); ctx.stroke(); }
-    ctx.fillStyle = "rgba(46,125,50,0.18)";
-    for (let i = 0; i < 50; i++) {
-      ctx.beginPath(); ctx.arc((i * 97) % WORLD.w, (i * 131) % WORLD.h, 45, 0, TAU); ctx.fill();
-    }
   } else if (theme === "DESERT") {
     ctx.strokeStyle = "rgba(180,130,40,0.15)"; ctx.lineWidth = 3;
     for (let y = 0; y < WORLD.h; y += 110) {
@@ -1191,11 +1109,6 @@ function drawBackground(t) {
       const rx = (i * 123) % WORLD.w, ry = (i * 167) % WORLD.h;
       ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx + 60, ry + 40); ctx.lineTo(rx + 110, ry + 20); ctx.stroke();
     }
-  } else if (theme === "HEAVEN") {
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    for (let i = 0; i < 35; i++) {
-      ctx.beginPath(); ctx.arc((i * 140 + t * 0.02) % (WORLD.w + 200) - 100, (i * 90) % WORLD.h, 70, 0, TAU); ctx.fill();
-    }
   } else if (theme === "COSMOS") {
     const grad = ctx.createRadialGradient(1300, 750, 100, 1300, 750, 1200);
     grad.addColorStop(0, "rgba(56,189,248,0.08)");
@@ -1205,7 +1118,6 @@ function drawBackground(t) {
     ctx.fillRect(0, 0, WORLD.w, WORLD.h);
   }
 
-  // 공통 입자
   for (const s of stars) {
     const a = s.a * (0.6 + 0.4 * Math.sin(t * 0.002 + s.p));
     ctx.globalAlpha = a;
@@ -1216,12 +1128,10 @@ function drawBackground(t) {
 
   ctx.strokeStyle = "rgba(99,220,255,0.2)";
   ctx.strokeRect(15, 15, WORLD.w - 30, WORLD.h - 30);
-
   ctx.restore();
 }
 
 function drawRoutes(t) {
-  if (activeGameMode !== "DOMINATION") return;
   ctx.save();
   ctx.translate(W / 2 - camera.x * camera.zoom, H / 2 - camera.y * camera.zoom);
   ctx.scale(camera.zoom, camera.zoom);
@@ -1231,13 +1141,21 @@ function drawRoutes(t) {
     const col = factions[b.team] ? factions[b.team].color : "#64748b";
 
     for (const target of b.routes) {
-      ctx.strokeStyle = col; ctx.globalAlpha = 0.85; ctx.lineWidth = 3.5;
-      ctx.setLineDash([12, 8]); ctx.lineDashOffset = -t * 0.06;
-      ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(target.x, target.y); ctx.stroke();
+      ctx.strokeStyle = col;
+      ctx.globalAlpha = 0.85;
+      ctx.lineWidth = 3.5;
+      ctx.setLineDash([12, 8]);
+      ctx.lineDashOffset = -t * 0.06;
+      ctx.beginPath();
+      ctx.moveTo(b.x, b.y);
+      ctx.lineTo(target.x, target.y);
+      ctx.stroke();
 
       const prog = (t * 0.001) % 1;
       ctx.fillStyle = "#fff";
-      ctx.beginPath(); ctx.arc(lerp(b.x, target.x, prog), lerp(b.y, target.y, prog), 4.5, 0, TAU); ctx.fill();
+      ctx.beginPath();
+      ctx.arc(lerp(b.x, target.x, prog), lerp(b.y, target.y, prog), 4.5, 0, TAU);
+      ctx.fill();
     }
   }
 
@@ -1258,13 +1176,21 @@ function drawBase(b, t) {
   ctx.beginPath(); ctx.arc(0, 0, (b.core ? 46 : 34) * pulse, 0, TAU); ctx.fill();
 
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = teamColor; ctx.lineWidth = 2.5;
+  ctx.strokeStyle = teamColor;
+  ctx.lineWidth = 2.5;
   ctx.beginPath(); ctx.arc(0, 0, b.core ? 32 : 24, 0, TAU); ctx.stroke();
 
   ctx.fillStyle = "#081822";
   ctx.beginPath(); ctx.arc(0, 0, b.core ? 30 : 22, 0, TAU); ctx.fill();
 
-  // 기지 주둔군 수치
+  if (!b.core && b.team >= 0) {
+    ctx.rotate(t * 0.002);
+    ctx.strokeStyle = teamColor;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -16); ctx.stroke();
+    ctx.rotate(-t * 0.002);
+  }
+
   ctx.fillStyle = teamColor;
   ctx.font = "bold 14px sans-serif";
   ctx.textAlign = "center";
@@ -1280,14 +1206,14 @@ function drawBase(b, t) {
     ctx.fillText("NEUTRAL", 0, 5);
   }
 
-  // 대형 체력바
   const bw = b.core ? 76 : 60;
   const hp = clamp(b.hp / b.maxHp, 0, 1);
   ctx.fillStyle = "rgba(0,0,0,0.85)";
   ctx.fillRect(-bw / 2, 36, bw, 6);
   ctx.fillStyle = teamColor;
   ctx.fillRect(-bw / 2, 36, bw * hp, 6);
-  ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(255,255,255,0.4)";
+  ctx.lineWidth = 1;
   ctx.strokeRect(-bw / 2, 36, bw, 6);
 
   ctx.restore();
@@ -1305,11 +1231,20 @@ function drawUnit(u) {
   ctx.save();
   ctx.translate(s.x, s.y + bob);
 
-  // 티어 배지
   ctx.fillStyle = u.tier >= 4 ? "#ffd700" : (u.tier >= 2 ? "#ffffff" : "rgba(255,255,255,0.75)");
   ctx.font = `bold ${Math.max(10, 10 * sc)}px monospace`;
   ctx.textAlign = "center";
   ctx.fillText(`★${u.tier}`, 0, -size - 13);
+
+  if (u.tier >= 4) {
+    ctx.save();
+    ctx.rotate(t * 0.001);
+    ctx.strokeStyle = u.tier === 5 ? "#ffd700" : c;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.arc(0, 0, size * 2.2, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }
 
   ctx.rotate(u.angle);
 
@@ -1322,49 +1257,65 @@ function drawUnit(u) {
     ctx.beginPath(); ctx.arc(0, 0, size * 1.4, 0, TAU); ctx.stroke();
   }
 
-  // 직업별 스프라이트
-  if (u.job === "Mage") {
-    ctx.fillStyle = "#0c2438";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
-    ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
-    ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
-    ctx.fillStyle = "#38bdf8";
-    ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
-  } else if (u.job === "Knight") {
-    ctx.fillStyle = "#1e1b4b";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
-    ctx.fillStyle = "rgba(129,140,248,0.85)";
-    ctx.fillRect(size * 0.6, -size * 1.5, size * 0.7, size * 3.0);
-  } else if (u.job === "Ranger") {
-    ctx.fillStyle = "#064e3b";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-    ctx.strokeStyle = c; ctx.lineWidth = 2.5 * sc;
-    ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
-  } else if (u.job === "Summoner") {
-    ctx.fillStyle = "#3b0764";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#f3e8ff";
-    ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
-  } else if (u.job === "Barbarian") {
-    // 저글링 / 바바리안
-    ctx.fillStyle = "#431407";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#fb923c";
+  if (activeGameMode === "MUTALISK") {
+    ctx.fillStyle = c;
     ctx.beginPath();
-    ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
-    ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
+    ctx.moveTo(size * 1.6, 0);
+    ctx.lineTo(-size, -size * 1.8);
+    ctx.lineTo(-size * 0.4, 0);
+    ctx.lineTo(-size, size * 1.8);
+    ctx.closePath();
     ctx.fill();
-  } else if (u.job === "Gunner") {
-    // 뮤탈리스크 / 거너
-    ctx.fillStyle = "#18181b";
-    ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#3f3f46";
-    ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
-    ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
-    ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
+  } else if (activeGameMode === "ZERGLING") {
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.moveTo(size * 0.5, -size * 1.2); ctx.lineTo(size * 1.8, 0); ctx.lineTo(size * 0.5, size * 1.2);
+    ctx.fill();
+  } else {
+    if (u.job === "Mage") {
+      ctx.fillStyle = "#0c2438";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+      ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.stroke();
+      ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 2.5 * sc;
+      ctx.beginPath(); ctx.moveTo(0, -size * 0.3); ctx.lineTo(size * 2.2, -size * 0.3); ctx.stroke();
+      ctx.fillStyle = "#38bdf8";
+      ctx.beginPath(); ctx.arc(size * 2.2, -size * 0.3, size * 0.45, 0, TAU); ctx.fill();
+    } else if (u.job === "Knight") {
+      ctx.fillStyle = "#1e1b4b";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+      ctx.strokeStyle = c; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = "rgba(129,140,248,0.85)";
+      ctx.fillRect(size * 0.6, -size * 1.5, size * 0.7, size * 3.0);
+    } else if (u.job === "Ranger") {
+      ctx.fillStyle = "#064e3b";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+      ctx.strokeStyle = c; ctx.lineWidth = 2.5 * sc;
+      ctx.beginPath(); ctx.arc(size * 0.5, 0, size * 1.6, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
+    } else if (u.job === "Summoner") {
+      ctx.fillStyle = "#3b0764";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.8, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#f3e8ff";
+      ctx.fillRect(size * 0.6, -size * 0.5, size * 0.9, size * 1.0);
+    } else if (u.job === "Barbarian") {
+      ctx.fillStyle = "#431407";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#fb923c";
+      ctx.beginPath();
+      ctx.moveTo(size * 1.1, -size * 1.6); ctx.lineTo(size * 2.7, -size * 0.7); ctx.lineTo(size * 1.1, 0);
+      ctx.moveTo(size * 1.1, size * 1.6); ctx.lineTo(size * 2.7, size * 0.7); ctx.lineTo(size * 1.1, 0);
+      ctx.fill();
+    } else if (u.job === "Gunner") {
+      ctx.fillStyle = "#18181b";
+      ctx.beginPath(); ctx.arc(0, 0, size * 0.85, 0, TAU); ctx.fill();
+      ctx.fillStyle = "#3f3f46";
+      ctx.fillRect(size * 0.3, -size * 0.8, size * 2.0, size * 0.35);
+      ctx.fillRect(size * 0.3, size * 0.45, size * 2.0, size * 0.35);
+      ctx.strokeStyle = "rgba(239,68,68,0.7)"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(size * 2.3, 0); ctx.lineTo(size * 16, 0); ctx.stroke();
+    }
   }
 
   ctx.rotate(-u.angle);
@@ -1395,15 +1346,6 @@ function drawEffects() {
     ctx.beginPath(); ctx.arc(s.x, s.y, p.r * camera.zoom, 0, TAU); ctx.fill();
     ctx.restore();
   }
-
-  for (const exp of explosions) {
-    const s = worldToScreen(exp.x, exp.y);
-    ctx.save();
-    ctx.strokeStyle = "#ffd700"; ctx.lineWidth = 3;
-    ctx.globalAlpha = exp.life / exp.maxLife;
-    ctx.beginPath(); ctx.arc(s.x, s.y, exp.r * camera.zoom, 0, TAU); ctx.stroke();
-    ctx.restore();
-  }
 }
 
 function render(t) {
@@ -1422,7 +1364,8 @@ function render(t) {
     const a = worldToScreen(dragBase.x, dragBase.y);
     ctx.save();
     ctx.strokeStyle = factions[dragBase.team] ? factions[dragBase.team].color : "#62eaff";
-    ctx.lineWidth = 3; ctx.setLineDash([8, 6]);
+    ctx.lineWidth = 3;
+    ctx.setLineDash([8, 6]);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y); ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
@@ -1439,9 +1382,6 @@ function hitBase(wx, wy) {
   return best;
 }
 
-/* =========================================================
-   포인터 조작 (게임 1/2/3 완벽 분기)
-========================================================= */
 canvas.addEventListener("pointerdown", e => {
   if (isPaused) return;
   pointerDown = true;
@@ -1450,20 +1390,9 @@ canvas.addEventListener("pointerdown", e => {
   lastPointer = { x: e.clientX, y: e.clientY };
 
   const w = screenToWorld(pointer.x, pointer.y);
+  const b = hitBase(w.x, w.y);
 
-  if (activeGameMode === "DOMINATION") {
-    const b = hitBase(w.x, w.y);
-    if (b && b.team === 0) dragBase = b;
-  } else if (activeGameMode === "ZERGLING") {
-    // 저글링 어택땅 이동 명령
-    for (const u of units) {
-      if (u.team === 0 && !u.dead) {
-        u.targetBase = { x: w.x + rand(-50, 50), y: w.y + rand(-50, 50) };
-      }
-    }
-  } else if (activeGameMode === "MUTALISK") {
-    mutalTargetPos = { x: w.x, y: w.y };
-  }
+  if (b && b.team === 0) dragBase = b;
 });
 
 window.addEventListener("pointermove", e => {
@@ -1475,21 +1404,10 @@ window.addEventListener("pointermove", e => {
   const dy = e.clientY - lastPointer.y;
   if (Math.hypot(dx, dy) > 4) dragMoved = true;
 
-  if (activeGameMode === "DOMINATION") {
-    if (!dragBase) {
-      camera.x -= dx / camera.zoom;
-      camera.y -= dy / camera.zoom;
-      clampCamera();
-    }
-  } else if (activeGameMode === "MUTALISK") {
-    const w = screenToWorld(e.clientX, e.clientY);
-    mutalTargetPos = { x: w.x, y: w.y };
-  } else if (activeGameMode === "ZERGLING") {
-    if (dragMoved) {
-      camera.x -= dx / camera.zoom;
-      camera.y -= dy / camera.zoom;
-      clampCamera();
-    }
+  if (!dragBase) {
+    camera.x -= dx / camera.zoom;
+    camera.y -= dy / camera.zoom;
+    clampCamera();
   }
   lastPointer = { x: e.clientX, y: e.clientY };
 });
@@ -1499,7 +1417,7 @@ window.addEventListener("pointerup", e => {
   if (!pointerDown) return;
   pointerDown = false;
 
-  if (activeGameMode === "DOMINATION" && dragBase) {
+  if (dragBase) {
     const w = screenToWorld(e.clientX, e.clientY);
     const target = hitBase(w.x, w.y);
 
@@ -1539,14 +1457,6 @@ function clampCamera() {
   camera.x = clamp(camera.x, halfW, WORLD.w - halfW);
   camera.y = clamp(camera.y, halfH, WORLD.h - halfH);
 }
-
-window.addEventListener("keydown", e => {
-  if (e.code === "Space" || e.code === "KeyP") {
-    if (running && document.getElementById("result").style.display !== "flex") {
-      togglePause();
-    }
-  }
-});
 
 let last = performance.now();
 function loop(now) {
