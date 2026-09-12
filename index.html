@@ -688,10 +688,12 @@
             anim: 0,
             job: j,
           };
-          cam = { x: 1300, y: 800, z: W < 650 ? 0.7 : 0.9 };
+          cam = { x: 1300, y: 800, z: innerWidth < 650 ? 0.7 : 0.9 };
           $("pad").classList.add("playing");
           $("routebar").classList.add("hidden");
           buildSkills();
+          close();
+          state = "play";
           say("WASD/방향키 이동 · Q 회피 · W 광역 · E 집중 공격");
         } else {
           chapter = 0;
@@ -974,7 +976,7 @@
         zones.push({ x, y, r, d, t, max: t, color: c, tick: 0.2, ...extra });
       }
       function hurt(d) {
-        if (hero.inv > 0 || state !== "play") return;
+        if (!hero || hero.inv > 0 || state !== "play") return;
         if (job === "Paladin") d *= 0.85;
         let absorbed = Math.min(hero.shield, d);
         hero.shield -= absorbed;
@@ -988,7 +990,7 @@
         }
       }
       function cast(k) {
-        if (mode !== "hunter" || state !== "play") return;
+        if (mode !== "hunter" || state !== "play" || !hero) return;
         let i = SK.indexOf(k);
         if (i < 0 || level < unlock[i] || (cd[k] || 0) > 0) return;
         let [name, type, cool] = skillSets[job][i];
@@ -1216,11 +1218,12 @@
               });
             break;
           default:
-            throw Error("Unknown skill " + type);
+            break;
         }
         if (i === 8) say(name + "!");
       }
       function spawnEnemy(isBoss = false) {
+        if (!hero) return;
         let a = rnd(0, TAU),
           d = rnd(500, 680),
           type = isBoss
@@ -1274,6 +1277,7 @@
         }
       }
       function updateHunter(dt) {
+        if (!hero) return;
         elapsed += dt;
         hero.inv = Math.max(0, hero.inv - dt);
         hero.buff = Math.max(0, hero.buff - dt);
@@ -1557,7 +1561,7 @@
           if (b.team >= 0) for (let n = 0; n < 6; n++) produce(b);
         cam = { x: 260, y: 300, z: Math.max(0.4, Math.min(W / 1250, H / 850)) };
         boundCam();
-        say("아군 기지 → 목표 기지 드래그 · 같은 기지 클릭 시 전체 해제");
+        say("아군 기지 → 목표 기지 드래그 · 같은 기지 클릭 시 연결 전체 해제");
         updateHUD();
       }
       function teamJob(t) {
@@ -1895,6 +1899,7 @@
         }
         let time = `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, "0")}`;
         if (mode === "hunter") {
+          if (!hero) return;
           $("status").innerHTML =
             `${names[job]} / <span class="gold">LV.${level}</span><br>${time} · ${kills} 처치 · 지역 ${Math.min(4, bossIndex + 1)}/4`;
           $("vitals").innerHTML =
@@ -1903,15 +1908,16 @@
           for (let i = 0; i < 9; i++) {
             let b = $("ct" + i),
               s = $("sh" + i);
-            if (!b) continue;
-            let v = cd[SK[i]] || 0;
+            if (!b || !s || !ss[i]) continue;
+            let v = cd[SK[i]] || 0,
+              baseCool = (ss[i][2] || 1) * (up.cd || 1);
             b.textContent =
               level < unlock[i]
                 ? "Lv." + unlock[i]
                 : v > 0
                   ? v.toFixed(1) + "s"
                   : "준비";
-            s.style.transform = `scaleY(${v / (ss[i][2] * up.cd)})`;
+            s.style.transform = `scaleY(${clamp(v / baseCool, 0, 1)})`;
           }
           $("boss").innerHTML = boss
             ? `<span>${["가시숲 수문장", "모래의 거신", "화염 군주", "공허의 사신"][bossIndex]} · ${Math.ceil(boss.hp)} / ${boss.maxHp}</span><div class="meter"><i style="width:${(boss.hp / boss.maxHp) * 100}%"></i></div>`
@@ -2733,7 +2739,6 @@
       $("pad").addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         padId = e.pointerId;
-        $("pad").setPointerCapture(e.pointerId);
         movePad(e);
       });
       $("pad").addEventListener("pointermove", (e) => {
