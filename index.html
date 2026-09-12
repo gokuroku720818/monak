@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
-    <title>FRONTIER / REFORGED</title>
+    <title>FRONTIER / REFORGED — VISUAL ASCENSION</title>
     <style>
       :root {
         --gold: #dfc18a;
@@ -412,7 +412,7 @@
     <canvas id="game"></canvas>
     <div id="top">
       <div>
-        <div class="label">TACTICAL FANTASY / 2.0</div>
+        <div class="label">TACTICAL FANTASY / 2.5 VISUAL ASCENSION</div>
         <div class="brand">FRONTIER <span class="gold">REFORGED</span></div>
         <div id="status"></div>
       </div>
@@ -493,12 +493,30 @@
         Gunner: "Archer",
       };
       const root = (j) => roots[j] || j;
-      const col = (j) =>
-        root(j) === "Warrior"
-          ? "#eab47f"
+      const jobPalette = {
+        Warrior: { p: "#e6a86f", s: "#fff0c6", d: "#704631" },
+        Knight: { p: "#d9c18e", s: "#fff4c9", d: "#4b5660" },
+        Paladin: { p: "#f5d36f", s: "#fff8c7", d: "#59666c" },
+        Berserker: { p: "#ff6658", s: "#ffb36b", d: "#521f28" },
+        Barbarian: { p: "#ef9159", s: "#ffd0a0", d: "#5c3427" },
+        Mage: { p: "#9eaef9", s: "#dff5ff", d: "#353b61" },
+        Archmage: { p: "#65dcff", s: "#ecfcff", d: "#254f6d" },
+        Warlock: { p: "#b66cff", s: "#efc9ff", d: "#352144" },
+        Summoner: { p: "#b98af0", s: "#e8d3ff", d: "#4a3568" },
+        Archer: { p: "#78d4a7", s: "#e5ffe9", d: "#315647" },
+        Ranger: { p: "#74d29f", s: "#e6ffd8", d: "#305a42" },
+        Sniper: { p: "#d9dd9a", s: "#fffbd4", d: "#485052" },
+        Stormracer: { p: "#58dcff", s: "#e9fdff", d: "#214f66" },
+        Gunner: { p: "#e4b75d", s: "#fff0b0", d: "#524633" },
+      };
+      const pal = (j) =>
+        jobPalette[j] ||
+        (root(j) === "Warrior"
+          ? jobPalette.Warrior
           : root(j) === "Mage"
-            ? "#a9b4f5"
-            : "#87d0b1";
+            ? jobPalette.Mage
+            : jobPalette.Archer);
+      const col = (j) => pal(j).p;
       let mode = "hub",
         state = "menu",
         job = "Warrior",
@@ -542,11 +560,11 @@
         combo = 0,
         promotionPending = false;
       const chapterNames = [
-        "초원",
-        "사막",
-        "불지옥",
-        "천국",
-        "우주",
+        "翡翠原野 / 초원",
+        "사구 요새 / 사막",
+        "잿불 왕국 / 불지옥",
+        "천상의 관문 / 천국",
+        "공허의 왕좌 / 우주",
       ];
       function tone(f = 180, d = 0.08) {
         if (muted) return;
@@ -688,13 +706,11 @@
             anim: 0,
             job: j,
           };
-          cam = { x: 1300, y: 800, z: innerWidth < 650 ? 0.7 : 0.9 };
+          cam = { x: 1300, y: 800, z: W < 650 ? 0.7 : 0.9 };
           $("pad").classList.add("playing");
           $("routebar").classList.add("hidden");
           buildSkills();
-          close();
-          state = "play";
-          say("WASD/방향키 이동 · Q 회피 · W 광역 · E 집중 공격");
+          say("자동 평타 · Q 회피 · W 광역 · E 집중 공격");
         } else {
           chapter = 0;
           startDom();
@@ -892,7 +908,7 @@
         close();
       }
       function effect(type, x, y, r, color, duration = 0.4, extra = {}) {
-        if (fx.length > 550) fx.splice(0, 30);
+        if (fx.length > 720) fx.splice(0, 55);
         fx.push({ type, x, y, r, color, t: duration, max: duration, ...extra });
       }
       function spark(x, y, c, n = 8) {
@@ -965,6 +981,7 @@
           r: 5,
           t: 1.4,
           color: col(job),
+          ownerJob: job,
           hits: new Set(),
           ...extra,
         });
@@ -973,10 +990,10 @@
         tasks.push({ t: delay, fn });
       }
       function zone(x, y, r, d, t, c, extra = {}) {
-        zones.push({ x, y, r, d, t, max: t, color: c, tick: 0.2, ...extra });
+        zones.push({ x, y, r, d, t, max: t, color: c, tick: 0.2, ownerJob: job, ...extra });
       }
       function hurt(d) {
-        if (!hero || hero.inv > 0 || state !== "play") return;
+        if (hero.inv > 0 || state !== "play") return;
         if (job === "Paladin") d *= 0.85;
         let absorbed = Math.min(hero.shield, d);
         hero.shield -= absorbed;
@@ -990,7 +1007,7 @@
         }
       }
       function cast(k) {
-        if (mode !== "hunter" || state !== "play" || !hero) return;
+        if (mode !== "hunter" || state !== "play") return;
         let i = SK.indexOf(k);
         if (i < 0 || level < unlock[i] || (cd[k] || 0) > 0) return;
         let [name, type, cool] = skillSets[job][i];
@@ -1218,12 +1235,12 @@
               });
             break;
           default:
-            break;
+            throw Error("Unknown skill " + type);
         }
+        skillAccent(job, i, type, x, y, tx, ty, a, r, c);
         if (i === 8) say(name + "!");
       }
       function spawnEnemy(isBoss = false) {
-        if (!hero) return;
         let a = rnd(0, TAU),
           d = rnd(500, 680),
           type = isBoss
@@ -1277,7 +1294,6 @@
         }
       }
       function updateHunter(dt) {
-        if (!hero) return;
         elapsed += dt;
         hero.inv = Math.max(0, hero.inv - dt);
         hero.buff = Math.max(0, hero.buff - dt);
@@ -1495,10 +1511,14 @@
       function segmentDistance(e, p) {
         let dx = p.x - p.px,
           dy = p.y - p.py,
-          denom = Math.max(1e-6, dx * dx + dy * dy),
-          t = clamp(((e.x - p.px) * dx + (e.y - p.py) * dy) / denom, 0, 1);
+          t = clamp(
+            ((e.x - p.px) * dx + (e.y - p.py) * dy) / (dx * dx + dy * dy || 1),
+            0,
+            1,
+          );
         return Math.hypot(e.x - p.px - t * dx, e.y - p.py - t * dy);
       }
+      // DOMINATION: per-class roles, living-unit caps, real-time cooldowns, validated saves.
       const stats = {
         Knight: { hp: 180, d: 21, range: 48, speed: 71, rate: 0.85 },
         Mage: { hp: 95, d: 25, range: 130, speed: 70, rate: 1.35 },
@@ -1561,7 +1581,7 @@
           if (b.team >= 0) for (let n = 0; n < 6; n++) produce(b);
         cam = { x: 260, y: 300, z: Math.max(0.4, Math.min(W / 1250, H / 850)) };
         boundCam();
-        say("아군 기지 → 목표 기지 드래그 · 같은 기지 클릭 시 연결 전체 해제");
+        say("아군 기지 → 목표 기지 드래그 · 같은 연결을 다시 그리면 해제");
         updateHUD();
       }
       function teamJob(t) {
@@ -1899,7 +1919,6 @@
         }
         let time = `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, "0")}`;
         if (mode === "hunter") {
-          if (!hero) return;
           $("status").innerHTML =
             `${names[job]} / <span class="gold">LV.${level}</span><br>${time} · ${kills} 처치 · 지역 ${Math.min(4, bossIndex + 1)}/4`;
           $("vitals").innerHTML =
@@ -1908,23 +1927,22 @@
           for (let i = 0; i < 9; i++) {
             let b = $("ct" + i),
               s = $("sh" + i);
-            if (!b || !s || !ss[i]) continue;
-            let v = cd[SK[i]] || 0,
-              baseCool = (ss[i][2] || 1) * (up.cd || 1);
+            if (!b) continue;
+            let v = cd[SK[i]] || 0;
             b.textContent =
               level < unlock[i]
                 ? "Lv." + unlock[i]
                 : v > 0
                   ? v.toFixed(1) + "s"
                   : "준비";
-            s.style.transform = `scaleY(${clamp(v / baseCool, 0, 1)})`;
+            s.style.transform = `scaleY(${v / (ss[i][2] * up.cd)})`;
           }
           $("boss").innerHTML = boss
             ? `<span>${["가시숲 수문장", "모래의 거신", "화염 군주", "공허의 사신"][bossIndex]} · ${Math.ceil(boss.hp)} / ${boss.maxHp}</span><div class="meter"><i style="width:${(boss.hp / boss.maxHp) * 100}%"></i></div>`
             : `<span class="muted">다음 보스 ${Math.max(0, Math.ceil(bossDue - elapsed))}초</span>`;
           $("hint").textContent = matchMedia("(pointer:coarse)").matches
             ? "왼쪽 패드 이동 · 오른쪽 스킬 · 화면 터치 이동"
-            : "WASD/방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
+            : "방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
         } else {
           $("status").textContent =
             `${chapter + 1}/5 ${chapterNames[chapter]} · ${time} / 10:00`;
@@ -1932,9 +1950,10 @@
           $("vitals").innerHTML =
             `<div class="gold">아군 기지 ${bases.filter((b) => b.team === 0).length} · 부대 ${units.filter((u) => u.team === 0).length} / 110</div><div class="muted" style="margin-top:6px">10 → 2 → 2 → 2 합체 · 신화 기술 9초 간격</div>`;
           $("hint").textContent =
-            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 화면 이동 · 휠 확대 · 기지 클릭: 연결 전체 해제";
+            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 이동 · 휠 확대 · 같은 기지 클릭: 보급선 전체 해제";
         }
       }
+      // Original vector silhouettes: layered armor, cloth, weapons, monsters and terrain.
       function poly(points, fill, stroke) {
         ctx.beginPath();
         points.forEach((p, i) => (i ? ctx.lineTo(...p) : ctx.moveTo(...p)));
@@ -1968,181 +1987,242 @@
         ctx.lineWidth = width;
         ctx.stroke();
       }
+
+      function glowCircle(x, y, r, c, alpha = 0.7, width = 2) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = c;
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0, r), 0, TAU);
+        ctx.strokeStyle = c;
+        ctx.lineWidth = width;
+        ctx.stroke();
+        ctx.restore();
+      }
+      function runeCircle(x, y, r, c, rot = 0, spokes = 6) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = c;
+        ctx.shadowColor = c;
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 1.4;
+        ctx.globalAlpha = 0.72;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, TAU);
+        ctx.stroke();
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.62, 0, TAU);
+        ctx.stroke();
+        for (let i = 0; i < spokes; i++) {
+          let a = (i * TAU) / spokes;
+          let a2 = ((i + 2) * TAU) / spokes;
+          line(
+            Math.cos(a) * r * 0.62,
+            Math.sin(a) * r * 0.62,
+            Math.cos(a2) * r,
+            Math.sin(a2) * r,
+            c,
+            1,
+          );
+        }
+        ctx.restore();
+      }
+      function weaponSpark(x, y, c, r = 8, rot = 0) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = c;
+        ctx.shadowColor = c;
+        ctx.shadowBlur = 12;
+        for (let i = 0; i < 4; i++) {
+          let a = (i * TAU) / 4 + elapsed * 2;
+          line(
+            Math.cos(a) * r * 0.18,
+            Math.sin(a) * r * 0.18,
+            Math.cos(a) * r,
+            Math.sin(a) * r,
+            c,
+            1.4,
+          );
+        }
+        ctx.restore();
+      }
+      function fxBurst(x, y, c, n = 8, speed = 115, size = 2.3) {
+        for (let q = 0; q < n; q++) {
+          let a = (q * TAU) / n + rnd(-0.12, 0.12);
+          effect("spark", x, y, rnd(1, size), c, rnd(0.22, 0.48), {
+            vx: Math.cos(a) * rnd(speed * 0.55, speed),
+            vy: Math.sin(a) * rnd(speed * 0.55, speed),
+          });
+        }
+      }
+      function skillAccent(j, i, type, x, y, tx, ty, a, radius, c) {
+        const P = pal(j);
+        const rr = Math.max(1, radius || 1);
+        const radial = ["slam", "quake", "freeze", "nova", "rage", "guard", "spin", "sanctuary", "swords", "titan", "judgment"];
+        const aimed = ["blade", "beam", "rail", "snipe", "spread", "barrage", "frost", "rapid"];
+        if (radial.includes(type)) effect("burst", x, y, 92 * rr, c, 0.42);
+        if (["meteor", "vortex", "supernova", "trap", "rain", "golem"].includes(type))
+          effect("sigil", tx, ty, 92 * rr, c, 0.8, { spin: j === "Warlock" ? -1 : 1, ownerJob: j });
+        if (aimed.includes(type)) effect("muzzle", x, y, 48, c, 0.22, { angle: a, ownerJob: j });
+        if (type === "dash" || type === "charge") {
+          effect("afterimage", x, y, 56, c, 0.32, { angle: a, ownerJob: j });
+          fxBurst(x, y, c, 7, 90, 2.2);
+        }
+
+        if (j === "Paladin") {
+          if (i === 4 || i === 6 || i === 8) effect("holy", type === "judgment" ? x : tx, type === "judgment" ? y : ty, i === 8 ? 210 * rr : 120 * rr, P.s, 0.72);
+          if (i === 5) effect("cross", x, y, 190 * rr, P.s, 0.5, { angle: a });
+        } else if (j === "Berserker") {
+          if ([1, 2, 3, 6, 7, 8].includes(i)) effect("blood", x, y, i === 8 ? 260 * rr : 115 * rr, c, 0.48, { angle: a });
+          fxBurst(x, y, P.s, i === 8 ? 15 : 6, i === 8 ? 180 : 100, 2.6);
+        } else if (j === "Archmage") {
+          effect("arcane", [1, 6, 8].includes(i) ? tx : x, [1, 6, 8].includes(i) ? ty : y, i === 8 ? 240 * rr : 92 * rr, c, 0.62, { spin: i % 2 ? 1 : -1 });
+        } else if (j === "Warlock") {
+          if (i !== 0) effect("void", [1, 3, 6, 8].includes(i) ? tx : x, [1, 3, 6, 8].includes(i) ? ty : y, i === 8 ? 245 * rr : 105 * rr, c, 0.7);
+        } else if (j === "Sniper") {
+          if ([2, 3, 8].includes(i)) effect("target", tx, ty, i === 8 ? 90 : 55, P.s, 0.34, { angle: a });
+          if (i === 8) effect("railflash", x, y, 280, P.s, 0.36, { angle: a });
+        } else if (j === "Stormracer") {
+          if (i !== 0) effect("storm", [1, 7, 8].includes(i) ? tx : x, [1, 7, 8].includes(i) ? ty : y, i === 8 ? 230 * rr : 105 * rr, c, 0.58);
+        } else if (j === "Mage") {
+          if ([1, 3, 4, 6, 7, 8].includes(i)) effect("arcane", [1, 6, 8].includes(i) ? tx : x, [1, 6, 8].includes(i) ? ty : y, i === 8 ? 210 * rr : 84 * rr, c, 0.52);
+        } else if (j === "Archer") {
+          if ([1, 3, 4, 5, 6, 7, 8].includes(i)) effect("wind", [1, 3, 7].includes(i) ? tx : x, [1, 3, 7].includes(i) ? ty : y, i === 8 ? 210 * rr : 100 * rr, c, 0.5, { angle: a });
+        } else if (j === "Warrior") {
+          if (i > 0) effect("steel", x, y, i === 8 ? 220 * rr : 95 * rr, c, 0.46, { angle: a });
+        }
+      }
       function person(u, size = 1, c = col(u.job), isHero = false) {
         ctx.save();
         ctx.translate(u.x, u.y);
         ctx.scale(size, size);
-        let r = root(u.job),
-          bob = Math.sin(u.anim || 0) * 1.2;
-        ctx.fillStyle = "#0006";
+        const j = u.job,
+          r = root(j),
+          P = pal(j),
+          t = elapsed,
+          bob = Math.sin((u.anim || 0) * 0.8) * 1.25,
+          face = Math.cos(u.angle || 0) < 0 ? -1 : 1;
+
+        ctx.fillStyle = "#0008";
         ctx.beginPath();
-        ctx.ellipse(0, 10, 18, 8, 0, 0, TAU);
+        ctx.ellipse(0, 17, 22, 8, 0, 0, TAU);
         ctx.fill();
-        ctx.translate(0, bob);
+
         if (isHero) {
-          ctx.strokeStyle = c + "88";
-          ctx.lineWidth = 1;
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.2 + Math.sin(t * 4) * 0.04;
+          ctx.shadowColor = c;
+          ctx.shadowBlur = 22;
           ctx.beginPath();
-          ctx.ellipse(0, 10, 25, 12, 0, 0, TAU);
+          ctx.ellipse(0, 13, 31, 14, 0, 0, TAU);
+          ctx.strokeStyle = c;
+          ctx.lineWidth = 2;
           ctx.stroke();
+          ctx.restore();
         }
-        let flip = Math.cos(u.angle) < 0 ? -1 : 1;
-        ctx.scale(flip, 1);
-        poly(
-          [
-            [-10, -10],
-            [-18, 17],
-            [8, 17],
-            [13, -10],
-          ],
-          "#263640",
-          c,
-        );
-        line(-6, 10, -7, 22, "#17202b", 6);
-        line(6, 10, 8, 22, "#17202b", 6);
-        poly(
-          [
-            [-10, -12],
-            [9, -12],
-            [12, 7],
-            [0, 13],
-            [-12, 7],
-          ],
-          r === "Warrior" ? "#8999a8" : c,
-          "#e3ddd055",
-        );
-        if (r === "Warrior") {
-          poly(
-            [
-              [-14, -15],
-              [-5, -15],
-              [-4, -5],
-              [-17, -5],
-            ],
-            "#b8c4c8",
-          );
-          poly(
-            [
-              [6, -15],
-              [16, -12],
-              [18, -4],
-              [7, -5],
-            ],
-            "#b8c4c8",
-          );
-          circle(0, -20, 9, "#96a8b2", "#dedbd1");
-          poly(
-            [
-              [-8, -21],
-              [8, -21],
-              [5, -13],
-              [-5, -13],
-            ],
-            "#263640",
-          );
-          line(-4, -19, 5, -19, c, 2);
-          poly(
-            [
-              [-21, -7],
-              [-9, -9],
-              [-7, 9],
-              [-15, 17],
-              [-23, 8],
-            ],
-            "#364754",
-            c,
-          );
-          poly(
-            [
-              [20, -28],
-              [23, -34],
-              [26, -27],
-              [24, 8],
-              [19, 8],
-            ],
-            "#ebe5ce",
-            "#8998a3",
-          );
-          line(15, 6, 28, 6, "#dfbb79", 3);
-          line(22, 8, 22, 16, "#a87850", 4);
-        } else if (r === "Mage") {
-          circle(0, -18, 7, "#d6bba4");
-          poly(
-            [
-              [-14, -22],
-              [0, -44],
-              [12, -22],
-            ],
-            c,
-            "#dce0ea",
-          );
-          line(-17, -20, 15, -20, c, 4);
-          line(21, 16, 21, -24, "#b99066", 3);
-          circle(21, -29, 6, "#b7e7ef", "#fff");
-          for (let n = 0; n < 3; n++) {
-            let a = elapsed * 1.4 + (n * TAU) / 3;
-            circle(Math.cos(a) * 27, Math.sin(a) * 15 - 10, 3, c);
+
+        ctx.translate(0, bob);
+        ctx.scale(face, 1);
+        line(-6, 8, -8, 23, "#17212c", 6);
+        line(6, 8, 8, 23, "#17212c", 6);
+
+        if (["Warrior", "Knight", "Paladin", "Berserker", "Barbarian"].includes(j)) {
+          poly([[-14,-10],[14,-10],[18,16],[0,23],[-18,16]], j === "Berserker" ? "#4b2027" : P.d, c);
+          poly([[-13,-15],[13,-15],[15,8],[0,16],[-15,8]], j === "Paladin" ? "#aab6b5" : "#74858f", P.s + "cc");
+          poly([[-12,-13],[-17,-10],[-15,-2],[-9,-4]], "#aab5ba", c);
+          poly([[12,-13],[17,-10],[15,-2],[9,-4]], "#aab5ba", c);
+          circle(0, -22, 9, "#8fa0aa", P.s);
+          poly([[-9,-25],[-5,-32],[0,-29],[5,-32],[9,-25],[6,-17],[-6,-17]], "#34444f", c);
+          line(-5,-21,-1,-21,P.s,2); line(1,-21,5,-21,P.s,2);
+
+          if (j === "Paladin") {
+            line(0,-11,0,8,"#fff4af",3); line(-6,-4,6,-4,"#fff4af",3);
+            poly([[-29,-16],[-10,-19],[-7,8],[-19,22],[-30,8]], "#75858c", "#f7db77");
+            line(-19,-10,-19,13,"#f7db77",3); line(-26,1,-11,1,"#f7db77",3);
+            line(17,11,25,-30,"#fff8ca",5); line(13,-2,29,1,"#e8c968",3);
+            weaponSpark(25,-30,"#fff3a1",9);
+            ctx.save(); ctx.scale(1/face,1); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.7;
+            ctx.beginPath(); ctx.ellipse(0,-37,14,4,0,0,TAU); ctx.strokeStyle="#ffe985"; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+          } else if (j === "Berserker" || j === "Barbarian") {
+            poly([[-7,-28],[-19,-39],[-12,-23]], "#decaa4", c);
+            poly([[7,-28],[19,-39],[12,-23]], "#decaa4", c);
+            line(-10,5,-25,-23,"#754c37",4); line(10,5,25,-23,"#754c37",4);
+            poly([[-36,-30],[-20,-31],[-17,-16],[-34,-12]], "#bec4c4", c);
+            poly([[36,-30],[20,-31],[17,-16],[34,-12]], "#bec4c4", c);
+            if (j === "Berserker") {
+              ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.42;
+              for (let n=0;n<4;n++){ let aa=t*3+n*1.6; line(Math.cos(aa)*17,Math.sin(aa)*10,Math.cos(aa)*29,Math.sin(aa)*19,"#ff5f50",2); }
+              ctx.restore();
+            }
+          } else {
+            poly([[-24,-11],[-10,-13],[-8,9],[-16,18],[-26,8]], "#3d5360", c);
+            line(17,11,25,-27,"#e9e5d4",5); line(13,-1,29,2,"#d7b879",3);
+          }
+        } else if (["Mage", "Archmage", "Warlock", "Summoner"].includes(j)) {
+          poly([[-11,-11],[11,-11],[19,21],[-19,21]], j === "Warlock" ? "#2b2038" : P.d, c);
+          poly([[-7,-9],[7,-9],[10,15],[-10,15]], c + "66");
+          circle(0,-20,7,"#d7bda6");
+          if (j === "Warlock") {
+            poly([[-14,-18],[0,-39],[14,-18],[8,-8],[-8,-8]], "#20182d", c);
+            line(-5,-20,-1,-20,"#e09aff",2); line(1,-20,5,-20,"#e09aff",2);
+          } else {
+            poly([[-16,-24],[0,-48],[14,-24]], P.d, P.s);
+            line(-18,-23,18,-23,c,4);
+          }
+          line(20,18,20,-28,"#9d7352",3);
+          circle(20,-33,j === "Archmage" ? 8 : 6,P.s,"#fff");
+          let orbCount = j === "Archmage" ? 4 : j === "Summoner" ? 3 : 2;
+          for (let n=0;n<orbCount;n++) {
+            let aa=t*(1.45+n*.08)+(n*TAU)/orbCount;
+            circle(Math.cos(aa)*27,Math.sin(aa)*13-8,j === "Archmage" ? 4 : 3,c,"#ffffff99");
+          }
+          if (j === "Archmage") {
+            ctx.save(); ctx.scale(1/face,1); runeCircle(0,-39,13,"#75e7ff",t,8); ctx.restore();
+          }
+          if (j === "Warlock") {
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.45;
+            for (let n=0;n<3;n++) { let aa=t*1.6+n*2.1; ctx.beginPath(); ctx.moveTo(0,12); ctx.quadraticCurveTo(Math.cos(aa)*20,20,Math.cos(aa+1)*25,31); ctx.strokeStyle="#9a61d2"; ctx.lineWidth=2; ctx.stroke(); }
+            ctx.restore();
+          }
+          if (j === "Summoner") {
+            ctx.save(); ctx.translate(-23,-2); ctx.rotate(Math.sin(t*2)*.1); ctx.fillStyle="#74568f"; ctx.fillRect(-9,-7,18,14); line(0,-7,0,7,"#ead7ff",1); ctx.restore();
           }
         } else {
-          circle(0, -19, 8, "#d5bba0");
-          poly(
-            [
-              [-10, -17],
-              [-8, -29],
-              [2, -32],
-              [11, -23],
-              [9, -15],
-              [2, -22],
-            ],
-            "#426858",
-            c,
-          );
-          poly(
-            [
-              [-10, -8],
-              [6, -12],
-              [11, 8],
-              [-7, 11],
-            ],
-            "#56765f",
-            c,
-          );
-          ctx.beginPath();
-          ctx.arc(15, -1, 19, -1.2, 1.2);
-          ctx.strokeStyle = "#dec893";
-          ctx.lineWidth = 3;
-          ctx.stroke();
-          line(22, -19, 22, 17, "#c8d5c1", 1);
-          line(8, -1, 40, -1, "#dee9d7", 2);
-          poly(
-            [
-              [40, -1],
-              [33, -5],
-              [33, 3],
-            ],
-            "#d8e2df",
-          );
+          poly([[-11,-11],[10,-11],[15,16],[0,21],[-16,16]], j === "Sniper" ? "#3f4949" : P.d, c);
+          circle(0,-21,8,"#d5bba1");
+          poly([[-12,-19],[-8,-32],[1,-35],[12,-26],[9,-16],[2,-23]], j === "Sniper" ? "#40494b" : "#355c4d", c);
+          poly([[-10,-9],[8,-12],[12,8],[-8,12]], "#506f60", c);
+          if (["Archer","Ranger","Stormracer"].includes(j)) {
+            ctx.beginPath(); ctx.arc(17,-1,21,-1.25,1.25); ctx.strokeStyle="#dfca8d"; ctx.lineWidth=3; ctx.stroke();
+            line(24,-21,24,19,"#e2e9dd",1); line(9,-1,43,-1,P.s,2);
+            poly([[43,-1],[35,-5],[35,3]], P.s);
+          }
+          if (j === "Sniper") {
+            ctx.fillStyle="#707b7c"; ctx.fillRect(8,-7,37,8); line(22,-3,53,-3,P.s,3);
+            ctx.fillStyle="#20292c"; ctx.fillRect(18,-13,13,5);
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.34; line(50,-3,78,-3,"#ff776d",1); ctx.restore();
+          }
+          if (j === "Stormracer") {
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.8;
+            for (let n=0;n<2;n++) { let yy=-15+n*25; line(-18,yy,-26,yy+5,"#67ecff",2); line(-26,yy+5,-17,yy+10,"#67ecff",2); }
+            ctx.restore();
+          }
+          if (j === "Gunner") {
+            ctx.fillStyle="#879294"; ctx.fillRect(7,-8,39,12); ctx.fillStyle="#40494c"; ctx.fillRect(15,4,10,12); line(32,-2,57,-2,"#e5c46e",5); circle(49,-2,4,"#ffd47d"); ctx.fillStyle="#4b5550"; ctx.fillRect(-18,-9,8,19);
+          }
         }
-        if (u.job === "Berserker" || u.job === "Barbarian") {
-          poly(
-            [
-              [20, -20],
-              [35, -25],
-              [36, -10],
-              [20, -8],
-            ],
-            "#c4c8c7",
-            "#edb485",
-          );
-        }
-        if (u.job === "Gunner") {
-          ctx.fillStyle = "#8d9b9d";
-          ctx.fillRect(11, -5, 29, 8);
-          line(25, -1, 45, -1, "#ddc591", 3);
-        }
-        if (promoted && isHero) {
-          circle(0, -38, 3, "#efd998");
-          line(-7, -40, 7, -40, "#efd998", 1);
+
+        if (isHero && promoted) {
+          ctx.save(); ctx.scale(1/face,1); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.52 + Math.sin(t*3)*.08;
+          runeCircle(0,-3,31,c,t*.65, j === "Archmage" ? 8 : 6); ctx.restore();
         }
         ctx.restore();
       }
@@ -2355,72 +2435,93 @@
         ctx.restore();
       }
       function drawFX(f) {
-        let p = 1 - f.t / f.max;
+        const p = clamp(1 - f.t / Math.max(0.001, f.max), 0, 1),
+          fade = clamp(f.t / Math.max(0.001, f.max), 0, 1);
         ctx.save();
-        ctx.globalAlpha = Math.min(1, f.t * 5);
         if (f.type === "spark") {
-          circle(f.x, f.y, f.r, f.color);
-        } else if (f.type === "link") line(f.x, f.y, f.tx, f.ty, f.color, 2);
-        else if (f.type === "beam") {
-          ctx.globalAlpha = (1 - p) * 0.6;
-          line(
-            f.x,
-            f.y,
-            f.x + Math.cos(f.angle) * f.r,
-            f.y + Math.sin(f.angle) * f.r,
-            f.color,
-            f.width,
-          );
-          ctx.globalAlpha = 1 - p;
-          line(
-            f.x,
-            f.y,
-            f.x + Math.cos(f.angle) * f.r,
-            f.y + Math.sin(f.angle) * f.r,
-            "#fff6d9",
-            f.width * 0.2,
-          );
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = fade;
+          ctx.shadowColor = f.color; ctx.shadowBlur = 12;
+          circle(f.x, f.y, f.r * (1.35 - p * 0.4), f.color);
+          if (f.vx !== undefined) line(f.x, f.y, f.x - f.vx * 0.035, f.y - f.vy * 0.035, f.color, Math.max(1, f.r));
+        } else if (f.type === "link") {
+          ctx.globalCompositeOperation = "lighter";
+          let dx=f.tx-f.x, dy=f.ty-f.y, len=Math.max(1,Math.hypot(dx,dy)), nx=-dy/len, ny=dx/len;
+          ctx.shadowColor=f.color; ctx.shadowBlur=16; ctx.beginPath(); ctx.moveTo(f.x,f.y);
+          for(let n=1;n<7;n++){let q=n/7,w=Math.sin(n*8.13+elapsed*35)*6;ctx.lineTo(f.x+dx*q+nx*w,f.y+dy*q+ny*w)}
+          ctx.lineTo(f.tx,f.ty); ctx.strokeStyle=f.color; ctx.globalAlpha=.25*fade; ctx.lineWidth=5; ctx.stroke(); ctx.globalAlpha=.95*fade; ctx.lineWidth=1.5; ctx.stroke(); circle(f.tx,f.ty,3+p*5,"#fff");
+        } else if (f.type === "beam") {
+          let ex=f.x+Math.cos(f.angle)*f.r, ey=f.y+Math.sin(f.angle)*f.r;
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=24;
+          ctx.globalAlpha=.12*fade; line(f.x,f.y,ex,ey,f.color,f.width*2.1);
+          ctx.globalAlpha=.45*fade; line(f.x,f.y,ex,ey,f.color,f.width);
+          ctx.globalAlpha=fade; line(f.x,f.y,ex,ey,"#fffbe7",Math.max(2,f.width*.18));
+          for(let n=0;n<7;n++){let q=(n/7+elapsed*1.5)%1;circle(f.x+(ex-f.x)*q,f.y+(ey-f.y)*q,2,"#fff")}
+          circle(ex,ey,Math.max(4,f.width*.28),f.color);
         } else if (f.type === "danger" || f.type === "warning") {
-          circle(
-            f.x,
-            f.y,
-            f.r,
-            f.type === "danger" ? "#f16d7122" : "#c4b6ef18",
-            f.color,
-          );
-          circle(f.x, f.y, f.r * p, null, f.color);
-          line(f.x - 9, f.y, f.x + 9, f.y, f.color, 2);
-          line(f.x, f.y - 9, f.x, f.y + 9, f.color, 2);
+          let dc=f.type === "danger" ? "#ff6469" : f.color;
+          ctx.globalAlpha=fade; circle(f.x,f.y,f.r,f.type === "danger" ? "#ff51551a" : null,dc);
+          ctx.save(); ctx.translate(f.x,f.y); ctx.rotate(elapsed*2.5); for(let n=0;n<12;n++){let a=n*TAU/12;line(Math.cos(a)*f.r*.82,Math.sin(a)*f.r*.82,Math.cos(a)*f.r,Math.sin(a)*f.r,dc,n%3===0?3:1)} ctx.restore();
+          circle(f.x,f.y,f.r*(1-p),null,dc); weaponSpark(f.x,f.y,dc,12);
         } else if (f.type === "slash") {
-          ctx.strokeStyle = f.color;
-          ctx.lineWidth = 10 * (1 - p) + 1;
-          ctx.beginPath();
-          ctx.arc(f.x, f.y, f.r, f.angle - 1 + p, f.angle + 1 + p);
-          ctx.stroke();
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=16;
+          for(let n=0;n<3;n++){ctx.globalAlpha=fade*(.95-n*.22);ctx.strokeStyle=n===0?"#fff9df":f.color;ctx.lineWidth=(10-n*2)*fade+1;ctx.beginPath();ctx.arc(f.x,f.y,f.r-n*7,f.angle-1.15+p*.5,f.angle+1.15+p*.6);ctx.stroke()}
         } else if (f.type === "rain") {
-          for (let n = 0; n < 14; n++) {
-            let a = n * 2.399,
-              r = Math.sqrt(n / 14) * f.r,
-              x = f.x + Math.cos(a) * r,
-              y = f.y + Math.sin(a) * r;
-            line(x - 15, y - 50 + p * 35, x, y + p * 35, f.color, 2);
-          }
+          ctx.globalCompositeOperation="lighter";
+          for(let n=0;n<18;n++){let a=n*2.399,rr=Math.sqrt(n/18)*f.r,x=f.x+Math.cos(a)*rr,y=f.y+Math.sin(a)*rr,fall=p*75;line(x-18,y-75+fall,x,y+fall,n%4===0?"#fff":f.color,n%4===0?3:2);if(p>.55)circle(x,y+8,3,f.color)}
+          ctx.globalAlpha=.25*fade; circle(f.x,f.y,f.r*p,null,f.color);
+        } else if (f.type === "sigil" || f.type === "arcane") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade;
+          runeCircle(f.x,f.y,f.r*(.72+p*.28),f.color,elapsed*1.7*(f.spin||1),f.type === "arcane" ? 8 : 6);
+          ctx.globalAlpha=.15*fade; circle(f.x,f.y,f.r*.72,f.color);
+        } else if (f.type === "burst") {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=20; ctx.globalAlpha=fade*.28; circle(f.x,f.y,f.r*p,f.color); ctx.globalAlpha=fade;
+          for(let n=0;n<10;n++){let a=n*TAU/10;line(f.x+Math.cos(a)*f.r*p*.28,f.y+Math.sin(a)*f.r*p*.28,f.x+Math.cos(a)*f.r*p,f.y+Math.sin(a)*f.r*p,f.color,2)}
+          circle(f.x,f.y,f.r*p,null,"#fff3cf");
+        } else if (f.type === "muzzle") {
+          ctx.translate(f.x,f.y); ctx.rotate(f.angle||0); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade;
+          poly([[0,0],[f.r,-10*fade],[f.r*.55,0],[f.r,10*fade]],f.color); circle(0,0,8*fade,"#fff");
+        } else if (f.type === "afterimage") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.5*fade; ctx.translate(f.x,f.y); ctx.rotate(f.angle||0);
+          for(let n=0;n<4;n++){ctx.globalAlpha=(.5-n*.1)*fade;line(-n*14,0,-f.r-n*22,0,f.color,10-n*2)}
+        } else if (f.type === "holy") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=28;
+          circle(f.x,f.y,f.r*p,null,f.color); circle(f.x,f.y,f.r*p*.72,null,"#fff9c9");
+          line(f.x-f.r*p*.55,f.y,f.x+f.r*p*.55,f.y,"#fff4a4",4); line(f.x,f.y-f.r*p*.55,f.x,f.y+f.r*p*.55,"#fff4a4",4);
+        } else if (f.type === "cross") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; let a=f.angle||0;
+          for(let n=0;n<4;n++){let aa=a+n*Math.PI/2;line(f.x,f.y,f.x+Math.cos(aa)*f.r*p,f.y+Math.sin(aa)*f.r*p,n%2?f.color:"#fff8bf",7-n)}
+        } else if (f.type === "blood") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=16;
+          for(let n=0;n<8;n++){let aa=(f.angle||0)+(n-3.5)*.22,rr=f.r*(.35+p*.7);line(f.x+Math.cos(aa)*20,f.y+Math.sin(aa)*20,f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr,n%2?f.color:"#ffb06c",3+n%3)}
+        } else if (f.type === "void") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=20;
+          circle(f.x,f.y,f.r*(.22+p*.58),"#130c1f",f.color); runeCircle(f.x,f.y,f.r*(.55+p*.35),f.color,-elapsed*1.35,7);
+          for(let n=0;n<5;n++){let aa=-elapsed*2+n*TAU/5,rr=f.r*(.35+.45*p);circle(f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr,3+n%2,f.color)}
+        } else if (f.type === "target") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.translate(f.x,f.y); ctx.rotate(f.angle||0);
+          circle(0,0,f.r*(.6+.4*p),null,f.color); line(-f.r,0,-f.r*.35,0,f.color,2);line(f.r*.35,0,f.r,0,f.color,2);line(0,-f.r,0,-f.r*.35,f.color,2);line(0,f.r*.35,0,f.r,f.color,2);circle(0,0,4,"#fff");
+        } else if (f.type === "railflash") {
+          ctx.translate(f.x,f.y); ctx.rotate(f.angle||0); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=28;
+          poly([[0,0],[f.r*p,-16*fade],[f.r*.65*p,0],[f.r*p,16*fade]],f.color); line(0,0,f.r*p,0,"#fff",4);
+        } else if (f.type === "storm") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=18; circle(f.x,f.y,f.r*p*.72,null,f.color);
+          for(let n=0;n<6;n++){let aa=n*TAU/6+elapsed*2,rr=f.r*(.3+.55*p),x=f.x+Math.cos(aa)*rr,y=f.y+Math.sin(aa)*rr;ctx.beginPath();ctx.moveTo(f.x,f.y);let mx=(f.x+x)/2+Math.sin(elapsed*25+n)*12,my=(f.y+y)/2+Math.cos(elapsed*22+n)*12;ctx.lineTo(mx,my);ctx.lineTo(x,y);ctx.strokeStyle=n%2?f.color:"#fff";ctx.lineWidth=2;ctx.stroke()}
+        } else if (f.type === "wind") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.strokeStyle=f.color; ctx.lineWidth=2;
+          for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(f.x,f.y,f.r*(.35+p*.55)-n*9,(f.angle||0)-1.4+n*.16,(f.angle||0)+1.4+n*.2);ctx.stroke()}
+        } else if (f.type === "steel") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; let aa=f.angle||0;
+          for(let n=-1;n<=1;n++){ctx.strokeStyle=n===0?"#fff4cf":f.color;ctx.lineWidth=5-Math.abs(n);ctx.beginPath();ctx.arc(f.x,f.y,f.r*(.6+.45*p)+n*7,aa-1.0,aa+1.0);ctx.stroke()}
+        } else if (f.type === "meteor") {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=26;
+          ctx.globalAlpha=fade*.3; circle(f.x,f.y,f.r*(.35+p*.8),f.color);
+          ctx.globalAlpha=fade; circle(f.x,f.y,f.r*p,null,"#fff0bd"); circle(f.x,f.y,f.r*p*.72,null,f.color);
+          line(f.x-180*(1-p),f.y-350*(1-p),f.x,f.y,f.color,42*fade+18); line(f.x-180*(1-p),f.y-350*(1-p),f.x,f.y,"#fff3c8",12*fade+5);
+          for(let n=0;n<12;n++){let aa=n*TAU/12+elapsed,rr=f.r*p;circle(f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr*.55,2+n%3,f.color)}
         } else {
-          ctx.lineWidth = 3 + 6 * (1 - p);
-          circle(f.x, f.y, f.r * (0.2 + p * 0.8), null, f.color);
-          if (f.type === "meteor") {
-            ctx.globalAlpha = (1 - p) * 0.25;
-            circle(f.x, f.y, f.r * (0.5 + p * 0.5), f.color);
-            ctx.globalAlpha = 1 - p;
-            line(
-              f.x - 150 * (1 - p),
-              f.y - 300 * (1 - p),
-              f.x,
-              f.y,
-              f.color,
-              22 * (1 - p),
-            );
-          }
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=14; ctx.globalAlpha=fade;
+          circle(f.x,f.y,f.r*(.2+p*.8),null,f.color); ctx.globalAlpha=fade*.35; circle(f.x,f.y,f.r*(.05+p*.6),null,"#fff");
         }
         ctx.restore();
       }
@@ -2477,42 +2578,46 @@
           }
         } else if (mode === "hunter" && hero) {
           for (let z of zones) {
+            let zj = z.ownerJob || job,
+              ZP = pal(zj),
+              pulse = 0.92 + Math.sin(elapsed * 4 + z.r) * 0.04;
             ctx.save();
-            ctx.globalAlpha = 0.2;
-            circle(z.x, z.y, z.r, z.color);
-            ctx.globalAlpha = 0.7;
+            ctx.globalCompositeOperation = "lighter";
+            ctx.globalAlpha = 0.09;
+            circle(z.x, z.y, z.r * pulse, z.color);
+            ctx.globalAlpha = 0.55;
             ctx.setLineDash([8, 12]);
-            circle(z.x, z.y, z.r, null, z.color);
+            ctx.lineDashOffset = -elapsed * 35;
+            circle(z.x, z.y, z.r * pulse, null, z.color);
+            ctx.setLineDash([]);
+            if (["Mage", "Archmage", "Warlock", "Summoner"].includes(zj))
+              runeCircle(z.x, z.y, z.r * 0.78, z.color, elapsed * (zj === "Warlock" ? -0.7 : 0.7), zj === "Archmage" ? 8 : 6);
+            if (zj === "Paladin") {
+              circle(z.x, z.y, z.r * 0.62, null, ZP.s);
+              line(z.x - z.r * 0.3, z.y, z.x + z.r * 0.3, z.y, ZP.s, 3);
+              line(z.x, z.y - z.r * 0.3, z.x, z.y + z.r * 0.3, ZP.s, 3);
+            }
+            if (zj === "Stormracer")
+              for (let n = 0; n < 5; n++) {
+                let aa = elapsed * 3 + (n * TAU) / 5,
+                  x1 = z.x + Math.cos(aa) * z.r * 0.45,
+                  y1 = z.y + Math.sin(aa) * z.r * 0.45,
+                  x2 = z.x + Math.cos(aa + 0.25) * z.r * 0.88,
+                  y2 = z.y + Math.sin(aa + 0.25) * z.r * 0.88;
+                line(x1, y1, x2, y2, n % 2 ? z.color : "#fff", 2);
+              }
             ctx.restore();
             if (z.spin)
               for (let n = 0; n < 4; n++) {
-                let a = elapsed * 5 + (n * TAU) / 4;
-                line(
-                  z.x + Math.cos(a) * (z.r - 20),
-                  z.y + Math.sin(a) * (z.r - 20),
-                  z.x + Math.cos(a) * z.r,
-                  z.y + Math.sin(a) * z.r,
-                  z.color,
-                  5,
-                );
+                let aa = elapsed * 5 + (n * TAU) / 4;
+                line(z.x + Math.cos(aa) * (z.r - 24), z.y + Math.sin(aa) * (z.r - 24), z.x + Math.cos(aa) * z.r, z.y + Math.sin(aa) * z.r, n % 2 ? z.color : ZP.s, 5);
               }
             if (z.golem)
-              person(
-                { x: z.x, y: z.y, job: "Knight", angle: 0, anim: elapsed * 3 },
-                2,
-                z.color,
-              );
-            if (z.trap)
-              poly(
-                [
-                  [z.x - 14, z.y],
-                  [z.x, z.y - 14],
-                  [z.x + 14, z.y],
-                  [z.x, z.y + 14],
-                ],
-                null,
-                z.color,
-              );
+              person({ x: z.x, y: z.y, job: "Knight", angle: 0, anim: elapsed * 3 }, 2, z.color);
+            if (z.trap) {
+              poly([[z.x - 16, z.y],[z.x, z.y - 16],[z.x + 16, z.y],[z.x, z.y + 16]], null, z.color);
+              glowCircle(z.x, z.y, 27, z.color, 0.4, 1);
+            }
           }
           for (let e of [...enemies].sort((a, b) => a.y - b.y)) monster(e);
           ctx.globalAlpha = hero.inv > 0 ? 0.65 : 1;
@@ -2521,30 +2626,25 @@
           if (hero.shield > 0) circle(hero.x, hero.y, 34, null, "#ece1a3");
           for (let p of shots) {
             if (p.kind === "axe") {
-              ctx.save();
-              ctx.translate(p.x, p.y);
-              ctx.rotate(elapsed * 15);
-              poly(
-                [
-                  [-15, -7],
-                  [15, -7],
-                  [8, 7],
-                  [-15, 7],
-                ],
-                p.color,
-              );
-              ctx.restore();
+              ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(elapsed * 15); ctx.globalCompositeOperation = "lighter"; ctx.shadowColor = p.color; ctx.shadowBlur = 12;
+              poly([[-18,-8],[15,-8],[9,0],[15,8],[-18,8],[-8,0]], p.color, "#fff0cc"); ctx.restore();
             } else {
-              let a = Math.atan2(p.vy, p.vx);
-              line(
-                p.x,
-                p.y,
-                p.x - Math.cos(a) * 22,
-                p.y - Math.sin(a) * 22,
-                p.color,
-                p.enemy ? 4 : 3,
-              );
-              circle(p.x, p.y, p.r, p.kind === "orb" ? "#eff8fd" : p.color);
+              let aa = Math.atan2(p.vy, p.vx), pj = p.ownerJob || job, PP = pal(pj);
+              ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.shadowColor = p.color; ctx.shadowBlur = p.enemy ? 6 : 10;
+              if (p.enemy) {
+                line(p.x,p.y,p.x-Math.cos(aa)*20,p.y-Math.sin(aa)*20,p.color,4); circle(p.x,p.y,p.r,p.color);
+              } else if (p.kind === "orb" || ["Mage","Archmage","Warlock","Summoner"].includes(pj)) {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,p.color,6);
+                circle(p.x,p.y,p.r+2,PP.s,p.color); circle(p.x,p.y,Math.max(2,p.r*.45),"#fff");
+              } else if (pj === "Sniper") {
+                line(p.x,p.y,p.x-Math.cos(aa)*38,p.y-Math.sin(aa)*38,PP.s,3); circle(p.x,p.y,3,"#fff");
+              } else if (pj === "Stormracer") {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,p.color,3); line(p.x-4,p.y-4,p.x+4,p.y+4,"#fff",1); circle(p.x,p.y,3,PP.s);
+              } else {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,PP.s,2.5);
+                poly([[p.x+Math.cos(aa)*7,p.y+Math.sin(aa)*7],[p.x+Math.cos(aa+2.55)*7,p.y+Math.sin(aa+2.55)*7],[p.x+Math.cos(aa-2.55)*7,p.y+Math.sin(aa-2.55)*7]],p.color);
+              }
+              ctx.restore();
             }
           }
         }
@@ -2620,14 +2720,6 @@
           boundCam();
         }
       };
-
-      const KEY_MAP = {
-        KeyW: "ArrowUp",
-        KeyS: "ArrowDown",
-        KeyA: "ArrowLeft",
-        KeyD: "ArrowRight",
-      };
-
       addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           pause();
@@ -2641,9 +2733,6 @@
         if (e.key.startsWith("Arrow")) {
           e.preventDefault();
           keys[e.key] = true;
-        } else if (KEY_MAP[e.code]) {
-          e.preventDefault();
-          keys[KEY_MAP[e.code]] = true;
         }
         if (!e.repeat && SK.includes(e.key.toLowerCase())) {
           e.preventDefault();
@@ -2651,23 +2740,26 @@
         }
       });
       addEventListener("keyup", (e) => {
-        if (e.key.startsWith("Arrow")) {
-          delete keys[e.key];
-        } else if (KEY_MAP[e.code]) {
-          delete keys[KEY_MAP[e.code]];
-        }
+        delete keys[e.key];
       });
-
+      addEventListener("blur", () => {
+        clearInput();
+        if (state === "play") pause();
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && state === "play") pause();
+      });
       cv.addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         pointer = { x: e.clientX, y: e.clientY };
+        cv.setPointerCapture(e.pointerId);
         let p = toWorld(pointer);
         if (mode === "hunter") {
           target = p;
           if (e.pointerType === "mouse") aim = p;
         } else {
           drag =
-            bases.find((b) => b.team === 0 && dist(b, p) < 55) || null;
+            bases.find((b) => b.team === 0 && dist(b, p) < 55 / cam.z) || null;
           pan = { x: e.clientX, y: e.clientY };
         }
       });
@@ -2686,7 +2778,7 @@
       cv.addEventListener("pointerup", (e) => {
         if (state === "play" && drag) {
           let p = toWorld({ x: e.clientX, y: e.clientY }),
-            b = bases.find((b) => dist(b, p) < 55);
+            b = bases.find((b) => dist(b, p) < 55 / cam.z);
           if (b === drag) {
             let removed = [...drag.routes];
             drag.routes = [];
@@ -2739,6 +2831,7 @@
       $("pad").addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         padId = e.pointerId;
+        $("pad").setPointerCapture(e.pointerId);
         movePad(e);
       });
       $("pad").addEventListener("pointermove", (e) => {
@@ -2794,3 +2887,4 @@
     </script>
   </body>
 </html>
+
