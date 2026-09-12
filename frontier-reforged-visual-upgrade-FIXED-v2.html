@@ -1,0 +1,2909 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>FRONTIER / REFORGED — VISUAL ASCENSION</title>
+    <style>
+      :root {
+        --gold: #dfc18a;
+        --ink: #080f16;
+        --muted: #91a3b0;
+        --line: #ffffff20;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--ink);
+        color: #eaf0f3;
+        font:
+          13px system-ui,
+          sans-serif;
+        overflow: hidden;
+        touch-action: none;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      canvas {
+        display: block;
+        width: 100vw;
+        height: 100dvh;
+      }
+      button {
+        background: #15232d;
+        border: 1px solid var(--line);
+        padding: 10px 14px;
+        border-radius: 6px;
+      }
+      button:hover {
+        border-color: var(--gold);
+        background: #243641;
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .gold {
+        color: var(--gold);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      #top {
+        position: fixed;
+        top: 16px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        pointer-events: none;
+        z-index: 5;
+      }
+      #top button {
+        pointer-events: auto;
+      }
+      .brand {
+        letter-spacing: 4px;
+        font-size: 16px;
+        font-weight: 900;
+      }
+      .label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--gold);
+      }
+      #status {
+        margin-top: 8px;
+        line-height: 1.7;
+        color: #b5c6d0;
+      }
+      .tools {
+        display: flex;
+        gap: 6px;
+        align-items: start;
+      }
+      #vitals {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(360px, 35vw);
+        pointer-events: none;
+      }
+      .meter {
+        height: 8px;
+        background: #0009;
+        border: 1px solid #ffffff19;
+        margin: 5px 0 8px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .meter i {
+        display: block;
+        height: 100%;
+        transition: width 0.12s;
+        background: linear-gradient(90deg, #997235, #efc886);
+      }
+      .meter.hp i {
+        background: linear-gradient(90deg, #397c6c, #a1d9b0);
+      }
+      #boss {
+        position: fixed;
+        top: 115px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(480px, 70vw);
+        text-align: center;
+        font-size: 11px;
+        pointer-events: none;
+      }
+      #boss .meter i {
+        background: #c46465;
+      }
+      #skills {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 5px;
+        z-index: 8;
+      }
+      .skill {
+        width: 72px;
+        height: 76px;
+        padding: 6px 3px;
+        position: relative;
+        overflow: hidden;
+        background: #0b1722ed;
+        border-bottom: 2px solid var(--gold);
+      }
+      .skill b {
+        font-size: 19px;
+        display: block;
+        color: var(--gold);
+      }
+      .skill span {
+        font-size: 10px;
+        display: block;
+        margin: 4px 0;
+        white-space: nowrap;
+      }
+      .skill small {
+        font-size: 10px;
+        color: #b4c4cb;
+      }
+      .skill .shade {
+        position: absolute;
+        inset: 0;
+        background: #060a12b8;
+        transform-origin: bottom;
+        pointer-events: none;
+      }
+      .skill.lock {
+        opacity: 0.42;
+        border-bottom-color: #53626c;
+      }
+      #hint {
+        position: fixed;
+        bottom: 108px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #b7c6c8;
+        font-size: 11px;
+        text-align: center;
+        pointer-events: none;
+        width: 90%;
+      }
+      #toast {
+        position: fixed;
+        top: 175px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        background: #15252dee;
+        border: 1px solid #dfc18a77;
+        z-index: 30;
+        display: none;
+        max-width: 90vw;
+        text-align: center;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 40%, #162d3dec, #03090ff7);
+        display: grid;
+        place-items: center;
+        z-index: 20;
+        padding: 24px;
+        overflow: auto;
+        touch-action: pan-y;
+      }
+      .box {
+        width: min(850px, 100%);
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #9eaaaf30;
+        background: #0b141eea;
+        box-shadow: 0 30px 100px #0008;
+        border-radius: 12px;
+      }
+      .box h1 {
+        font:
+          600 clamp(28px, 5vw, 48px) Georgia,
+          serif;
+        letter-spacing: 7px;
+        margin: 12px 0;
+      }
+      .box h2 {
+        font-size: 25px;
+        margin: 12px 0;
+      }
+      .box p {
+        color: #a4b7c4;
+        line-height: 1.8;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 24px 0;
+      }
+      .card {
+        text-align: left;
+        padding: 22px 18px;
+        background: linear-gradient(150deg, #1b2b37, #0d1822);
+        border: 1px solid #ffffff20;
+        min-height: 175px;
+      }
+      .card strong {
+        display: block;
+        font-size: 20px;
+        margin: 10px 0;
+      }
+      .card small {
+        display: block;
+        color: #a4b7c4;
+        line-height: 1.8;
+      }
+      .card svg {
+        height: 58px;
+        width: 58px;
+      }
+      .footer {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .hidden {
+        display: none !important;
+      }
+      #pad {
+        display: none;
+        position: fixed;
+        left: 22px;
+        bottom: 28px;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: #ffffff08;
+        border: 1px solid #ffffff25;
+        z-index: 9;
+        touch-action: none;
+      }
+      #stick {
+        position: absolute;
+        left: 35px;
+        top: 35px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #dfc18a55;
+        border: 1px solid #dfc18a77;
+        pointer-events: none;
+      }
+      #map {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 156px;
+        height: 90px;
+        border: 1px solid #ffffff22;
+        background: #071017;
+        pointer-events: none;
+      }
+      #routebar {
+        position: fixed;
+        bottom: 25px;
+        left: 22px;
+        display: flex;
+        gap: 8px;
+      }
+      #routebar button {
+        font-size: 12px;
+      }
+      @media (pointer: coarse) {
+        #pad.playing {
+          display: block;
+        }
+        #skills {
+          left: auto;
+          right: 12px;
+          transform: none;
+          bottom: 18px;
+          display: grid;
+          grid-template-columns: repeat(3, 52px);
+        }
+        .skill {
+          width: 52px;
+          height: 53px;
+          padding: 1px;
+        }
+        .skill b {
+          font-size: 14px;
+        }
+        .skill span {
+          font-size: 8px;
+          margin: 1px;
+        }
+        .skill small {
+          font-size: 8px;
+        }
+        #hint {
+          bottom: 190px;
+        }
+        #map {
+          display: none;
+        }
+      }
+      @media (max-width: 650px) {
+        #top {
+          left: 12px;
+          right: 12px;
+          top: 12px;
+        }
+        .brand {
+          font-size: 12px;
+          letter-spacing: 2px;
+        }
+        .tools button {
+          padding: 7px 9px;
+          font-size: 11px;
+        }
+        #status {
+          font-size: 10px;
+        }
+        #vitals {
+          top: 80px;
+          width: 85vw;
+        }
+        #boss {
+          top: 143px;
+        }
+        #toast {
+          top: 195px;
+        }
+        .box {
+          padding: 20px;
+        }
+        .cards {
+          grid-template-columns: 1fr;
+          margin: 15px 0;
+          gap: 8px;
+        }
+        .card {
+          min-height: 0;
+          padding: 12px;
+        }
+        .card svg {
+          float: left;
+          margin-right: 16px;
+          height: 52px;
+        }
+        .card strong {
+          font-size: 17px;
+          margin: 2px 0;
+        }
+        .box h1 {
+          font-size: 29px;
+        }
+        .box p {
+          font-size: 12px;
+        }
+        #routebar {
+          bottom: 20px;
+        }
+        #hint {
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="top">
+      <div>
+        <div class="label">TACTICAL FANTASY / 2.5 VISUAL ASCENSION</div>
+        <div class="brand">FRONTIER <span class="gold">REFORGED</span></div>
+        <div id="status"></div>
+      </div>
+      <div class="tools">
+        <button id="sound">소리 OFF</button><button id="pause">Ⅱ</button
+        ><button id="hub">모드 선택</button>
+      </div>
+    </div>
+    <div id="vitals"></div>
+    <div id="boss"></div>
+    <div id="hint"></div>
+    <div id="skills"></div>
+    <canvas id="map" width="312" height="180"></canvas>
+    <div id="routebar" class="hidden">
+      <button id="save">저장</button><button id="focus">본진 보기</button>
+    </div>
+    <div id="pad"><div id="stick"></div></div>
+    <div id="toast"></div>
+    <div id="modal" class="overlay"></div>
+    <script>
+      "use strict";
+      const $ = (id) => document.getElementById(id),
+        cv = $("game"),
+        ctx = cv.getContext("2d"),
+        mc = $("map").getContext("2d");
+      const TAU = Math.PI * 2,
+        clamp = (v, a, b) => Math.max(a, Math.min(b, v)),
+        rnd = (a, b) => a + Math.random() * (b - a),
+        dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y),
+        ang = (a, b) => Math.atan2(b.y - a.y, b.x - a.x),
+        WORLD = { w: 2600, h: 1600 };
+      let W, H, dpr;
+      function resize() {
+        W = innerWidth;
+        H = innerHeight;
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        cv.width = W * dpr;
+        cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      addEventListener("resize", resize);
+      resize();
+      const colors = [
+        "#82c8d4",
+        "#de7c81",
+        "#99bd77",
+        "#b5a0e1",
+        "#eba96f",
+        "#cdd184",
+      ];
+      const names = {
+        Warrior: "전사",
+        Mage: "마법사",
+        Archer: "궁수",
+        Paladin: "팔라딘",
+        Berserker: "버서커",
+        Archmage: "아크메이지",
+        Warlock: "워록",
+        Sniper: "스나이퍼",
+        Stormracer: "스톰레이서",
+        Summoner: "소환사",
+        Barbarian: "야만전사",
+        Gunner: "거너",
+        Knight: "기사",
+        Ranger: "레인저",
+      };
+      const roots = {
+        Paladin: "Warrior",
+        Berserker: "Warrior",
+        Archmage: "Mage",
+        Warlock: "Mage",
+        Sniper: "Archer",
+        Stormracer: "Archer",
+        Knight: "Warrior",
+        Barbarian: "Warrior",
+        Ranger: "Archer",
+        Summoner: "Mage",
+        Gunner: "Archer",
+      };
+      const root = (j) => roots[j] || j;
+      const jobPalette = {
+        Warrior: { p: "#e6a86f", s: "#fff0c6", d: "#704631" },
+        Knight: { p: "#d9c18e", s: "#fff4c9", d: "#4b5660" },
+        Paladin: { p: "#f5d36f", s: "#fff8c7", d: "#59666c" },
+        Berserker: { p: "#ff6658", s: "#ffb36b", d: "#521f28" },
+        Barbarian: { p: "#ef9159", s: "#ffd0a0", d: "#5c3427" },
+        Mage: { p: "#9eaef9", s: "#dff5ff", d: "#353b61" },
+        Archmage: { p: "#65dcff", s: "#ecfcff", d: "#254f6d" },
+        Warlock: { p: "#b66cff", s: "#efc9ff", d: "#352144" },
+        Summoner: { p: "#b98af0", s: "#e8d3ff", d: "#4a3568" },
+        Archer: { p: "#78d4a7", s: "#e5ffe9", d: "#315647" },
+        Ranger: { p: "#74d29f", s: "#e6ffd8", d: "#305a42" },
+        Sniper: { p: "#d9dd9a", s: "#fffbd4", d: "#485052" },
+        Stormracer: { p: "#58dcff", s: "#e9fdff", d: "#214f66" },
+        Gunner: { p: "#e4b75d", s: "#fff0b0", d: "#524633" },
+      };
+      const pal = (j) =>
+        jobPalette[j] ||
+        (root(j) === "Warrior"
+          ? jobPalette.Warrior
+          : root(j) === "Mage"
+            ? jobPalette.Mage
+            : jobPalette.Archer);
+      const col = (j) => pal(j).p;
+      let mode = "hub",
+        state = "menu",
+        job = "Warrior",
+        chapter = 0,
+        elapsed = 0,
+        uid = 0,
+        hero = null,
+        enemies = [],
+        units = [],
+        bases = [],
+        shots = [],
+        fx = [],
+        zones = [],
+        tasks = [],
+        cam = { x: 1300, y: 800, z: 0.8 },
+        keys = {},
+        pointer = { x: 0, y: 0 },
+        target = null,
+        aim = null,
+        drag = null,
+        pan = null,
+        joy = { x: 0, y: 0 },
+        spawn = 0,
+        bossDue = 50,
+        bossIndex = 0,
+        boss = null,
+        kills = 0,
+        xp = 0,
+        level = 1,
+        score = 0,
+        up = { dmg: 1, aoe: 1, cd: 1, speed: 1 },
+        cd = {},
+        promoted = false,
+        shake = 0,
+        hudClock = 0,
+        aiClock = 0,
+        mergeClock = 0,
+        toastTimer = 0,
+        muted = true,
+        audio = null,
+        combo = 0,
+        promotionPending = false;
+      const chapterNames = [
+        "翡翠原野 / 초원",
+        "사구 요새 / 사막",
+        "잿불 왕국 / 불지옥",
+        "천상의 관문 / 천국",
+        "공허의 왕좌 / 우주",
+      ];
+      function tone(f = 180, d = 0.08) {
+        if (muted) return;
+        try {
+          audio ??= new (window.AudioContext || window.webkitAudioContext)();
+          if (audio.state === "suspended") audio.resume();
+          let o = audio.createOscillator(),
+            g = audio.createGain();
+          o.type = "triangle";
+          o.frequency.setValueAtTime(f, audio.currentTime);
+          o.frequency.exponentialRampToValueAtTime(
+            f * 0.4,
+            audio.currentTime + d,
+          );
+          g.gain.setValueAtTime(0.045, audio.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
+          o.connect(g);
+          g.connect(audio.destination);
+          o.start();
+          o.stop(audio.currentTime + d);
+        } catch {}
+      }
+      function say(s) {
+        $("toast").textContent = s;
+        $("toast").style.display = "block";
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(
+          () => ($("toast").style.display = "none"),
+          2400,
+        );
+      }
+      function icon(j) {
+        let c = col(j),
+          r = root(j),
+          p =
+            r === "Warrior"
+              ? '<path d="M36 8 42 10 34 43 27 42Z" fill="#eee5d0"/><path d="m12 21 18-5 1 22-10 9-10-9Z"/>'
+              : r === "Mage"
+                ? '<path d="m31 5 15 24H13Z"/><path d="m22 27-10 27h37L39 27Z"/><circle cx="51" cy="20" r="5" fill="#eed69c"/>'
+                : '<path d="M18 9q35 22 0 45l13-23Z" fill="none" stroke-width="3"/><path d="M8 31h44m-7-5 7 5-7 5" fill="none"/>';
+        return `<svg viewBox="0 0 64 64" fill="${c}" stroke="${c}" stroke-width="1.5">${p}</svg>`;
+      }
+      function modal(html) {
+        $("modal").innerHTML = `<div class="box">${html}</div>`;
+        $("modal").classList.remove("hidden");
+        clearInput();
+      }
+      function close() {
+        $("modal").classList.add("hidden");
+      }
+      function clearInput() {
+        keys = {};
+        joy = { x: 0, y: 0 };
+        drag = null;
+        pan = null;
+        target = null;
+        $("stick").style.transform = "none";
+      }
+      function hub() {
+        state = "menu";
+        mode = "hub";
+        clearInput();
+        $("skills").innerHTML = "";
+        $("vitals").innerHTML = "";
+        $("boss").innerHTML = "";
+        $("pad").classList.remove("playing");
+        $("routebar").classList.add("hidden");
+        modal(
+          `<div class="label">THE NEXT FRONTIER</div><h1>REFORGED</h1><p>칼날에는 무게를, 마법에는 연계를.<br>두 가지 전장. 당신만의 전투 방식.</p><div class="cards" style="grid-template-columns:repeat(2,1fr)"><button class="card" onclick="choose('dom')"><div class="label">01 / STRATEGY</div><strong>프론티어 플럭스</strong><small>5개 챕터 · 보급선 점령 · 6개 병과<br>병력을 모아 신화 부대로 진화시키세요.</small></button><button class="card" onclick="choose('hunter')"><div class="label">02 / SURVIVAL</div><strong>프론티어 헌터</strong><small>3개 직업 · 6개 전직 · 9개 스킬<br>공격 예고를 피하고 4대 보스를 토벌하세요.</small></button></div><p>외부 다운로드 없이 실행 · PC / 터치 조작 지원</p>`,
+        );
+      }
+      function choose(m) {
+        mode = m;
+        let js =
+          m === "hunter"
+            ? ["Warrior", "Mage", "Archer"]
+            : ["Knight", "Mage", "Ranger", "Summoner", "Barbarian", "Gunner"];
+        const desc = {
+          Warrior: "근접 3연격 · 높은 체력<br>3번째 평타는 넓은 강타",
+          Mage: "원소 탄환 · 빙결 연계<br>빙결된 적에게 마법 피해 +35%",
+          Archer: "원거리 연사 · 빠른 이동<br>4번째 평타는 관통 사격",
+          Knight: "방어형 · 높은 체력 · 근접 검격",
+          MageD: "범위형 · 작은 폭발 · 느린 공격",
+          Ranger: "기동형 · 긴 사거리 · 낮은 체력",
+          Summoner: "지속형 · 근처 아군 재생",
+          Barbarian: "돌격형 · 강한 근접 피해",
+          Gunner: "사격형 · 빠른 연사 · 느린 이동",
+        };
+        modal(
+          `<div class="label">${m === "hunter" ? "HUNTER / CLASS SELECTION" : "DOMINATION / FACTION SELECTION"}</div><h2>전장에 나설 직업</h2><p>${m === "hunter" ? "QWE부터 시작 · 15레벨 전직 · 17레벨 궁극기" : "기지에서 기지로 드래그해 보급선을 연결합니다."}</p><div class="cards">${js.map((j) => `<button class="card" onclick="start('${j}')">${icon(j)}<strong>${names[j]}</strong><small>${desc[m === "dom" && j === "Mage" ? "MageD" : j]}</small></button>`).join("")}</div><div class="footer"><button onclick="hub()">돌아가기</button>${m === "dom" ? '<button onclick="loadGame()">저장 이어하기</button>' : ""}</div>`,
+        );
+      }
+      function reset() {
+        elapsed = 0;
+        enemies = [];
+        units = [];
+        bases = [];
+        shots = [];
+        fx = [];
+        zones = [];
+        tasks = [];
+        clearInput();
+        uid = 0;
+        spawn = 0;
+        shake = 0;
+        aiClock = 0;
+        mergeClock = 0;
+        boss = null;
+        bossIndex = 0;
+        hudClock = 0;
+        cd = {};
+        close();
+        state = "play";
+      }
+      function start(j) {
+        job = j;
+        if (mode === "hunter") {
+          reset();
+          kills = score = xp = 0;
+          level = 1;
+          promoted = false;
+          promotionPending = false;
+          combo = 0;
+          up = { dmg: 1, aoe: 1, cd: 1, speed: 1 };
+          bossDue = 50;
+          let r = root(j);
+          hero = {
+            x: 1300,
+            y: 800,
+            hp: r === "Warrior" ? 340 : r === "Mage" ? 230 : 260,
+            maxHp: r === "Warrior" ? 340 : r === "Mage" ? 230 : 260,
+            speed: r === "Archer" ? 225 : r === "Mage" ? 200 : 210,
+            angle: 0,
+            inv: 0,
+            atk: 0,
+            shield: 0,
+            shieldT: 0,
+            buff: 0,
+            anim: 0,
+            job: j,
+          };
+          cam = { x: 1300, y: 800, z: innerWidth < 650 ? 0.7 : 0.9 };
+          $("pad").classList.add("playing");
+          $("routebar").classList.add("hidden");
+          buildSkills();
+          close();
+          state = "play";
+          say("WASD/방향키 이동 · Q 회피 · W 광역 · E 집중 공격");
+        } else {
+          chapter = 0;
+          startDom();
+        }
+        updateHUD();
+      }
+      const SK = ["q", "w", "e", "r", "a", "s", "d", "f", "z"],
+        unlock = [1, 1, 1, 5, 8, 10, 15, 16, 17];
+      const skillSets = {
+        Warrior: [
+          ["전투 점멸", "dash", 4],
+          ["분쇄 강타", "slam", 5],
+          ["관통 검기", "blade", 4],
+          ["돌파 돌격", "charge", 8],
+          ["철벽 자세", "guard", 12],
+          ["회귀 도끼", "axe", 7],
+          ["지진", "quake", 10],
+          ["전투 함성", "rage", 15],
+          ["티탄 강림", "titan", 35],
+        ],
+        Paladin: [
+          ["성광 점멸", "dash", 3.6],
+          ["신성 강타", "slam", 4.6],
+          ["심판 검기", "blade", 3.8],
+          ["빛의 돌격", "charge", 7],
+          ["성스런 방벽", "guard", 11],
+          ["십자 심판", "cross", 8],
+          ["치유 성역", "sanctuary", 14],
+          ["공전 성검", "swords", 12],
+          ["천상의 심판", "judgment", 36],
+        ],
+        Berserker: [
+          ["광기 점멸", "dash", 3.2],
+          ["분노 강타", "slam", 4],
+          ["광폭 회전", "spin", 9],
+          ["대지 분쇄", "quake", 10],
+          ["피의 포효", "rage", 14],
+          ["쌍날 회귀", "axe", 5],
+          ["격노 돌진", "charge", 6],
+          ["피의 소용돌이", "spin", 11],
+          ["거신의 참격", "titan", 32],
+        ],
+        Mage: [
+          ["비전 점멸", "dash", 4],
+          ["운석 낙하", "meteor", 6],
+          ["비전 광선", "beam", 5],
+          ["연쇄 번개", "chain", 8],
+          ["빙결 고리", "freeze", 9],
+          ["공전 비전구", "orbs", 10],
+          ["중력 우물", "vortex", 12],
+          ["원소 폭발", "nova", 11],
+          ["별의 붕괴", "supernova", 38],
+        ],
+        Archmage: [
+          ["차원 점멸", "dash", 3.2],
+          ["유성 군집", "meteor", 5],
+          ["분해 광선", "beam", 4],
+          ["폭풍 번개", "chain", 7],
+          ["절대 영도", "freeze", 8],
+          ["원소 공전구", "orbs", 9],
+          ["중력 특이점", "vortex", 11],
+          ["융합 폭발", "nova", 10],
+          ["초신성", "supernova", 34],
+        ],
+        Warlock: [
+          ["그림자 이동", "dash", 3.5],
+          ["심연 우물", "vortex", 9],
+          ["영혼 수탈", "drain", 5],
+          ["망령 소환", "ghosts", 9],
+          ["죽음의 냉기", "freeze", 9],
+          ["영혼 전이", "chain", 8],
+          ["흑기사 소환", "golem", 15],
+          ["영혼 방벽", "guard", 12],
+          ["망자의 행진", "legion", 36],
+        ],
+        Archer: [
+          ["바람 점멸", "dash", 3.5],
+          ["속박 덫", "trap", 6],
+          ["부채꼴 사격", "spread", 4],
+          ["화살 소나기", "rain", 9],
+          ["서리 화살", "frost", 7],
+          ["도탄 사격", "ricochet", 6],
+          ["집중 사격", "rapid", 12],
+          ["바람 회오리", "vortex", 12],
+          ["천공 일제사격", "barrage", 36],
+        ],
+        Sniper: [
+          ["전술 이동", "dash", 3.4],
+          ["강철 덫", "trap", 6],
+          ["급소 저격", "snipe", 5],
+          ["궤도 레일건", "beam", 7],
+          ["빙결 탄환", "frost", 7],
+          ["도탄 철갑탄", "ricochet", 6],
+          ["정밀 조준", "rapid", 13],
+          ["추적 탄환", "ghosts", 10],
+          ["공허 관통탄", "rail", 34],
+        ],
+        Stormracer: [
+          ["질풍 점멸", "dash", 2.8],
+          ["폭풍 화살비", "rain", 7],
+          ["다중 사격", "spread", 3.5],
+          ["속사 태세", "rapid", 11],
+          ["서리 폭풍", "frost", 6],
+          ["연쇄 화살", "ricochet", 5],
+          ["칼날 덫", "trap", 5],
+          ["태풍의 눈", "vortex", 10],
+          ["천풍 난사", "barrage", 32],
+        ],
+      };
+      function buildSkills() {
+        let ss = skillSets[job];
+        $("skills").innerHTML = ss
+          .map(
+            (s, i) =>
+              `<button class="skill ${level < unlock[i] ? "lock" : ""}" id="sk${i}" onclick="cast('${SK[i]}')" title="${s[0]} / 기본 재사용 ${s[2]}초"><b>${SK[i].toUpperCase()}</b><span>${s[0]}</span><small id="ct${i}">${level < unlock[i] ? "Lv." + unlock[i] : "준비"}</small><i class="shade" id="sh${i}" style="transform:scaleY(0)"></i></button>`,
+          )
+          .join("");
+      }
+      function xpNeed(l = level) {
+        return Math.round(80 + 32 * (l - 1) + 3 * (l - 1) ** 2);
+      }
+      function checkLevel() {
+        if (state !== "play" || mode !== "hunter") return;
+        if (xp >= xpNeed()) {
+          xp -= xpNeed();
+          level++;
+          hero.maxHp += 6;
+          hero.hp = Math.min(hero.maxHp, hero.hp + 25);
+          tone(700, 0.2);
+          buildSkills();
+          if (level === 15 && !promoted) {
+            state = "choice";
+            promotionPending = true;
+            let js =
+              root(job) === "Warrior"
+                ? ["Paladin", "Berserker"]
+                : root(job) === "Mage"
+                  ? ["Archmage", "Warlock"]
+                  : ["Sniper", "Stormracer"];
+            let ds = {
+              Paladin: "방패와 치유 성역 · 피해 감소 15%",
+              Berserker: "회전 근접전 · 체력 50% 이하 피해 +25%",
+              Archmage: "빙결 후 폭발 · 모든 스킬 피해 +15%",
+              Warlock: "망령과 흑기사 · 가한 피해의 4% 흡혈",
+              Sniper: "긴 사거리 · 기본 공격 관통 · 피해 +25%",
+              Stormracer: "다중 사격 · 이동속도 +15%",
+            };
+            modal(
+              `<div class="label">LEVEL 15 / ASCENSION</div><h2>한계를 넘어선 전직</h2><div class="cards" style="grid-template-columns:repeat(2,1fr)">${js.map((j, i) => `<button class="card choice" onclick="promote('${j}')">${icon(j)}<strong>${i + 1}. ${names[j]}</strong><small>${ds[j]}</small></button>`).join("")}</div>`,
+            );
+          } else if ([5, 10, 18, 21, 24].includes(level)) {
+            state = "choice";
+            let options = [
+              ["dmg", "날카로운 결의", "모든 피해 +20%"],
+              ["aoe", "확장된 기운", "스킬 반경 +15%"],
+              ["cd", "빠른 순환", "재사용 시간 10% 감소"],
+              ["speed", "바람의 발걸음", "이동속도 +8% · 최대 체력 +25"],
+            ];
+            options.sort(() => Math.random() - 0.5);
+            modal(
+              `<div class="label">LEVEL ${level} / BLESSING</div><h2>전투 능력 강화</h2><div class="cards">${options
+                .slice(0, 3)
+                .map(
+                  (o, i) =>
+                    `<button class="card choice" onclick="bless('${o[0]}')"><strong>${i + 1}. ${o[1]}</strong><small>${o[2]}</small></button>`,
+                )
+                .join("")}</div>`,
+            );
+          } else
+            say(
+              `Lv.${level}${unlock.includes(level) ? " · 새로운 스킬 해금" : ""}`,
+            );
+        }
+      }
+      function promote(j) {
+        job = j;
+        hero.job = j;
+        promoted = true;
+        promotionPending = false;
+        hero.hp = hero.maxHp;
+        cd = {};
+        buildSkills();
+        state = "play";
+        close();
+        say(names[j] + " 전직 완료!");
+      }
+      function bless(k) {
+        if (k === "cd") up.cd = Math.max(0.55, up.cd * 0.9);
+        else if (k === "speed") {
+          up.speed += 0.08;
+          hero.maxHp += 25;
+          hero.hp += 25;
+        } else up[k] += k === "dmg" ? 0.2 : 0.15;
+        state = "play";
+        close();
+      }
+      function effect(type, x, y, r, color, duration = 0.4, extra = {}) {
+        if (fx.length > 720) fx.splice(0, 55);
+        fx.push({ type, x, y, r, color, t: duration, max: duration, ...extra });
+      }
+      function spark(x, y, c, n = 8) {
+        for (let i = 0; i < n; i++)
+          effect("spark", x, y, rnd(1, 3), c, rnd(0.2, 0.5), {
+            vx: rnd(-130, 130),
+            vy: rnd(-130, 130),
+          });
+      }
+      function hit(e, d, freeze = 0) {
+        if (e.hp <= 0) return;
+        let mult =
+          up.dmg *
+          (job === "Archmage" ? 1.15 : 1) *
+          (job === "Berserker" && hero.hp < hero.maxHp * 0.5 ? 1.25 : 1);
+        if (e.frozen > 0 && root(job) === "Mage") mult *= 1.35;
+        let dealt = Math.min(e.hp, d * mult);
+        e.hp -= d * mult;
+        e.flash = 0.1;
+        if (freeze)
+          e.frozen = Math.max(e.frozen || 0, freeze * (e.boss ? 0.3 : 1));
+        if (job === "Warlock")
+          hero.hp = Math.min(hero.maxHp, hero.hp + dealt * 0.04);
+        if (e.hp <= 0) {
+          kills++;
+          score += e.boss ? 3000 : e.elite ? 120 : 30;
+          xp += e.boss ? 280 : e.elite ? 28 : 12;
+          spark(e.x, e.y, e.color, e.boss ? 32 : 5);
+          if (Math.random() < 0.08 && !e.boss)
+            hero.hp = Math.min(hero.maxHp, hero.hp + 5);
+          if (e.boss) {
+            boss = null;
+            bossIndex++;
+            bossDue = elapsed + 58;
+            hero.hp = Math.min(hero.maxHp, hero.hp + 70);
+            say("보스 토벌 · 다음 지역 진입");
+            if (bossIndex >= 4) finish(true);
+          }
+        }
+      }
+      function area(x, y, r, d, freeze = 0) {
+        for (let e of enemies)
+          if (e.hp > 0 && dist(e, { x, y }) < r + e.r) hit(e, d, freeze);
+      }
+      function beam(a, len, width, d, c = col(job)) {
+        let x = hero.x,
+          y = hero.y;
+        effect("beam", x, y, len, c, 0.28, { angle: a, width });
+        for (let e of enemies) {
+          let dx = e.x - x,
+            dy = e.y - y,
+            t = dx * Math.cos(a) + dy * Math.sin(a);
+          if (
+            t >= 0 &&
+            t < len &&
+            Math.abs(-dx * Math.sin(a) + dy * Math.cos(a)) < width / 2 + e.r
+          )
+            hit(e, d);
+        }
+      }
+      function bullet(x, y, a, d = 30, speed = 620, extra = {}) {
+        shots.push({
+          x,
+          y,
+          px: x,
+          py: y,
+          vx: Math.cos(a) * speed,
+          vy: Math.sin(a) * speed,
+          d,
+          r: 5,
+          t: 1.4,
+          color: col(job),
+          ownerJob: job,
+          hits: new Set(),
+          ...extra,
+        });
+      }
+      function schedule(delay, fn) {
+        tasks.push({ t: delay, fn });
+      }
+      function zone(x, y, r, d, t, c, extra = {}) {
+        zones.push({ x, y, r, d, t, max: t, color: c, tick: 0.2, ownerJob: job, ...extra });
+      }
+      function hurt(d) {
+        if (hero.inv > 0 || state !== "play") return;
+        if (job === "Paladin") d *= 0.85;
+        let absorbed = Math.min(hero.shield, d);
+        hero.shield -= absorbed;
+        hero.hp -= d - absorbed;
+        hero.inv = 0.45;
+        shake = 4;
+        tone(80);
+        if (hero.hp <= 0) {
+          hero.hp = 0;
+          finish(false);
+        }
+      }
+      function cast(k) {
+        if (mode !== "hunter" || state !== "play") return;
+        let i = SK.indexOf(k);
+        if (i < 0 || level < unlock[i] || (cd[k] || 0) > 0) return;
+        let [name, type, cool] = skillSets[job][i];
+        cd[k] = cool * up.cd;
+        let h = hero,
+          a = aim ? ang(h, aim) : h.angle,
+          x = h.x,
+          y = h.y,
+          r = up.aoe,
+          c = col(job),
+          tx = clamp(x + Math.cos(a) * 240, 30, WORLD.w - 30),
+          ty = clamp(y + Math.sin(a) * 240, 30, WORLD.h - 30);
+        h.angle = a;
+        tone(i === 8 ? 100 : 260, 0.12);
+        switch (type) {
+          case "dash": {
+            let da =
+              joy.x || joy.y
+                ? Math.atan2(joy.y, joy.x)
+                : keys.ArrowUp ||
+                    keys.ArrowDown ||
+                    keys.ArrowLeft ||
+                    keys.ArrowRight
+                  ? Math.atan2(
+                      (keys.ArrowDown ? 1 : 0) - (keys.ArrowUp ? 1 : 0),
+                      (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0),
+                    )
+                  : a;
+            effect("ring", x, y, 65, c);
+            h.x = clamp(x + Math.cos(da) * 235, 25, WORLD.w - 25);
+            h.y = clamp(y + Math.sin(da) * 235, 25, WORLD.h - 25);
+            h.inv = 0.4;
+            effect("ring", h.x, h.y, 65, c);
+            break;
+          }
+          case "slam":
+            area(x, y, 150 * r, 130);
+            effect("ring", x, y, 150 * r, c);
+            shake = 4;
+            break;
+          case "blade":
+            beam(a, 530, 48 * r, 155);
+            break;
+          case "charge":
+            beam(a, 300, 95 * r, 130);
+            h.x = tx;
+            h.y = ty;
+            h.inv = 0.6;
+            effect("ring", tx, ty, 100, c);
+            break;
+          case "guard":
+            h.shield = Math.max(h.shield, Math.round(h.maxHp * 0.35));
+            h.shieldT = 6;
+            effect("ring", x, y, 70, c);
+            break;
+          case "axe":
+            bullet(x, y, a, 85, 470, {
+              kind: "axe",
+              r: 18,
+              pierce: true,
+              t: 2.2,
+              age: 0,
+            });
+            break;
+          case "quake":
+            for (let n = 0; n < 4; n++)
+              schedule(n * 0.16, () => {
+                let bx = x + Math.cos(a) * n * 120,
+                  by = y + Math.sin(a) * n * 120;
+                area(bx, by, 115 * r, 85);
+                effect("ring", bx, by, 115 * r, c);
+              });
+            break;
+          case "rage":
+            h.buff = 6;
+            h.hp = Math.min(h.maxHp, h.hp + 30);
+            effect("ring", x, y, 85, "#ff906e");
+            break;
+          case "spin":
+            zone(x, y, 145 * r, 105, 3.5, c, { follow: true, spin: true });
+            break;
+          case "cross":
+            for (let n = 0; n < 4; n++)
+              beam(a + (n * Math.PI) / 2, 440, 45 * r, 130, c);
+            break;
+          case "sanctuary":
+            zone(x, y, 190 * r, 48, 6, c, { heal: 12 });
+            break;
+          case "swords":
+            zone(x, y, 135 * r, 90, 6, c, { follow: true, spin: true });
+            break;
+          case "meteor": {
+            let count = job === "Archmage" ? 3 : 1;
+            for (let n = 0; n < count; n++) {
+              let mx = tx + rnd(-30, 30),
+                my = ty + rnd(-30, 30);
+              effect("warning", mx, my, 150 * r, c, 0.65 + n * 0.18);
+              schedule(0.65 + n * 0.18, () => {
+                area(mx, my, 150 * r, job === "Archmage" ? 125 : 210);
+                effect("meteor", mx, my, 150 * r, c, 0.5);
+                shake = 5;
+              });
+            }
+            break;
+          }
+          case "beam":
+            beam(a, 850, 42 * r, 220);
+            break;
+          case "drain":
+            beam(a, 630, 48 * r, 165, "#bca0e2");
+            h.hp = Math.min(h.maxHp, h.hp + 18);
+            break;
+          case "chain":
+          case "ricochet": {
+            let source = h,
+              used = new Set();
+            for (let n = 0; n < (type === "chain" ? 6 : 5); n++) {
+              let e = enemies
+                .filter(
+                  (e) => e.hp > 0 && !used.has(e.id) && dist(e, source) < 420,
+                )
+                .sort((a, b) => dist(a, source) - dist(b, source))[0];
+              if (!e) break;
+              effect("link", source.x, source.y, 0, c, 0.32, {
+                tx: e.x,
+                ty: e.y,
+              });
+              hit(e, type === "chain" ? 100 : 85);
+              used.add(e.id);
+              source = e;
+            }
+            break;
+          }
+          case "freeze":
+            area(x, y, 210 * r, 60, 2.2);
+            effect("ring", x, y, 210 * r, "#9ee7ed");
+            break;
+          case "orbs":
+            zone(x, y, 150 * r, 65, 6, c, { follow: true, spin: true });
+            break;
+          case "vortex":
+            zone(tx, ty, 185 * r, 52, 4, c, { pull: true });
+            break;
+          case "nova":
+            area(x, y, 260 * r, 260);
+            effect("ring", x, y, 260 * r, c, 0.65);
+            break;
+          case "ghosts":
+            for (let n = 0; n < 5; n++)
+              bullet(x, y, a + (n - 2) * 0.35, 85, 330, {
+                kind: "ghost",
+                t: 3,
+              });
+            break;
+          case "golem":
+            zone(tx, ty, 170 * r, 105, 8, "#b99cdb", { golem: true });
+            break;
+          case "trap":
+            zone(x, y, 140 * r, 40, 6, c, { trap: true });
+            break;
+          case "spread":
+            for (let n = -2; n <= 2; n++)
+              bullet(x, y, a + n * 0.16, 65, 660, { pierce: true });
+            break;
+          case "rain":
+            for (let n = 0; n < 5; n++)
+              schedule(n * 0.25, () => {
+                area(tx, ty, 180 * r, 50);
+                effect("rain", tx, ty, 180 * r, c, 0.4);
+              });
+            break;
+          case "frost":
+            for (let n = -1; n <= 1; n++)
+              bullet(x, y, a + n * 0.12, 65, 650, {
+                freeze: 2,
+                pierce: true,
+                color: "#a5e7eb",
+              });
+            break;
+          case "rapid":
+            h.buff = 6;
+            effect("ring", x, y, 60, c);
+            break;
+          case "snipe":
+            beam(a, 1000, 24 * r, 320);
+            break;
+          case "titan":
+            h.inv = 1;
+            area(x, y, 370 * r, 650);
+            effect("ring", x, y, 370 * r, "#f4b787", 0.8);
+            h.buff = 7;
+            shake = 8;
+            break;
+          case "judgment":
+            h.hp = Math.min(h.maxHp, h.hp + 100);
+            h.shield = h.maxHp * 0.35;
+            h.shieldT = 8;
+            area(x, y, 410 * r, 500);
+            effect("meteor", x, y, 410 * r, "#f3dda1", 0.8);
+            break;
+          case "supernova":
+            zone(tx, ty, 320 * r, 65, 1.6, c, { pull: true });
+            schedule(1.6, () => {
+              area(tx, ty, 350 * r, 720);
+              effect("meteor", tx, ty, 350 * r, c, 0.9);
+              shake = 9;
+            });
+            break;
+          case "legion":
+            for (let n = 0; n < 18; n++)
+              bullet(x, y, (n * TAU) / 18, 140, 310, { kind: "ghost", t: 5 });
+            break;
+          case "rail":
+            beam(a, 1500, 100 * r, 1050, "#e4e6bd");
+            shake = 8;
+            break;
+          case "barrage":
+            for (let n = 0; n < 10; n++)
+              schedule(n * 0.12, () => {
+                for (let s = -2; s <= 2; s++)
+                  bullet(h.x, h.y, h.angle + s * 0.17, 80, 740, {
+                    pierce: true,
+                    t: 1.7,
+                  });
+              });
+            break;
+          default:
+            break;
+        }
+        skillAccent(job, i, type, x, y, tx, ty, a, r, c);
+        if (i === 8) say(name + "!");
+      }
+      function spawnEnemy(isBoss = false) {
+        if (!hero) return;
+        let a = rnd(0, TAU),
+          d = rnd(500, 680),
+          type = isBoss
+            ? "boss"
+            : Math.random() < 0.12
+              ? "elite"
+              : Math.random() < 0.2
+                ? "ranged"
+                : Math.random() < 0.25
+                  ? "runner"
+                  : "grunt";
+        let idx = bossIndex,
+          base = type === "elite" ? 160 : type === "runner" ? 40 : 60,
+          hp = isBoss ? 1800 + idx * 1150 : base * (1 + elapsed / 260);
+        let e = {
+          id: ++uid,
+          x: clamp(hero.x + Math.cos(a) * d, 45, WORLD.w - 45),
+          y: clamp(hero.y + Math.sin(a) * d, 45, WORLD.h - 45),
+          hp,
+          maxHp: hp,
+          r: isBoss ? 43 : type === "elite" ? 22 : 14,
+          speed: isBoss
+            ? 65
+            : type === "runner"
+              ? 143
+              : type === "elite"
+                ? 65
+                : 92,
+          color: isBoss
+            ? "#d5a0db"
+            : type === "ranged"
+              ? "#cab77c"
+              : type === "runner"
+                ? "#bc99b9"
+                : "#b88077",
+          type,
+          boss: isBoss,
+          elite: type === "elite",
+          frozen: 0,
+          flash: 0,
+          atk: rnd(1.5, 3),
+          phase: 0,
+        };
+        enemies.push(e);
+        if (isBoss) {
+          boss = e;
+          say(
+            ["가시숲 수문장", "모래의 거신", "화염 군주", "공허의 사신"][idx] +
+              " 출현",
+          );
+        }
+      }
+      function updateHunter(dt) {
+        if (!hero || state !== "play") return;
+        elapsed += dt;
+        hero.inv = Math.max(0, hero.inv - dt);
+        hero.buff = Math.max(0, hero.buff - dt);
+        hero.shieldT -= dt;
+        if (hero.shieldT <= 0) hero.shield = 0;
+        for (let k in cd) cd[k] = Math.max(0, cd[k] - dt);
+        let mx = (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0) + joy.x,
+          my = (keys.ArrowDown ? 1 : 0) - (keys.ArrowUp ? 1 : 0) + joy.y;
+        if (mx || my) target = null;
+        else if (target) {
+          let d = dist(hero, target);
+          if (d > 12) {
+            mx = (target.x - hero.x) / d;
+            my = (target.y - hero.y) / d;
+          } else target = null;
+        }
+        let len = Math.hypot(mx, my),
+          speed = hero.speed * up.speed * (job === "Stormracer" ? 1.15 : 1);
+        if (len) {
+          hero.x = clamp(
+            hero.x + (mx / Math.max(1, len)) * speed * dt,
+            25,
+            WORLD.w - 25,
+          );
+          hero.y = clamp(
+            hero.y + (my / Math.max(1, len)) * speed * dt,
+            25,
+            WORLD.h - 25,
+          );
+          hero.angle = Math.atan2(my, mx);
+        }
+        hero.anim += dt * (len ? 11 : 2);
+        hero.atk -= dt;
+        if (hero.atk <= 0) {
+          let range =
+            root(job) === "Warrior" ? 105 : job === "Sniper" ? 640 : 480;
+          let e = enemies
+            .filter((e) => e.hp > 0 && dist(e, hero) < range)
+            .sort((a, b) => dist(a, hero) - dist(b, hero))[0];
+          if (e) {
+            let a = ang(hero, e);
+            hero.angle = a;
+            combo++;
+            hero.atk =
+              (root(job) === "Warrior"
+                ? 0.55
+                : root(job) === "Mage"
+                  ? 0.64
+                  : 0.4) / (hero.buff > 0 ? 1.65 : 1);
+            let dmg =
+              (root(job) === "Warrior" ? 47 : root(job) === "Mage" ? 40 : 26) *
+              (1 + level * 0.035);
+            if (root(job) === "Warrior") {
+              let cleave = combo % 3 === 0;
+              for (let v of enemies)
+                if (
+                  v.hp > 0 &&
+                  dist(v, hero) < (cleave ? 125 : 95) &&
+                  Math.cos(ang(hero, v) - a) > (cleave ? -0.25 : 0.35)
+                )
+                  hit(v, dmg * (cleave ? 1.65 : 1));
+              effect(
+                "slash",
+                hero.x,
+                hero.y,
+                cleave ? 125 : 90,
+                col(job),
+                0.22,
+                { angle: a },
+              );
+            } else
+              bullet(
+                hero.x,
+                hero.y,
+                a,
+                dmg * (job === "Sniper" ? 1.25 : 1),
+                root(job) === "Mage" ? 460 : 700,
+                {
+                  kind: root(job) === "Mage" ? "orb" : "arrow",
+                  pierce:
+                    job === "Sniper" ||
+                    (root(job) === "Archer" && combo % 4 === 0),
+                },
+              );
+            tone(230, 0.04);
+          }
+        }
+        for (let e of enemies) {
+          if (e.hp <= 0) continue;
+          e.frozen = Math.max(0, e.frozen - dt);
+          e.flash = Math.max(0, e.flash - dt);
+          let d = dist(e, hero),
+            a = ang(e, hero),
+            slow = e.frozen > 0 ? 0.15 : 1;
+          e.atk -= dt * slow;
+          if (d > (e.type === "ranged" ? 280 : e.r + 20)) {
+            e.x += Math.cos(a) * e.speed * slow * dt;
+            e.y += Math.sin(a) * e.speed * slow * dt;
+          } else if (d < e.r + 23) hurt(e.boss ? 30 : e.elite ? 17 : 9);
+          if (e.type === "ranged" && e.atk <= 0 && d < 600) {
+            e.atk = 2.6;
+            bullet(e.x, e.y, a, 12, 240, {
+              enemy: true,
+              color: "#eaad81",
+              t: 3,
+              r: 7,
+            });
+          }
+          if (e.boss && e.atk <= 0) {
+            e.atk = e.hp < e.maxHp * 0.45 ? 2.7 : 4;
+            let bx = hero.x,
+              by = hero.y,
+              rr = 95 + bossIndex * 17;
+            effect("danger", bx, by, rr, "#f17879", 0.95);
+            schedule(0.95, () => {
+              if (e.hp <= 0) return;
+              effect("ring", bx, by, rr, "#f17879");
+              if (dist(hero, { x: bx, y: by }) < rr) hurt(36 + bossIndex * 7);
+              for (let n = 0; n < 6 + bossIndex * 2; n++)
+                bullet(e.x, e.y, (n * TAU) / (6 + bossIndex * 2), 16, 175, {
+                  enemy: true,
+                  t: 4,
+                  color: "#d8909b",
+                  r: 7,
+                });
+            });
+          }
+          e.x = clamp(e.x, 15, WORLD.w - 15);
+          e.y = clamp(e.y, 15, WORLD.h - 15);
+        }
+        for (let p of shots) {
+          p.t -= dt;
+          p.px = p.x;
+          p.py = p.y;
+          if (p.kind === "ghost") {
+            let e = enemies
+              .filter((e) => e.hp > 0)
+              .sort((a, b) => dist(a, p) - dist(b, p))[0];
+            if (e) {
+              let a = ang(p, e);
+              p.vx = Math.cos(a) * 360;
+              p.vy = Math.sin(a) * 360;
+            }
+          }
+          if (p.kind === "axe") {
+            p.age += dt;
+            if (p.age > 0.65) {
+              let a = ang(p, hero);
+              p.vx = Math.cos(a) * 550;
+              p.vy = Math.sin(a) * 550;
+              if (dist(p, hero) < 24) p.t = 0;
+              if (!p.returned) {
+                p.hits.clear();
+                p.returned = true;
+              }
+            }
+          }
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          if (p.enemy) {
+            if (segmentDistance(hero, p) < p.r + 16) {
+              hurt(p.d);
+              p.t = 0;
+            }
+          } else
+            for (let e of enemies) {
+              if (e.hp <= 0 || p.hits.has(e.id)) continue;
+              if (segmentDistance(e, p) < e.r + p.r) {
+                hit(e, p.d, p.freeze || 0);
+                p.hits.add(e.id);
+                spark(e.x, e.y, p.color, 3);
+                if (!p.pierce) {
+                  p.t = 0;
+                  break;
+                }
+              }
+            }
+        }
+        for (let z of zones) {
+          z.t -= dt;
+          z.tick -= dt;
+          if (z.follow) {
+            z.x = hero.x;
+            z.y = hero.y;
+          }
+          while (z.tick <= 1e-9) {
+            z.tick += 0.2;
+            if (z.heal && dist(hero, z) < z.r)
+              hero.hp = Math.min(hero.maxHp, hero.hp + z.heal * 0.2);
+            area(z.x, z.y, z.r, z.d * 0.2, z.trap ? 0.5 : 0);
+          }
+          if (z.pull)
+            for (let e of enemies)
+              if (e.hp > 0 && dist(e, z) < z.r) {
+                let a = ang(e, z);
+                e.x += Math.cos(a) * (e.boss ? 12 : 100) * dt;
+                e.y += Math.sin(a) * (e.boss ? 12 : 100) * dt;
+              }
+        }
+        shots = shots.filter((p) => p.t > 0);
+        zones = zones.filter((z) => z.t > 0);
+        enemies = enemies.filter((e) => e.hp > 0);
+        spawn -= dt;
+        if (spawn <= 0 && enemies.length < 180) {
+          spawn = Math.max(0.28, 0.7 - elapsed / 750);
+          spawnEnemy();
+          if (elapsed > 35) spawnEnemy();
+        }
+        if (!boss && bossIndex < 4 && elapsed >= bossDue) spawnEnemy(true);
+        cam.x += (hero.x - cam.x) * (1 - Math.exp(-8 * dt));
+        cam.y += (hero.y - cam.y) * (1 - Math.exp(-8 * dt));
+        boundCam();
+        if (state === "play") checkLevel();
+      }
+      function segmentDistance(e, p) {
+        let dx = p.x - p.px,
+          dy = p.y - p.py,
+          t = clamp(
+            ((e.x - p.px) * dx + (e.y - p.py) * dy) / (dx * dx + dy * dy || 1),
+            0,
+            1,
+          );
+        return Math.hypot(e.x - p.px - t * dx, e.y - p.py - t * dy);
+      }
+      // DOMINATION: per-class roles, living-unit caps, real-time cooldowns, validated saves.
+      const stats = {
+        Knight: { hp: 180, d: 21, range: 48, speed: 71, rate: 0.85 },
+        Mage: { hp: 95, d: 25, range: 130, speed: 70, rate: 1.35 },
+        Ranger: { hp: 95, d: 18, range: 170, speed: 92, rate: 0.95 },
+        Summoner: { hp: 120, d: 16, range: 120, speed: 72, rate: 1.2 },
+        Barbarian: { hp: 155, d: 32, range: 45, speed: 85, rate: 1.05 },
+        Gunner: { hp: 110, d: 12, range: 145, speed: 60, rate: 0.48 },
+      };
+      function startDom() {
+        reset();
+        hero = null;
+        $("skills").innerHTML = "";
+        $("vitals").innerHTML = "";
+        $("pad").classList.remove("playing");
+        $("routebar").classList.remove("hidden");
+        let spots = [
+            [260, 300],
+            [2340, 1300],
+            [2340, 300],
+            [260, 1300],
+            [1300, 220],
+            [1300, 1380],
+          ],
+          n = chapter + 2;
+        for (let i = 0; i < n; i++)
+          bases.push({
+            id: ++uid,
+            x: spots[i][0],
+            y: spots[i][1],
+            team: i,
+            core: true,
+            hp: 2400,
+            maxHp: 2400,
+            routes: [],
+            spawn: 0,
+            turret: 0,
+          });
+        for (let [x, y] of [
+          [700, 450],
+          [1900, 450],
+          [700, 1100],
+          [1900, 1100],
+          [1100, 650],
+          [1500, 950],
+          [1300, 800],
+        ])
+          bases.push({
+            id: ++uid,
+            x,
+            y,
+            team: -1,
+            core: false,
+            hp: 650,
+            maxHp: 650,
+            routes: [],
+            spawn: 0,
+            turret: 0,
+          });
+        for (let b of bases)
+          if (b.team >= 0) for (let n = 0; n < 6; n++) produce(b);
+        cam = { x: 260, y: 300, z: Math.max(0.4, Math.min(W / 1250, H / 850)) };
+        boundCam();
+        say("아군 기지 → 목표 기지 드래그 · 같은 연결을 다시 그리면 해제");
+        updateHUD();
+      }
+      function teamJob(t) {
+        if (t === 0) return job;
+        return Object.keys(stats).filter((j) => j !== job)[(t - 1) % 5];
+      }
+      function produce(b) {
+        if (units.filter((u) => u.team === b.team && u.hp > 0).length >= 110)
+          return;
+        let j = teamJob(b.team),
+          s = stats[j];
+        units.push({
+          id: ++uid,
+          x: b.x + rnd(-25, 25),
+          y: b.y + rnd(-25, 25),
+          team: b.team,
+          job: j,
+          tier: 1,
+          hp: s.hp,
+          maxHp: s.hp,
+          atk: rnd(0, 1),
+          ult: 7,
+          home: b.id,
+          target: b.routes.length
+            ? b.routes[Math.floor(Math.random() * b.routes.length)]
+            : null,
+          angle: 0,
+          anim: 0,
+        });
+      }
+      function domDamage(u, d, c) {
+        if (u.hp <= 0) return;
+        u.hp -= d;
+        if (u.hp <= 0) spark(u.x, u.y, c, 5);
+      }
+      function updateDom(dt) {
+        elapsed += dt;
+        if (elapsed >= 600) {
+          finish(false);
+          return;
+        }
+        for (let b of bases) {
+          if (b.team < 0) continue;
+          b.spawn -= dt;
+          b.turret -= dt;
+          if (b.spawn <= 0) {
+            b.spawn =
+              (b.core ? 2.5 : 3.8) *
+              (b.team ? Math.max(0.78, 1.15 - chapter * 0.08) : 1);
+            produce(b);
+          }
+          if (b.turret <= 0) {
+            let e = units.find(
+              (u) =>
+                u.hp > 0 &&
+                u.team !== b.team &&
+                dist(u, b) < (b.core ? 190 : 155),
+            );
+            if (e) {
+              b.turret = 0.9;
+              domDamage(e, b.core ? 25 : 17, colors[b.team]);
+              effect("link", b.x, b.y, 0, colors[b.team], 0.15, {
+                tx: e.x,
+                ty: e.y,
+              });
+            }
+          }
+        }
+        aiClock -= dt;
+        if (aiClock <= 0) {
+          aiClock = 2.5;
+          for (let b of bases.filter((b) => b.team > 0)) {
+            let targets = bases
+              .filter((t) => t.team !== b.team)
+              .sort(
+                (a, c) =>
+                  dist(a, b) +
+                  (a.team === -1 ? -160 : 0) -
+                  (dist(c, b) + (c.team === -1 ? -160 : 0)),
+              );
+            if (targets[0]) {
+              b.routes = [targets[0].id];
+              for (let u of units)
+                if (u.team === b.team && dist(u, b) < 140)
+                  u.target = targets[0].id;
+            }
+          }
+        }
+        let grid = new Map();
+        for (let u of units) {
+          if (u.hp <= 0) continue;
+          let k = ((u.x / 200) | 0) + "," + ((u.y / 200) | 0);
+          if (!grid.has(k)) grid.set(k, []);
+          grid.get(k).push(u);
+        }
+        for (let u of units) {
+          if (u.hp <= 0) continue;
+          let s = stats[u.job],
+            scale = 2 ** (u.tier - 1),
+            near = [];
+          for (let dx = -1; dx <= 1; dx++)
+            for (let dy = -1; dy <= 1; dy++)
+              near.push(
+                ...(grid.get(
+                  ((u.x / 200) | 0) + dx + "," + (((u.y / 200) | 0) + dy),
+                ) || []),
+              );
+          let e = near
+            .filter(
+              (e) => e.team !== u.team && e.hp > 0 && dist(e, u) < s.range + 30,
+            )
+            .sort((a, b) => dist(a, u) - dist(b, u))[0];
+          u.atk -= dt;
+          u.ult -= dt;
+          u.anim += dt * 7;
+          if (u.job === "Summoner")
+            for (let v of near)
+              if (v.team === u.team && v.hp > 0 && dist(v, u) < 90)
+                v.hp = Math.min(v.maxHp, v.hp + 1.8 * scale * dt);
+          if (u.tier === 5 && u.ult <= 0) {
+            u.ult = 9;
+            effect("ring", u.x, u.y, 190, colors[u.team], 0.6);
+            for (let e of near)
+              if (e.team !== u.team && dist(e, u) < 190)
+                domDamage(e, 180 * scale, colors[u.team]);
+          }
+          let to = null;
+          if (e) {
+            if (dist(e, u) <= s.range) {
+              u.angle = ang(u, e);
+              if (u.atk <= 0) {
+                u.atk = s.rate;
+                domDamage(e, s.d * scale, colors[u.team]);
+                effect("link", u.x, u.y, 0, colors[u.team], 0.14, {
+                  tx: e.x,
+                  ty: e.y,
+                });
+                if (u.job === "Mage")
+                  for (let v of near)
+                    if (v !== e && v.team !== u.team && dist(v, e) < 45)
+                      domDamage(v, s.d * scale * 0.4, colors[u.team]);
+              }
+            } else to = e;
+          } else {
+            let b = bases.find((b) => b.id === u.target);
+            if (!b) {
+              b =
+                bases.find((b) => b.id === u.home && b.team === u.team) ||
+                bases.find((b) => b.team === u.team);
+              if (b) {
+                u.home = b.id;
+                if (b.routes.length) {
+                  u.target =
+                    b.routes[Math.floor(Math.random() * b.routes.length)];
+                  b = bases.find((b) => b.id === u.target);
+                }
+              }
+            }
+            if (b) {
+              if (dist(u, b) > b.core * 8 + 34) to = b;
+              else if (b.team !== u.team) {
+                b.hp -= s.d * scale * 0.6 * dt;
+                if (b.hp <= 0) {
+                  b.team = u.team;
+                  b.hp = b.maxHp * 0.65;
+                  b.routes = [];
+                  spark(b.x, b.y, colors[u.team], 25);
+                }
+              } else {
+                u.home = b.id;
+                u.target = b.routes.length
+                  ? b.routes[Math.floor(Math.random() * b.routes.length)]
+                  : null;
+              }
+            }
+          }
+          if (to) {
+            let a = ang(u, to);
+            u.angle = a;
+            u.x += Math.cos(a) * s.speed * dt;
+            u.y += Math.sin(a) * s.speed * dt;
+          }
+          for (let v of near) {
+            if (v.id <= u.id || v.hp <= 0) continue;
+            let d = dist(v, u);
+            if (d < 15 && d > 0.01) {
+              let sx = ((u.x - v.x) / d) * (15 - d) * dt * 3,
+                sy = ((u.y - v.y) / d) * (15 - d) * dt * 3;
+              u.x += sx;
+              u.y += sy;
+              v.x -= sx;
+              v.y -= sy;
+            }
+          }
+          u.x = clamp(u.x, 20, WORLD.w - 20);
+          u.y = clamp(u.y, 20, WORLD.h - 20);
+        }
+        mergeClock -= dt;
+        if (mergeClock <= 0) {
+          mergeClock = 0.6;
+          let consumed = new Set(),
+            born = [];
+          for (let u of units) {
+            if (u.hp <= 0 || u.tier >= 5 || consumed.has(u.id)) continue;
+            let req = u.tier === 1 ? 10 : 2,
+              all = units
+                .filter(
+                  (v) =>
+                    v.hp > 0 &&
+                    v.team === u.team &&
+                    v.tier === u.tier &&
+                    !consumed.has(v.id) &&
+                    dist(v, u) < 100,
+                )
+                .slice(0, req);
+            if (all.length === req) {
+              all.forEach((v) => consumed.add(v.id));
+              let tier = u.tier + 1,
+                hp = stats[u.job].hp * 2.25 ** (tier - 1);
+              born.push({
+                ...u,
+                id: ++uid,
+                tier,
+                x: all.reduce((s, v) => s + v.x, 0) / req,
+                y: all.reduce((s, v) => s + v.y, 0) / req,
+                hp,
+                maxHp: hp,
+                ult: 6,
+              });
+              effect("ring", u.x, u.y, 70, colors[u.team], 0.5);
+            }
+          }
+          units = units
+            .filter((u) => u.hp > 0 && !consumed.has(u.id))
+            .concat(born);
+        } else units = units.filter((u) => u.hp > 0);
+        if (!bases.some((b) => b.team === 0)) finish(false);
+        else if (!bases.some((b) => b.core && b.team > 0)) finish(true);
+      }
+      function saveGame() {
+        if (mode !== "dom") return;
+        try {
+          localStorage.setItem(
+            "frontier_reforged_v2",
+            JSON.stringify({
+              v: 2,
+              chapter,
+              job,
+              elapsed,
+              uid,
+              cam,
+              bases,
+              units,
+            }),
+          );
+          say("현재 전장 저장 완료");
+        } catch {
+          say("저장할 수 없습니다. 브라우저 저장 권한을 확인하세요.");
+        }
+      }
+      function loadGame() {
+        try {
+          let d = JSON.parse(localStorage.getItem("frontier_reforged_v2"));
+          if (
+            !d ||
+            d.v !== 2 ||
+            !stats[d.job] ||
+            !Number.isInteger(d.chapter) ||
+            d.chapter < 0 ||
+            d.chapter > 4 ||
+            !Array.isArray(d.bases) ||
+            !d.bases.length ||
+            !Array.isArray(d.units) ||
+            d.units.length > 1000 ||
+            !Number.isFinite(d.elapsed) ||
+            !d.cam
+          )
+            throw Error();
+          for (let b of d.bases)
+            if (
+              ![b.x, b.y, b.hp, b.maxHp, b.id, b.team].every(Number.isFinite) ||
+              !Array.isArray(b.routes) ||
+              b.team < -1 ||
+              b.team > 5
+            )
+              throw Error();
+          for (let u of d.units)
+            if (
+              ![u.x, u.y, u.hp, u.maxHp, u.tier, u.team].every(
+                Number.isFinite,
+              ) ||
+              !stats[u.job]
+            )
+              throw Error();
+          mode = "dom";
+          reset();
+          ({ chapter, job, elapsed, uid, cam, bases, units } = d);
+          $("routebar").classList.remove("hidden");
+          $("skills").innerHTML = "";
+          $("vitals").innerHTML = "";
+          updateHUD();
+          say("저장한 전장을 불러왔습니다");
+        } catch {
+          say(
+            "호환되는 저장 데이터가 없습니다. 이 버전에서 새로 저장해 주세요.",
+          );
+        }
+      }
+      function finish(win) {
+        state = "result";
+        clearInput();
+        tasks = [];
+        modal(
+          `<div class="label">${mode === "hunter" ? "HUNT COMPLETE" : "CAMPAIGN REPORT"}</div><h1>${win ? "VICTORY" : "DEFEAT"}</h1><p>${mode === "hunter" ? `Lv.${level} ${names[job]} · ${kills} 처치 · ${Math.floor(elapsed / 60)}분 ${Math.floor(elapsed % 60)}초` : `${chapterNames[chapter]} · ${win ? "적의 지휘 기지를 점령했습니다." : "전장을 잃었습니다."}`}</p><div class="footer">${win && mode === "dom" && chapter < 4 ? '<button onclick="chapter++;startDom()">다음 챕터</button>' : `<button onclick="${mode === "hunter" ? `start('${root(job)}')` : "startDom()"}">다시 도전</button>`}<button onclick="hub()">모드 선택</button></div>`,
+        );
+      }
+      function pause() {
+        if (state === "play") {
+          state = "pause";
+          modal(
+            `<div class="label">TAKE A BREATH</div><h2>일시정지</h2><p>전투와 지속 스킬의 시간이 함께 멈춥니다.</p><div class="footer"><button onclick="resume()">계속하기</button>${mode === "dom" ? '<button onclick="saveGame()">저장</button>' : ""}<button onclick="hub()">모드 선택</button></div>`,
+          );
+        } else if (state === "pause") resume();
+      }
+      function resume() {
+        state = "play";
+        close();
+        clearInput();
+      }
+      function updateHUD() {
+        if (mode === "hub") {
+          $("status").textContent = "전장을 선택하세요";
+          $("hint").textContent = "";
+          return;
+        }
+        let time = `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, "0")}`;
+        if (mode === "hunter") {
+          // 직업 선택 중에는 mode만 hunter이고 hero는 아직 생성되지 않는다.
+          // 이때 hero.hp를 읽으면 첫 HUD 갱신에서 예외가 나며 게임 루프가 멈춘다.
+          if (!hero) {
+            $("status").textContent = "프론티어 헌터 · 직업 선택 중";
+            $("vitals").innerHTML = "";
+            $("boss").innerHTML = "";
+            $("hint").textContent = "직업을 선택하면 전투가 시작됩니다.";
+            return;
+          }
+          $("status").innerHTML =
+            `${names[job]} / <span class="gold">LV.${level}</span><br>${time} · ${kills} 처치 · 지역 ${Math.min(4, bossIndex + 1)}/4`;
+          $("vitals").innerHTML =
+            `<div style="display:flex;justify-content:space-between;font-size:11px"><span>체력 ${Math.ceil(hero.hp)} / ${hero.maxHp}</span><span>${hero.shield > 0 ? "보호막 " + Math.ceil(hero.shield) : "자동 공격"}</span></div><div class="meter hp"><i style="width:${clamp((hero.hp / hero.maxHp) * 100, 0, 100)}%"></i></div><div style="display:flex;justify-content:space-between;font-size:10px"><span>경험치 ${xp} / ${xpNeed()}</span><span>다음 레벨까지 ${Math.max(0, xpNeed() - xp)}</span></div><div class="meter"><i style="width:${Math.min(100, (xp / xpNeed()) * 100)}%"></i></div>`;
+          let ss = skillSets[job];
+          for (let i = 0; i < 9; i++) {
+            let b = $("ct" + i),
+              s = $("sh" + i);
+            if (!b) continue;
+            let v = cd[SK[i]] || 0;
+            b.textContent =
+              level < unlock[i]
+                ? "Lv." + unlock[i]
+                : v > 0
+                  ? v.toFixed(1) + "s"
+                  : "준비";
+            let baseCool = (ss[i][2] || 1) * (up.cd || 1);
+            s.style.transform = `scaleY(${clamp(v / baseCool, 0, 1)})`;
+          }
+          $("boss").innerHTML = boss
+            ? `<span>${["가시숲 수문장", "모래의 거신", "화염 군주", "공허의 사신"][bossIndex]} · ${Math.ceil(boss.hp)} / ${boss.maxHp}</span><div class="meter"><i style="width:${(boss.hp / boss.maxHp) * 100}%"></i></div>`
+            : `<span class="muted">다음 보스 ${Math.max(0, Math.ceil(bossDue - elapsed))}초</span>`;
+          $("hint").textContent = matchMedia("(pointer:coarse)").matches
+            ? "왼쪽 패드 이동 · 오른쪽 스킬 · 화면 터치 이동"
+            : "WASD/방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
+        } else {
+          $("status").textContent =
+            `${chapter + 1}/5 ${chapterNames[chapter]} · ${time} / 10:00`;
+          $("boss").innerHTML = "";
+          $("vitals").innerHTML =
+            `<div class="gold">아군 기지 ${bases.filter((b) => b.team === 0).length} · 부대 ${units.filter((u) => u.team === 0).length} / 110</div><div class="muted" style="margin-top:6px">10 → 2 → 2 → 2 합체 · 신화 기술 9초 간격</div>`;
+          $("hint").textContent =
+            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 화면 이동 · 휠 확대 · 기지 클릭: 연결 전체 해제";
+        }
+      }
+      // Original vector silhouettes: layered armor, cloth, weapons, monsters and terrain.
+      function poly(points, fill, stroke) {
+        ctx.beginPath();
+        points.forEach((p, i) => (i ? ctx.lineTo(...p) : ctx.moveTo(...p)));
+        ctx.closePath();
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.strokeStyle = stroke;
+          ctx.stroke();
+        }
+      }
+      function circle(x, y, r, fill, stroke) {
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0, r), 0, TAU);
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.strokeStyle = stroke;
+          ctx.stroke();
+        }
+      }
+      function line(x, y, tx, ty, c, width = 2) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(tx, ty);
+        ctx.strokeStyle = c;
+        ctx.lineWidth = width;
+        ctx.stroke();
+      }
+
+      function glowCircle(x, y, r, c, alpha = 0.7, width = 2) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = c;
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0, r), 0, TAU);
+        ctx.strokeStyle = c;
+        ctx.lineWidth = width;
+        ctx.stroke();
+        ctx.restore();
+      }
+      function runeCircle(x, y, r, c, rot = 0, spokes = 6) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = c;
+        ctx.shadowColor = c;
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 1.4;
+        ctx.globalAlpha = 0.72;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, TAU);
+        ctx.stroke();
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.62, 0, TAU);
+        ctx.stroke();
+        for (let i = 0; i < spokes; i++) {
+          let a = (i * TAU) / spokes;
+          let a2 = ((i + 2) * TAU) / spokes;
+          line(
+            Math.cos(a) * r * 0.62,
+            Math.sin(a) * r * 0.62,
+            Math.cos(a2) * r,
+            Math.sin(a2) * r,
+            c,
+            1,
+          );
+        }
+        ctx.restore();
+      }
+      function weaponSpark(x, y, c, r = 8, rot = 0) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = c;
+        ctx.shadowColor = c;
+        ctx.shadowBlur = 12;
+        for (let i = 0; i < 4; i++) {
+          let a = (i * TAU) / 4 + elapsed * 2;
+          line(
+            Math.cos(a) * r * 0.18,
+            Math.sin(a) * r * 0.18,
+            Math.cos(a) * r,
+            Math.sin(a) * r,
+            c,
+            1.4,
+          );
+        }
+        ctx.restore();
+      }
+      function fxBurst(x, y, c, n = 8, speed = 115, size = 2.3) {
+        for (let q = 0; q < n; q++) {
+          let a = (q * TAU) / n + rnd(-0.12, 0.12);
+          effect("spark", x, y, rnd(1, size), c, rnd(0.22, 0.48), {
+            vx: Math.cos(a) * rnd(speed * 0.55, speed),
+            vy: Math.sin(a) * rnd(speed * 0.55, speed),
+          });
+        }
+      }
+      function skillAccent(j, i, type, x, y, tx, ty, a, radius, c) {
+        const P = pal(j);
+        const rr = Math.max(1, radius || 1);
+        const radial = ["slam", "quake", "freeze", "nova", "rage", "guard", "spin", "sanctuary", "swords", "titan", "judgment"];
+        const aimed = ["blade", "beam", "rail", "snipe", "spread", "barrage", "frost", "rapid"];
+        if (radial.includes(type)) effect("burst", x, y, 92 * rr, c, 0.42);
+        if (["meteor", "vortex", "supernova", "trap", "rain", "golem"].includes(type))
+          effect("sigil", tx, ty, 92 * rr, c, 0.8, { spin: j === "Warlock" ? -1 : 1, ownerJob: j });
+        if (aimed.includes(type)) effect("muzzle", x, y, 48, c, 0.22, { angle: a, ownerJob: j });
+        if (type === "dash" || type === "charge") {
+          effect("afterimage", x, y, 56, c, 0.32, { angle: a, ownerJob: j });
+          fxBurst(x, y, c, 7, 90, 2.2);
+        }
+
+        if (j === "Paladin") {
+          if (i === 4 || i === 6 || i === 8) effect("holy", type === "judgment" ? x : tx, type === "judgment" ? y : ty, i === 8 ? 210 * rr : 120 * rr, P.s, 0.72);
+          if (i === 5) effect("cross", x, y, 190 * rr, P.s, 0.5, { angle: a });
+        } else if (j === "Berserker") {
+          if ([1, 2, 3, 6, 7, 8].includes(i)) effect("blood", x, y, i === 8 ? 260 * rr : 115 * rr, c, 0.48, { angle: a });
+          fxBurst(x, y, P.s, i === 8 ? 15 : 6, i === 8 ? 180 : 100, 2.6);
+        } else if (j === "Archmage") {
+          effect("arcane", [1, 6, 8].includes(i) ? tx : x, [1, 6, 8].includes(i) ? ty : y, i === 8 ? 240 * rr : 92 * rr, c, 0.62, { spin: i % 2 ? 1 : -1 });
+        } else if (j === "Warlock") {
+          if (i !== 0) effect("void", [1, 3, 6, 8].includes(i) ? tx : x, [1, 3, 6, 8].includes(i) ? ty : y, i === 8 ? 245 * rr : 105 * rr, c, 0.7);
+        } else if (j === "Sniper") {
+          if ([2, 3, 8].includes(i)) effect("target", tx, ty, i === 8 ? 90 : 55, P.s, 0.34, { angle: a });
+          if (i === 8) effect("railflash", x, y, 280, P.s, 0.36, { angle: a });
+        } else if (j === "Stormracer") {
+          if (i !== 0) effect("storm", [1, 7, 8].includes(i) ? tx : x, [1, 7, 8].includes(i) ? ty : y, i === 8 ? 230 * rr : 105 * rr, c, 0.58);
+        } else if (j === "Mage") {
+          if ([1, 3, 4, 6, 7, 8].includes(i)) effect("arcane", [1, 6, 8].includes(i) ? tx : x, [1, 6, 8].includes(i) ? ty : y, i === 8 ? 210 * rr : 84 * rr, c, 0.52);
+        } else if (j === "Archer") {
+          if ([1, 3, 4, 5, 6, 7, 8].includes(i)) effect("wind", [1, 3, 7].includes(i) ? tx : x, [1, 3, 7].includes(i) ? ty : y, i === 8 ? 210 * rr : 100 * rr, c, 0.5, { angle: a });
+        } else if (j === "Warrior") {
+          if (i > 0) effect("steel", x, y, i === 8 ? 220 * rr : 95 * rr, c, 0.46, { angle: a });
+        }
+      }
+      function person(u, size = 1, c = col(u.job), isHero = false) {
+        ctx.save();
+        ctx.translate(u.x, u.y);
+        ctx.scale(size, size);
+        const j = u.job,
+          r = root(j),
+          P = pal(j),
+          t = elapsed,
+          bob = Math.sin((u.anim || 0) * 0.8) * 1.25,
+          face = Math.cos(u.angle || 0) < 0 ? -1 : 1;
+
+        ctx.fillStyle = "#0008";
+        ctx.beginPath();
+        ctx.ellipse(0, 17, 22, 8, 0, 0, TAU);
+        ctx.fill();
+
+        if (isHero) {
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.2 + Math.sin(t * 4) * 0.04;
+          ctx.shadowColor = c;
+          ctx.shadowBlur = 22;
+          ctx.beginPath();
+          ctx.ellipse(0, 13, 31, 14, 0, 0, TAU);
+          ctx.strokeStyle = c;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.translate(0, bob);
+        ctx.scale(face, 1);
+        line(-6, 8, -8, 23, "#17212c", 6);
+        line(6, 8, 8, 23, "#17212c", 6);
+
+        if (["Warrior", "Knight", "Paladin", "Berserker", "Barbarian"].includes(j)) {
+          poly([[-14,-10],[14,-10],[18,16],[0,23],[-18,16]], j === "Berserker" ? "#4b2027" : P.d, c);
+          poly([[-13,-15],[13,-15],[15,8],[0,16],[-15,8]], j === "Paladin" ? "#aab6b5" : "#74858f", P.s + "cc");
+          poly([[-12,-13],[-17,-10],[-15,-2],[-9,-4]], "#aab5ba", c);
+          poly([[12,-13],[17,-10],[15,-2],[9,-4]], "#aab5ba", c);
+          circle(0, -22, 9, "#8fa0aa", P.s);
+          poly([[-9,-25],[-5,-32],[0,-29],[5,-32],[9,-25],[6,-17],[-6,-17]], "#34444f", c);
+          line(-5,-21,-1,-21,P.s,2); line(1,-21,5,-21,P.s,2);
+
+          if (j === "Paladin") {
+            line(0,-11,0,8,"#fff4af",3); line(-6,-4,6,-4,"#fff4af",3);
+            poly([[-29,-16],[-10,-19],[-7,8],[-19,22],[-30,8]], "#75858c", "#f7db77");
+            line(-19,-10,-19,13,"#f7db77",3); line(-26,1,-11,1,"#f7db77",3);
+            line(17,11,25,-30,"#fff8ca",5); line(13,-2,29,1,"#e8c968",3);
+            weaponSpark(25,-30,"#fff3a1",9);
+            ctx.save(); ctx.scale(1/face,1); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.7;
+            ctx.beginPath(); ctx.ellipse(0,-37,14,4,0,0,TAU); ctx.strokeStyle="#ffe985"; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+          } else if (j === "Berserker" || j === "Barbarian") {
+            poly([[-7,-28],[-19,-39],[-12,-23]], "#decaa4", c);
+            poly([[7,-28],[19,-39],[12,-23]], "#decaa4", c);
+            line(-10,5,-25,-23,"#754c37",4); line(10,5,25,-23,"#754c37",4);
+            poly([[-36,-30],[-20,-31],[-17,-16],[-34,-12]], "#bec4c4", c);
+            poly([[36,-30],[20,-31],[17,-16],[34,-12]], "#bec4c4", c);
+            if (j === "Berserker") {
+              ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.42;
+              for (let n=0;n<4;n++){ let aa=t*3+n*1.6; line(Math.cos(aa)*17,Math.sin(aa)*10,Math.cos(aa)*29,Math.sin(aa)*19,"#ff5f50",2); }
+              ctx.restore();
+            }
+          } else {
+            poly([[-24,-11],[-10,-13],[-8,9],[-16,18],[-26,8]], "#3d5360", c);
+            line(17,11,25,-27,"#e9e5d4",5); line(13,-1,29,2,"#d7b879",3);
+          }
+        } else if (["Mage", "Archmage", "Warlock", "Summoner"].includes(j)) {
+          poly([[-11,-11],[11,-11],[19,21],[-19,21]], j === "Warlock" ? "#2b2038" : P.d, c);
+          poly([[-7,-9],[7,-9],[10,15],[-10,15]], c + "66");
+          circle(0,-20,7,"#d7bda6");
+          if (j === "Warlock") {
+            poly([[-14,-18],[0,-39],[14,-18],[8,-8],[-8,-8]], "#20182d", c);
+            line(-5,-20,-1,-20,"#e09aff",2); line(1,-20,5,-20,"#e09aff",2);
+          } else {
+            poly([[-16,-24],[0,-48],[14,-24]], P.d, P.s);
+            line(-18,-23,18,-23,c,4);
+          }
+          line(20,18,20,-28,"#9d7352",3);
+          circle(20,-33,j === "Archmage" ? 8 : 6,P.s,"#fff");
+          let orbCount = j === "Archmage" ? 4 : j === "Summoner" ? 3 : 2;
+          for (let n=0;n<orbCount;n++) {
+            let aa=t*(1.45+n*.08)+(n*TAU)/orbCount;
+            circle(Math.cos(aa)*27,Math.sin(aa)*13-8,j === "Archmage" ? 4 : 3,c,"#ffffff99");
+          }
+          if (j === "Archmage") {
+            ctx.save(); ctx.scale(1/face,1); runeCircle(0,-39,13,"#75e7ff",t,8); ctx.restore();
+          }
+          if (j === "Warlock") {
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.45;
+            for (let n=0;n<3;n++) { let aa=t*1.6+n*2.1; ctx.beginPath(); ctx.moveTo(0,12); ctx.quadraticCurveTo(Math.cos(aa)*20,20,Math.cos(aa+1)*25,31); ctx.strokeStyle="#9a61d2"; ctx.lineWidth=2; ctx.stroke(); }
+            ctx.restore();
+          }
+          if (j === "Summoner") {
+            ctx.save(); ctx.translate(-23,-2); ctx.rotate(Math.sin(t*2)*.1); ctx.fillStyle="#74568f"; ctx.fillRect(-9,-7,18,14); line(0,-7,0,7,"#ead7ff",1); ctx.restore();
+          }
+        } else {
+          poly([[-11,-11],[10,-11],[15,16],[0,21],[-16,16]], j === "Sniper" ? "#3f4949" : P.d, c);
+          circle(0,-21,8,"#d5bba1");
+          poly([[-12,-19],[-8,-32],[1,-35],[12,-26],[9,-16],[2,-23]], j === "Sniper" ? "#40494b" : "#355c4d", c);
+          poly([[-10,-9],[8,-12],[12,8],[-8,12]], "#506f60", c);
+          if (["Archer","Ranger","Stormracer"].includes(j)) {
+            ctx.beginPath(); ctx.arc(17,-1,21,-1.25,1.25); ctx.strokeStyle="#dfca8d"; ctx.lineWidth=3; ctx.stroke();
+            line(24,-21,24,19,"#e2e9dd",1); line(9,-1,43,-1,P.s,2);
+            poly([[43,-1],[35,-5],[35,3]], P.s);
+          }
+          if (j === "Sniper") {
+            ctx.fillStyle="#707b7c"; ctx.fillRect(8,-7,37,8); line(22,-3,53,-3,P.s,3);
+            ctx.fillStyle="#20292c"; ctx.fillRect(18,-13,13,5);
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.34; line(50,-3,78,-3,"#ff776d",1); ctx.restore();
+          }
+          if (j === "Stormracer") {
+            ctx.save(); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.8;
+            for (let n=0;n<2;n++) { let yy=-15+n*25; line(-18,yy,-26,yy+5,"#67ecff",2); line(-26,yy+5,-17,yy+10,"#67ecff",2); }
+            ctx.restore();
+          }
+          if (j === "Gunner") {
+            ctx.fillStyle="#879294"; ctx.fillRect(7,-8,39,12); ctx.fillStyle="#40494c"; ctx.fillRect(15,4,10,12); line(32,-2,57,-2,"#e5c46e",5); circle(49,-2,4,"#ffd47d"); ctx.fillStyle="#4b5550"; ctx.fillRect(-18,-9,8,19);
+          }
+        }
+
+        if (isHero && promoted) {
+          ctx.save(); ctx.scale(1/face,1); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.52 + Math.sin(t*3)*.08;
+          runeCircle(0,-3,31,c,t*.65, j === "Archmage" ? 8 : 6); ctx.restore();
+        }
+        ctx.restore();
+      }
+      function monster(e) {
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        let s = e.r / 16;
+        ctx.scale(s, s);
+        ctx.fillStyle = "#0006";
+        ctx.beginPath();
+        ctx.ellipse(0, 12, 17, 7, 0, 0, TAU);
+        ctx.fill();
+        let c = e.flash > 0 ? "#fff" : e.frozen > 0 ? "#a4dfe9" : e.color;
+        poly(
+          [
+            [-13, -8],
+            [-9, -22],
+            [0, -15],
+            [9, -23],
+            [15, -9],
+            [13, 10],
+            [0, 17],
+            [-14, 10],
+          ],
+          "#463840",
+          c,
+        );
+        poly(
+          [
+            [-13, -8],
+            [-24, -13],
+            [-18, 1],
+            [-25, 10],
+            [-10, 8],
+          ],
+          c,
+        );
+        poly(
+          [
+            [13, -8],
+            [24, -13],
+            [18, 1],
+            [25, 10],
+            [10, 8],
+          ],
+          c,
+        );
+        poly(
+          [
+            [-8, -10],
+            [0, -15],
+            [8, -10],
+            [7, 4],
+            [0, 9],
+            [-7, 4],
+          ],
+          c,
+        );
+        line(-6, -5, -2, -4, "#ffe7bd", 2);
+        line(2, -4, 6, -5, "#ffe7bd", 2);
+        if (e.boss) {
+          poly(
+            [
+              [-13, -15],
+              [-19, -33],
+              [-5, -20],
+              [0, -30],
+              [5, -20],
+              [19, -33],
+              [13, -15],
+            ],
+            "#b9a2be",
+            "#f3d9b0",
+          );
+        }
+        if (e.type === "ranged") circle(20, 0, 5, "#f6d894");
+        ctx.restore();
+        if (e.hp < e.maxHp) {
+          ctx.fillStyle = "#0008";
+          ctx.fillRect(e.x - e.r, e.y + e.r + 8, e.r * 2, 3);
+          ctx.fillStyle = e.color;
+          ctx.fillRect(e.x - e.r, e.y + e.r + 8, (e.r * 2 * e.hp) / e.maxHp, 3);
+        }
+      }
+      const terrain = Array.from({ length: 260 }, (_, i) => ({
+        x: (i * 773 + 117) % 2600,
+        y: (i * 431 + 57) % 1600,
+        s: 8 + ((i * 17) % 22),
+        type: i % 4,
+      }));
+      function background() {
+        let ch = mode === "hunter" ? Math.min(4, bossIndex) : chapter,
+          pal = [
+            ["#172621", "#20342b", "#3b5140"],
+            ["#302b22", "#413729", "#65563b"],
+            ["#291e23", "#37262a", "#623a38"],
+            ["#202735", "#303d4b", "#586577"],
+            ["#171b2b", "#242c40", "#384359"],
+          ][ch];
+        ctx.fillStyle = pal[0];
+        ctx.fillRect(0, 0, WORLD.w, WORLD.h);
+        ctx.strokeStyle = pal[1];
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= 2600; x += 100) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, 1600);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= 1600; y += 100) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(2600, y);
+          ctx.stroke();
+        }
+        for (let t of terrain) {
+          if (
+            Math.abs(t.x - cam.x) > W / cam.z / 2 + 80 ||
+            Math.abs(t.y - cam.y) > H / cam.z / 2 + 80
+          )
+            continue;
+          if (t.type === 0) {
+            poly(
+              [
+                [t.x - t.s, t.y + 8],
+                [t.x - t.s * 0.7, t.y - t.s * 0.5],
+                [t.x + 4, t.y - t.s],
+                [t.x + t.s, t.y],
+                [t.x + 9, t.y + 10],
+              ],
+              pal[1],
+              pal[2],
+            );
+          } else if (ch === 0) {
+            line(t.x, t.y, t.x - 4, t.y - 10, pal[2], 1);
+            line(t.x, t.y, t.x + 5, t.y - 15, pal[2], 1);
+          } else if (ch === 2) {
+            line(t.x, t.y, t.x + 30, t.y + 14, "#96554b44", 2);
+            line(t.x + 30, t.y + 14, t.x + 47, t.y - 2, "#96554b44", 2);
+          } else circle(t.x, t.y, 1.5, pal[2]);
+        }
+        ctx.strokeStyle = "#bdc4b035";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(10, 10, 2580, 1580);
+      }
+      function drawBase(b) {
+        let c = b.team < 0 ? "#87969b" : colors[b.team],
+          r = b.core ? 39 : 28;
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.fillStyle = "#0006";
+        ctx.beginPath();
+        ctx.ellipse(0, 16, r + 15, r * 0.55, 0, 0, TAU);
+        ctx.fill();
+        let pts = Array.from({ length: 6 }, (_, i) => [
+          Math.cos((i * TAU) / 6) * r,
+          Math.sin((i * TAU) / 6) * r * 0.68 + 8,
+        ]);
+        poly(pts, "#24323b", c);
+        poly(
+          [
+            [-r * 0.65, 8],
+            [-r * 0.65, -20],
+            [0, -35],
+            [r * 0.65, -20],
+            [r * 0.65, 8],
+            [0, 23],
+          ],
+          "#354551",
+          c,
+        );
+        poly(
+          [
+            [-12, -8],
+            [0, -24],
+            [12, -8],
+            [0, 8],
+          ],
+          c,
+          "#dfe8dd",
+        );
+        if (b.core) {
+          line(-28, 4, -28, -40, c, 3);
+          poly(
+            [
+              [-28, -40],
+              [-7, -36],
+              [-28, -26],
+            ],
+            c,
+          );
+        }
+        let n = units.filter(
+          (u) => u.team === b.team && dist(u, b) < 90,
+        ).length;
+        ctx.fillStyle = "#ecf0df";
+        ctx.font = "bold 12px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          b.team < 0
+            ? "중립"
+            : `${b.team === 0 ? "아군" : `적 ${b.team}`} · ${n}`,
+          0,
+          -49,
+        );
+        ctx.fillStyle = "#0008";
+        ctx.fillRect(-35, 37, 70, 5);
+        ctx.fillStyle = c;
+        ctx.fillRect(-35, 37, 70 * clamp(b.hp / b.maxHp, 0, 1), 5);
+        ctx.restore();
+      }
+      function drawFX(f) {
+        const p = clamp(1 - f.t / Math.max(0.001, f.max), 0, 1),
+          fade = clamp(f.t / Math.max(0.001, f.max), 0, 1);
+        ctx.save();
+        if (f.type === "spark") {
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = fade;
+          ctx.shadowColor = f.color; ctx.shadowBlur = 12;
+          circle(f.x, f.y, f.r * (1.35 - p * 0.4), f.color);
+          if (f.vx !== undefined) line(f.x, f.y, f.x - f.vx * 0.035, f.y - f.vy * 0.035, f.color, Math.max(1, f.r));
+        } else if (f.type === "link") {
+          ctx.globalCompositeOperation = "lighter";
+          let dx=f.tx-f.x, dy=f.ty-f.y, len=Math.max(1,Math.hypot(dx,dy)), nx=-dy/len, ny=dx/len;
+          ctx.shadowColor=f.color; ctx.shadowBlur=16; ctx.beginPath(); ctx.moveTo(f.x,f.y);
+          for(let n=1;n<7;n++){let q=n/7,w=Math.sin(n*8.13+elapsed*35)*6;ctx.lineTo(f.x+dx*q+nx*w,f.y+dy*q+ny*w)}
+          ctx.lineTo(f.tx,f.ty); ctx.strokeStyle=f.color; ctx.globalAlpha=.25*fade; ctx.lineWidth=5; ctx.stroke(); ctx.globalAlpha=.95*fade; ctx.lineWidth=1.5; ctx.stroke(); circle(f.tx,f.ty,3+p*5,"#fff");
+        } else if (f.type === "beam") {
+          let ex=f.x+Math.cos(f.angle)*f.r, ey=f.y+Math.sin(f.angle)*f.r;
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=24;
+          ctx.globalAlpha=.12*fade; line(f.x,f.y,ex,ey,f.color,f.width*2.1);
+          ctx.globalAlpha=.45*fade; line(f.x,f.y,ex,ey,f.color,f.width);
+          ctx.globalAlpha=fade; line(f.x,f.y,ex,ey,"#fffbe7",Math.max(2,f.width*.18));
+          for(let n=0;n<7;n++){let q=(n/7+elapsed*1.5)%1;circle(f.x+(ex-f.x)*q,f.y+(ey-f.y)*q,2,"#fff")}
+          circle(ex,ey,Math.max(4,f.width*.28),f.color);
+        } else if (f.type === "danger" || f.type === "warning") {
+          let dc=f.type === "danger" ? "#ff6469" : f.color;
+          ctx.globalAlpha=fade; circle(f.x,f.y,f.r,f.type === "danger" ? "#ff51551a" : null,dc);
+          ctx.save(); ctx.translate(f.x,f.y); ctx.rotate(elapsed*2.5); for(let n=0;n<12;n++){let a=n*TAU/12;line(Math.cos(a)*f.r*.82,Math.sin(a)*f.r*.82,Math.cos(a)*f.r,Math.sin(a)*f.r,dc,n%3===0?3:1)} ctx.restore();
+          circle(f.x,f.y,f.r*(1-p),null,dc); weaponSpark(f.x,f.y,dc,12);
+        } else if (f.type === "slash") {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=16;
+          for(let n=0;n<3;n++){ctx.globalAlpha=fade*(.95-n*.22);ctx.strokeStyle=n===0?"#fff9df":f.color;ctx.lineWidth=(10-n*2)*fade+1;ctx.beginPath();ctx.arc(f.x,f.y,f.r-n*7,f.angle-1.15+p*.5,f.angle+1.15+p*.6);ctx.stroke()}
+        } else if (f.type === "rain") {
+          ctx.globalCompositeOperation="lighter";
+          for(let n=0;n<18;n++){let a=n*2.399,rr=Math.sqrt(n/18)*f.r,x=f.x+Math.cos(a)*rr,y=f.y+Math.sin(a)*rr,fall=p*75;line(x-18,y-75+fall,x,y+fall,n%4===0?"#fff":f.color,n%4===0?3:2);if(p>.55)circle(x,y+8,3,f.color)}
+          ctx.globalAlpha=.25*fade; circle(f.x,f.y,f.r*p,null,f.color);
+        } else if (f.type === "sigil" || f.type === "arcane") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade;
+          runeCircle(f.x,f.y,f.r*(.72+p*.28),f.color,elapsed*1.7*(f.spin||1),f.type === "arcane" ? 8 : 6);
+          ctx.globalAlpha=.15*fade; circle(f.x,f.y,f.r*.72,f.color);
+        } else if (f.type === "burst") {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=20; ctx.globalAlpha=fade*.28; circle(f.x,f.y,f.r*p,f.color); ctx.globalAlpha=fade;
+          for(let n=0;n<10;n++){let a=n*TAU/10;line(f.x+Math.cos(a)*f.r*p*.28,f.y+Math.sin(a)*f.r*p*.28,f.x+Math.cos(a)*f.r*p,f.y+Math.sin(a)*f.r*p,f.color,2)}
+          circle(f.x,f.y,f.r*p,null,"#fff3cf");
+        } else if (f.type === "muzzle") {
+          ctx.translate(f.x,f.y); ctx.rotate(f.angle||0); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade;
+          poly([[0,0],[f.r,-10*fade],[f.r*.55,0],[f.r,10*fade]],f.color); circle(0,0,8*fade,"#fff");
+        } else if (f.type === "afterimage") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=.5*fade; ctx.translate(f.x,f.y); ctx.rotate(f.angle||0);
+          for(let n=0;n<4;n++){ctx.globalAlpha=(.5-n*.1)*fade;line(-n*14,0,-f.r-n*22,0,f.color,10-n*2)}
+        } else if (f.type === "holy") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=28;
+          circle(f.x,f.y,f.r*p,null,f.color); circle(f.x,f.y,f.r*p*.72,null,"#fff9c9");
+          line(f.x-f.r*p*.55,f.y,f.x+f.r*p*.55,f.y,"#fff4a4",4); line(f.x,f.y-f.r*p*.55,f.x,f.y+f.r*p*.55,"#fff4a4",4);
+        } else if (f.type === "cross") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; let a=f.angle||0;
+          for(let n=0;n<4;n++){let aa=a+n*Math.PI/2;line(f.x,f.y,f.x+Math.cos(aa)*f.r*p,f.y+Math.sin(aa)*f.r*p,n%2?f.color:"#fff8bf",7-n)}
+        } else if (f.type === "blood") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=16;
+          for(let n=0;n<8;n++){let aa=(f.angle||0)+(n-3.5)*.22,rr=f.r*(.35+p*.7);line(f.x+Math.cos(aa)*20,f.y+Math.sin(aa)*20,f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr,n%2?f.color:"#ffb06c",3+n%3)}
+        } else if (f.type === "void") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=20;
+          circle(f.x,f.y,f.r*(.22+p*.58),"#130c1f",f.color); runeCircle(f.x,f.y,f.r*(.55+p*.35),f.color,-elapsed*1.35,7);
+          for(let n=0;n<5;n++){let aa=-elapsed*2+n*TAU/5,rr=f.r*(.35+.45*p);circle(f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr,3+n%2,f.color)}
+        } else if (f.type === "target") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.translate(f.x,f.y); ctx.rotate(f.angle||0);
+          circle(0,0,f.r*(.6+.4*p),null,f.color); line(-f.r,0,-f.r*.35,0,f.color,2);line(f.r*.35,0,f.r,0,f.color,2);line(0,-f.r,0,-f.r*.35,f.color,2);line(0,f.r*.35,0,f.r,f.color,2);circle(0,0,4,"#fff");
+        } else if (f.type === "railflash") {
+          ctx.translate(f.x,f.y); ctx.rotate(f.angle||0); ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=28;
+          poly([[0,0],[f.r*p,-16*fade],[f.r*.65*p,0],[f.r*p,16*fade]],f.color); line(0,0,f.r*p,0,"#fff",4);
+        } else if (f.type === "storm") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.shadowColor=f.color; ctx.shadowBlur=18; circle(f.x,f.y,f.r*p*.72,null,f.color);
+          for(let n=0;n<6;n++){let aa=n*TAU/6+elapsed*2,rr=f.r*(.3+.55*p),x=f.x+Math.cos(aa)*rr,y=f.y+Math.sin(aa)*rr;ctx.beginPath();ctx.moveTo(f.x,f.y);let mx=(f.x+x)/2+Math.sin(elapsed*25+n)*12,my=(f.y+y)/2+Math.cos(elapsed*22+n)*12;ctx.lineTo(mx,my);ctx.lineTo(x,y);ctx.strokeStyle=n%2?f.color:"#fff";ctx.lineWidth=2;ctx.stroke()}
+        } else if (f.type === "wind") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; ctx.strokeStyle=f.color; ctx.lineWidth=2;
+          for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(f.x,f.y,f.r*(.35+p*.55)-n*9,(f.angle||0)-1.4+n*.16,(f.angle||0)+1.4+n*.2);ctx.stroke()}
+        } else if (f.type === "steel") {
+          ctx.globalCompositeOperation="lighter"; ctx.globalAlpha=fade; let aa=f.angle||0;
+          for(let n=-1;n<=1;n++){ctx.strokeStyle=n===0?"#fff4cf":f.color;ctx.lineWidth=5-Math.abs(n);ctx.beginPath();ctx.arc(f.x,f.y,f.r*(.6+.45*p)+n*7,aa-1.0,aa+1.0);ctx.stroke()}
+        } else if (f.type === "meteor") {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=26;
+          ctx.globalAlpha=fade*.3; circle(f.x,f.y,f.r*(.35+p*.8),f.color);
+          ctx.globalAlpha=fade; circle(f.x,f.y,f.r*p,null,"#fff0bd"); circle(f.x,f.y,f.r*p*.72,null,f.color);
+          line(f.x-180*(1-p),f.y-350*(1-p),f.x,f.y,f.color,42*fade+18); line(f.x-180*(1-p),f.y-350*(1-p),f.x,f.y,"#fff3c8",12*fade+5);
+          for(let n=0;n<12;n++){let aa=n*TAU/12+elapsed,rr=f.r*p;circle(f.x+Math.cos(aa)*rr,f.y+Math.sin(aa)*rr*.55,2+n%3,f.color)}
+        } else {
+          ctx.globalCompositeOperation="lighter"; ctx.shadowColor=f.color; ctx.shadowBlur=14; ctx.globalAlpha=fade;
+          circle(f.x,f.y,f.r*(.2+p*.8),null,f.color); ctx.globalAlpha=fade*.35; circle(f.x,f.y,f.r*(.05+p*.6),null,"#fff");
+        }
+        ctx.restore();
+      }
+      function draw() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.fillStyle = "#091017";
+        ctx.fillRect(0, 0, W, H);
+        ctx.save();
+        ctx.translate(
+          W / 2 - cam.x * cam.z + (shake ? rnd(-shake, shake) : 0),
+          H / 2 - cam.y * cam.z + (shake ? rnd(-shake, shake) : 0),
+        );
+        ctx.scale(cam.z, cam.z);
+        background();
+        if (mode === "dom") {
+          for (let b of bases)
+            for (let id of b.routes) {
+              let t = bases.find((t) => t.id === id);
+              if (!t) continue;
+              ctx.setLineDash([12, 10]);
+              ctx.lineDashOffset = -elapsed * 22;
+              line(b.x, b.y, t.x, t.y, colors[b.team] + "aa", 2);
+              ctx.setLineDash([]);
+              let a = ang(b, t),
+                x = (b.x + t.x) / 2,
+                y = (b.y + t.y) / 2;
+              poly(
+                [
+                  [x + Math.cos(a) * 10, y + Math.sin(a) * 10],
+                  [x + Math.cos(a + 2.5) * 9, y + Math.sin(a + 2.5) * 9],
+                  [x + Math.cos(a - 2.5) * 9, y + Math.sin(a - 2.5) * 9],
+                ],
+                colors[b.team],
+              );
+            }
+          for (let b of bases) drawBase(b);
+          for (let u of units) {
+            if (
+              Math.abs(u.x - cam.x) > W / cam.z / 2 + 60 ||
+              Math.abs(u.y - cam.y) > H / cam.z / 2 + 60
+            )
+              continue;
+            person(u, 0.44 + u.tier * 0.11, colors[u.team]);
+            if (u.tier > 1) {
+              ctx.fillStyle = u.tier === 5 ? "#f4d489" : colors[u.team];
+              ctx.font = "10px system-ui";
+              ctx.textAlign = "center";
+              ctx.fillText("◆".repeat(u.tier - 1), u.x, u.y - 35);
+            }
+          }
+          if (drag) {
+            let p = toWorld(pointer);
+            line(drag.x, drag.y, p.x, p.y, "#ead3a0", 2);
+          }
+        } else if (mode === "hunter" && hero) {
+          for (let z of zones) {
+            let zj = z.ownerJob || job,
+              ZP = pal(zj),
+              pulse = 0.92 + Math.sin(elapsed * 4 + z.r) * 0.04;
+            ctx.save();
+            ctx.globalCompositeOperation = "lighter";
+            ctx.globalAlpha = 0.09;
+            circle(z.x, z.y, z.r * pulse, z.color);
+            ctx.globalAlpha = 0.55;
+            ctx.setLineDash([8, 12]);
+            ctx.lineDashOffset = -elapsed * 35;
+            circle(z.x, z.y, z.r * pulse, null, z.color);
+            ctx.setLineDash([]);
+            if (["Mage", "Archmage", "Warlock", "Summoner"].includes(zj))
+              runeCircle(z.x, z.y, z.r * 0.78, z.color, elapsed * (zj === "Warlock" ? -0.7 : 0.7), zj === "Archmage" ? 8 : 6);
+            if (zj === "Paladin") {
+              circle(z.x, z.y, z.r * 0.62, null, ZP.s);
+              line(z.x - z.r * 0.3, z.y, z.x + z.r * 0.3, z.y, ZP.s, 3);
+              line(z.x, z.y - z.r * 0.3, z.x, z.y + z.r * 0.3, ZP.s, 3);
+            }
+            if (zj === "Stormracer")
+              for (let n = 0; n < 5; n++) {
+                let aa = elapsed * 3 + (n * TAU) / 5,
+                  x1 = z.x + Math.cos(aa) * z.r * 0.45,
+                  y1 = z.y + Math.sin(aa) * z.r * 0.45,
+                  x2 = z.x + Math.cos(aa + 0.25) * z.r * 0.88,
+                  y2 = z.y + Math.sin(aa + 0.25) * z.r * 0.88;
+                line(x1, y1, x2, y2, n % 2 ? z.color : "#fff", 2);
+              }
+            ctx.restore();
+            if (z.spin)
+              for (let n = 0; n < 4; n++) {
+                let aa = elapsed * 5 + (n * TAU) / 4;
+                line(z.x + Math.cos(aa) * (z.r - 24), z.y + Math.sin(aa) * (z.r - 24), z.x + Math.cos(aa) * z.r, z.y + Math.sin(aa) * z.r, n % 2 ? z.color : ZP.s, 5);
+              }
+            if (z.golem)
+              person({ x: z.x, y: z.y, job: "Knight", angle: 0, anim: elapsed * 3 }, 2, z.color);
+            if (z.trap) {
+              poly([[z.x - 16, z.y],[z.x, z.y - 16],[z.x + 16, z.y],[z.x, z.y + 16]], null, z.color);
+              glowCircle(z.x, z.y, 27, z.color, 0.4, 1);
+            }
+          }
+          for (let e of [...enemies].sort((a, b) => a.y - b.y)) monster(e);
+          ctx.globalAlpha = hero.inv > 0 ? 0.65 : 1;
+          person(hero, 1.05, col(job), true);
+          ctx.globalAlpha = 1;
+          if (hero.shield > 0) circle(hero.x, hero.y, 34, null, "#ece1a3");
+          for (let p of shots) {
+            if (p.kind === "axe") {
+              ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(elapsed * 15); ctx.globalCompositeOperation = "lighter"; ctx.shadowColor = p.color; ctx.shadowBlur = 12;
+              poly([[-18,-8],[15,-8],[9,0],[15,8],[-18,8],[-8,0]], p.color, "#fff0cc"); ctx.restore();
+            } else {
+              let aa = Math.atan2(p.vy, p.vx), pj = p.ownerJob || job, PP = pal(pj);
+              ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.shadowColor = p.color; ctx.shadowBlur = p.enemy ? 6 : 10;
+              if (p.enemy) {
+                line(p.x,p.y,p.x-Math.cos(aa)*20,p.y-Math.sin(aa)*20,p.color,4); circle(p.x,p.y,p.r,p.color);
+              } else if (p.kind === "orb" || ["Mage","Archmage","Warlock","Summoner"].includes(pj)) {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,p.color,6);
+                circle(p.x,p.y,p.r+2,PP.s,p.color); circle(p.x,p.y,Math.max(2,p.r*.45),"#fff");
+              } else if (pj === "Sniper") {
+                line(p.x,p.y,p.x-Math.cos(aa)*38,p.y-Math.sin(aa)*38,PP.s,3); circle(p.x,p.y,3,"#fff");
+              } else if (pj === "Stormracer") {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,p.color,3); line(p.x-4,p.y-4,p.x+4,p.y+4,"#fff",1); circle(p.x,p.y,3,PP.s);
+              } else {
+                line(p.x,p.y,p.x-Math.cos(aa)*28,p.y-Math.sin(aa)*28,PP.s,2.5);
+                poly([[p.x+Math.cos(aa)*7,p.y+Math.sin(aa)*7],[p.x+Math.cos(aa+2.55)*7,p.y+Math.sin(aa+2.55)*7],[p.x+Math.cos(aa-2.55)*7,p.y+Math.sin(aa-2.55)*7]],p.color);
+              }
+              ctx.restore();
+            }
+          }
+        }
+        for (let f of fx) drawFX(f);
+        ctx.restore();
+        let gr = ctx.createRadialGradient(
+          W / 2,
+          H / 2,
+          H * 0.2,
+          W / 2,
+          H / 2,
+          Math.max(W, H) * 0.7,
+        );
+        gr.addColorStop(0, "#0000");
+        gr.addColorStop(1, "#0008");
+        ctx.fillStyle = gr;
+        ctx.fillRect(0, 0, W, H);
+        drawMap();
+      }
+      function drawMap() {
+        mc.fillStyle = "#0b151b";
+        mc.fillRect(0, 0, 312, 180);
+        let sx = 312 / WORLD.w,
+          sy = 180 / WORLD.h;
+        if (mode === "dom")
+          for (let b of bases) {
+            mc.fillStyle = b.team < 0 ? "#77858a" : colors[b.team];
+            mc.fillRect(b.x * sx - 4, b.y * sy - 4, 8, 8);
+          }
+        else if (mode === "hunter" && hero) {
+          for (let e of enemies) {
+            mc.fillStyle = e.boss ? "#eac482" : "#ad767a";
+            mc.fillRect(e.x * sx, e.y * sy, e.boss ? 6 : 2, e.boss ? 6 : 2);
+          }
+          mc.fillStyle = "#bce1d4";
+          mc.fillRect(hero.x * sx - 3, hero.y * sy - 3, 6, 6);
+        }
+        mc.strokeStyle = "#c0d5d366";
+        mc.strokeRect(
+          (cam.x - W / 2 / cam.z) * sx,
+          (cam.y - H / 2 / cam.z) * sy,
+          (W / cam.z) * sx,
+          (H / cam.z) * sy,
+        );
+      }
+      function toWorld(p) {
+        return {
+          x: (p.x - W / 2) / cam.z + cam.x,
+          y: (p.y - H / 2) / cam.z + cam.y,
+        };
+      }
+      function boundCam() {
+        let x = W / 2 / cam.z,
+          y = H / 2 / cam.z;
+        cam.x = x * 2 > WORLD.w ? WORLD.w / 2 : clamp(cam.x, x, WORLD.w - x);
+        cam.y = y * 2 > WORLD.h ? WORLD.h / 2 : clamp(cam.y, y, WORLD.h - y);
+      }
+      $("hub").onclick = hub;
+      $("pause").onclick = pause;
+      $("sound").onclick = () => {
+        muted = !muted;
+        $("sound").textContent = "소리 " + (muted ? "OFF" : "ON");
+        tone(400);
+      };
+      $("save").onclick = saveGame;
+      $("focus").onclick = () => {
+        let b =
+          bases.find((b) => b.team === 0 && b.core) ||
+          bases.find((b) => b.team === 0);
+        if (b) {
+          cam.x = b.x;
+          cam.y = b.y;
+          boundCam();
+        }
+      };
+      const KEY_MAP = {
+        KeyW: "ArrowUp",
+        KeyS: "ArrowDown",
+        KeyA: "ArrowLeft",
+        KeyD: "ArrowRight",
+      };
+
+      addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          pause();
+          return;
+        }
+        if (state === "choice" && ["1", "2", "3"].includes(e.key)) {
+          document.querySelectorAll(".choice")[+e.key - 1]?.click();
+          return;
+        }
+        if (state !== "play") return;
+        if (e.key.startsWith("Arrow")) {
+          e.preventDefault();
+          keys[e.key] = true;
+        } else if (KEY_MAP[e.code]) {
+          e.preventDefault();
+          keys[KEY_MAP[e.code]] = true;
+        }
+        if (!e.repeat && SK.includes(e.key.toLowerCase())) {
+          e.preventDefault();
+          cast(e.key.toLowerCase());
+        }
+      });
+      addEventListener("keyup", (e) => {
+        if (e.key.startsWith("Arrow")) {
+          delete keys[e.key];
+        } else if (KEY_MAP[e.code]) {
+          delete keys[KEY_MAP[e.code]];
+        }
+      });
+
+      cv.addEventListener("pointerdown", (e) => {
+        if (state !== "play") return;
+        pointer = { x: e.clientX, y: e.clientY };
+        let p = toWorld(pointer);
+        if (mode === "hunter") {
+          target = p;
+          if (e.pointerType === "mouse") aim = p;
+        } else {
+          drag =
+            bases.find((b) => b.team === 0 && dist(b, p) < 55) || null;
+          pan = { x: e.clientX, y: e.clientY };
+        }
+      });
+      cv.addEventListener("pointermove", (e) => {
+        pointer = { x: e.clientX, y: e.clientY };
+        if (state !== "play") return;
+        if (mode === "hunter") {
+          if (e.pointerType === "mouse") aim = toWorld(pointer);
+        } else if (pan && !drag) {
+          cam.x -= (e.clientX - pan.x) / cam.z;
+          cam.y -= (e.clientY - pan.y) / cam.z;
+          pan = { x: e.clientX, y: e.clientY };
+          boundCam();
+        }
+      });
+      cv.addEventListener("pointerup", (e) => {
+        if (state === "play" && drag) {
+          let p = toWorld({ x: e.clientX, y: e.clientY }),
+            b = bases.find((b) => dist(b, p) < 55);
+          if (b === drag) {
+            let removed = [...drag.routes];
+            drag.routes = [];
+            for (let u of units)
+              if (
+                u.team === 0 &&
+                u.home === drag.id &&
+                removed.includes(u.target)
+              )
+                u.target = null;
+          } else if (b) {
+            let off = drag.routes.includes(b.id);
+            drag.routes = off
+              ? drag.routes.filter((id) => id !== b.id)
+              : [...drag.routes, b.id];
+            for (let u of units)
+              if (u.team === 0 && dist(u, drag) < 140)
+                u.target = off ? null : b.id;
+          }
+        }
+        drag = null;
+        pan = null;
+      });
+      cv.addEventListener("pointercancel", () => {
+        drag = null;
+        pan = null;
+      });
+      cv.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          if (state !== "play") return;
+          cam.z = clamp(cam.z * Math.exp(-e.deltaY * 0.001), 0.35, 1.4);
+          boundCam();
+        },
+        { passive: false },
+      );
+      let padId = null;
+      function movePad(e) {
+        let r = $("pad").getBoundingClientRect(),
+          x = e.clientX - r.left - r.width / 2,
+          y = e.clientY - r.top - r.height / 2,
+          l = Math.hypot(x, y);
+        joy = { x: x / Math.max(l, 38), y: y / Math.max(l, 38) };
+        $("stick").style.transform =
+          `translate(${joy.x * 32}px,${joy.y * 32}px)`;
+        aim = null;
+        target = null;
+      }
+      $("pad").addEventListener("pointerdown", (e) => {
+        if (state !== "play") return;
+        padId = e.pointerId;
+        movePad(e);
+      });
+      $("pad").addEventListener("pointermove", (e) => {
+        if (e.pointerId === padId) movePad(e);
+      });
+      for (let evt of ["pointerup", "pointercancel"])
+        $("pad").addEventListener(evt, (e) => {
+          if (e.pointerId === padId) {
+            padId = null;
+            joy = { x: 0, y: 0 };
+            $("stick").style.transform = "none";
+          }
+        });
+      let last = performance.now();
+      function loop(now) {
+        let dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        if (state === "play") {
+          if (mode === "hunter") updateHunter(dt);
+          else if (mode === "dom") updateDom(dt);
+          if (state === "play") {
+            let due = [];
+            for (let task of tasks) {
+              task.t -= dt;
+              if (task.t <= 0) due.push(task);
+            }
+            tasks = tasks.filter((t) => t.t > 0);
+            for (let task of due) {
+              if (state !== "play") break;
+              task.fn();
+            }
+            for (let f of fx) {
+              f.t -= dt;
+              if (f.vx !== undefined) {
+                f.x += f.vx * dt;
+                f.y += f.vy * dt;
+              }
+            }
+            fx = fx.filter((f) => f.t > 0);
+            shake = Math.max(0, shake - dt * 20);
+          }
+        }
+        hudClock -= dt;
+        if (hudClock <= 0) {
+          hudClock = 0.1;
+          updateHUD();
+        }
+        draw();
+        requestAnimationFrame(loop);
+      }
+      hub();
+      requestAnimationFrame(loop);
+    </script>
+  </body>
+</html>
