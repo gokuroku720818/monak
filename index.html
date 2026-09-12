@@ -1297,6 +1297,7 @@
         }
       }
       function updateHunter(dt) {
+        if (!hero || state !== "play") return;
         elapsed += dt;
         hero.inv = Math.max(0, hero.inv - dt);
         hero.buff = Math.max(0, hero.buff - dt);
@@ -1922,6 +1923,15 @@
         }
         let time = `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, "0")}`;
         if (mode === "hunter") {
+          // 직업 선택 중에는 mode만 hunter이고 hero는 아직 생성되지 않는다.
+          // 이때 hero.hp를 읽으면 첫 HUD 갱신에서 예외가 나며 게임 루프가 멈춘다.
+          if (!hero) {
+            $("status").textContent = "프론티어 헌터 · 직업 선택 중";
+            $("vitals").innerHTML = "";
+            $("boss").innerHTML = "";
+            $("hint").textContent = "직업을 선택하면 전투가 시작됩니다.";
+            return;
+          }
           $("status").innerHTML =
             `${names[job]} / <span class="gold">LV.${level}</span><br>${time} · ${kills} 처치 · 지역 ${Math.min(4, bossIndex + 1)}/4`;
           $("vitals").innerHTML =
@@ -2897,4 +2907,3 @@
     </script>
   </body>
 </html>
-
