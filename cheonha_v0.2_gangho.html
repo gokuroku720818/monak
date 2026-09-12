@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>天下 v0.2 — 강호입문</title>
+<style>
+:root{
+  --bg:#080808;--panel:#151411;--panel2:#1d1a15;--ink:#eee5d3;--muted:#938a7c;
+  --line:#393226;--gold:#d5ae68;--gold2:#8f6d3d;--red:#bb5a51;--blue:#6d90a6;
+  --green:#829a6c;--purple:#9777a7;
+}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;background:
+radial-gradient(circle at 50% -15%,#2a241b 0,#0e0d0b 33%,#070707 72%);
+color:var(--ink);font-family:"Noto Serif KR","Apple SD Gothic Neo","Malgun Gothic",serif}
+button{font:inherit} body{overflow-x:hidden}
+#app{max-width:1420px;margin:0 auto;padding:14px 12px 30px}
+.top{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;border-bottom:1px solid var(--line);padding:10px 3px 14px;margin-bottom:13px}
+.brand{display:flex;align-items:baseline;gap:13px}.brand h1{margin:0;font-size:clamp(31px,5vw,58px);font-weight:500;letter-spacing:.22em;color:#f2ddb2;text-shadow:0 0 30px #d8ad6725}
+.brand small{font-size:10px;letter-spacing:.22em;color:var(--muted)}.date{text-align:right;color:var(--gold);font-size:12px;line-height:1.7}
+.layout{display:grid;grid-template-columns:285px minmax(0,1fr) 330px;gap:13px}
+.panel{background:linear-gradient(180deg,#181612f4,#11100ef4);border:1px solid var(--line);border-radius:9px;overflow:hidden;box-shadow:0 16px 36px #0007}
+.panel+.panel{margin-top:12px}.panel h2{margin:0;padding:11px 13px;border-bottom:1px solid var(--line);background:#1c1914;font-size:12px;letter-spacing:.15em;color:var(--gold);font-weight:600}
+.pad{padding:13px}.charname{font-size:23px;letter-spacing:.18em}.sub{font-size:11px;color:var(--muted);margin:4px 0 12px}
+.stat{display:grid;grid-template-columns:60px 1fr 48px;gap:7px;align-items:center;font-size:11px;margin:8px 0}
+.bar{height:7px;border:1px solid #363027;background:#25211b;border-radius:99px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#9c7644,#d7b16c)}
+.fill.hp{background:linear-gradient(90deg,#753530,#c05b52)}.fill.qi{background:linear-gradient(90deg,#3e6278,#77a3bb)}.v{text-align:right;font-size:10px;color:#c1b7a6}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.kv>div{padding:8px;background:#0d0d0b;border:1px solid #29251e;border-radius:6px}
+.kv b{display:block;font-size:9px;color:#8e8577;font-weight:500;margin-bottom:4px}.kv span{font-size:12px}
+.story{border:1px solid #5c482d;background:linear-gradient(145deg,#221b12,#15130f);border-radius:8px;padding:12px;position:relative;overflow:hidden}
+.story:after{content:"";position:absolute;right:-28px;top:-34px;width:100px;height:100px;border:1px solid #6f573640;border-radius:50%}
+.story .chapter{font-size:9px;color:#987b50;letter-spacing:.18em}.story .title{font-size:17px;color:#e9cc92;margin:4px 0 6px}.story .obj{font-size:11px;line-height:1.6;color:#c7bda9}
+.story .progress{margin-top:9px;font-size:9px;color:#867d70}
+.location{font-size:20px;color:#ead4a8;margin-bottom:4px}.scene{font-size:12px;line-height:1.7;color:#9e9587;min-height:43px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px}
+.action,.npcbtn,.smallbtn,.choice,.combatbtn{appearance:none;border:1px solid #4a4030;background:linear-gradient(180deg,#272118,#17140f);color:#eadfc9;border-radius:6px;cursor:pointer}
+.action{padding:12px 10px;text-align:left;transition:.14s}.action:hover,.npcbtn:hover,.smallbtn:hover,.choice:hover,.combatbtn:hover{border-color:#a27d43;background:#2c2519}
+.action strong{display:block;font-size:12px;margin-bottom:3px}.action small{font-size:9px;color:#898173}
+.feed{height:330px;overflow:auto;padding:2px 12px 12px}.news{padding:10px 1px;border-bottom:1px solid #28231c}.news:last-child{border-bottom:0}
+.news .when{font-size:9px;color:#776e61;margin-bottom:3px}.news .txt{font-size:11px;line-height:1.65;color:#d9cfbc}.news.major .txt{color:#efc982}.news.danger .txt{color:#dc8b82}.news.good .txt{color:#abc395}
+.sectionTitle{font-size:10px;color:#9a8f7d;margin:11px 0 7px;letter-spacing:.08em}.npcgrid{display:grid;gap:7px}
+.npcbtn{display:grid;grid-template-columns:1fr auto;gap:7px;text-align:left;padding:9px}.npcbtn .nm{font-size:12px}.npcbtn .meta{font-size:9px;color:#837a6d;margin-top:3px}.badge{font-size:9px;border:1px solid #40372a;border-radius:99px;padding:3px 6px;align-self:center;color:#c8b593}
+.tech{padding:8px 0;border-bottom:1px solid #28231c}.tech:last-child{border:0}.tech .tn{font-size:11px;color:#dfcfaf}.tech .tm{font-size:9px;color:#82796c;margin-top:3px}
+.meter{height:4px;background:#28231c;border-radius:99px;overflow:hidden;margin-top:5px}.meter i{display:block;height:100%;background:#9b7746}
+.factionrow{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid #28231c}.factionrow:last-child{border:0}.factionrow .n{font-size:11px}.factionrow .m{font-size:9px;color:#81786b;margin-top:3px}
+.tabs{display:flex;gap:5px;padding:7px;border-bottom:1px solid var(--line);background:#111}.tab{border:1px solid #353026;background:#17140f;color:#8f8678;border-radius:5px;padding:6px 9px;font-size:9px;cursor:pointer}.tab.on{border-color:#8c6c3b;color:#ebd29f;background:#211c14}
+.detail{height:180px;overflow:auto;padding:9px 11px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:9px;line-height:1.55;color:#999083}
+.footerbar{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.smallbtn{padding:7px 10px;font-size:9px}
+.overlay{position:fixed;inset:0;background:#000c;display:none;place-items:center;padding:16px;z-index:50}.overlay.show{display:grid}
+.modal{width:min(780px,100%);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#191610,#11100d);border:1px solid #665033;border-radius:10px;box-shadow:0 28px 90px #000;padding:17px}
+.close{float:right;border:0;background:transparent;color:#8c8375;font-size:19px;cursor:pointer}.modal h3{margin:0 0 9px;color:#e9c98e;font-size:20px}.modal p{font-size:12px;line-height:1.8;color:#cfc4af}
+.quote{margin:12px 0;padding:11px 12px;border-left:2px solid #7e6038;background:#0d0c0a;color:#ded2bd;font-size:12px;line-height:1.75}
+.choicegrid{display:grid;gap:7px;margin-top:12px}.choice{padding:10px;text-align:left;font-size:11px}.choice small{display:block;color:#81786c;font-size:9px;margin-top:3px}
+.profile{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.profile>div{background:#0d0c0a;border:1px solid #2e281f;border-radius:6px;padding:9px}.profile b{display:block;font-size:9px;color:#887e70;margin-bottom:4px}.profile span{font-size:11px}
+.relgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.rel{padding:7px;background:#0e0d0a;border:1px solid #2b261f;border-radius:5px;text-align:center}.rel b{display:block;font-size:9px;color:#82786b}.rel span{font-size:13px}
+.combatHead{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}.fighter{text-align:center}.fighter b{display:block;font-size:13px}.fighter small{font-size:9px;color:#81796c}.vs{color:#a88046;font-size:12px}
+.hpbig{height:9px;background:#29231c;border-radius:99px;overflow:hidden;margin-top:6px;border:1px solid #372e24}.hpbig i{display:block;height:100%;background:#b9554d}
+.combatlog{height:150px;overflow:auto;background:#0b0a08;border:1px solid #2d271f;border-radius:6px;margin:12px 0;padding:9px;font-size:10px;line-height:1.65;color:#bdb3a2}
+.combatgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.combatbtn{padding:10px;text-align:left;font-size:10px}.combatbtn small{display:block;font-size:8px;color:#81776b;margin-top:3px}
+.dead{opacity:.45;text-decoration:line-through}.gold{color:#dfbd7f}.red{color:#d8786f}.green{color:#a6bd92}.muted{color:#82796d}
+@media(max-width:1050px){.layout{grid-template-columns:260px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}.right .panel{margin-top:0}}
+@media(max-width:700px){#app{padding:8px}.top{grid-template-columns:1fr}.date{text-align:left}.layout{grid-template-columns:1fr}.right{display:block}.right .panel{margin-top:12px}.actions{grid-template-columns:1fr}.feed{height:270px}.relgrid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="brand"><h1>天下</h1><small>v0.2 · 江湖入門</small></div>
+    <div class="date" id="date"></div>
+  </div>
+  <div class="layout">
+    <aside>
+      <section class="panel">
+        <h2>人物 · 플레이어</h2>
+        <div class="pad">
+          <div class="charname" id="pname"></div><div class="sub" id="psub"></div>
+          <div class="stat"><span>체력</span><div class="bar"><div class="fill hp" id="hpbar"></div></div><span class="v" id="hpv"></span></div>
+          <div class="stat"><span>내공</span><div class="bar"><div class="fill qi" id="qibar"></div></div><span class="v" id="qiv"></span></div>
+          <div class="stat"><span>경지</span><div class="bar"><div class="fill" id="xpbar"></div></div><span class="v" id="xpv"></span></div>
+          <div class="kv">
+            <div><b>무공 경지</b><span id="realm"></span></div><div><b>소속</b><span id="pfaction"></span></div>
+            <div><b>은자</b><span id="money"></span></div><div><b>명성</b><span id="fame"></span></div>
+            <div><b>문파 지위</b><span id="prank"></span></div><div><b>공헌도</b><span id="contrib"></span></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>武功 · 익힌 무공</h2><div class="pad" id="techniques"></div>
+      </section>
+      <section class="panel">
+        <h2>天下 · 세계 현황</h2><div class="pad" id="worldstats"></div>
+      </section>
+    </aside>
+
+    <main>
+      <section class="panel">
+        <h2>主線 · 메인스토리</h2>
+        <div class="pad"><div class="story">
+          <div class="chapter" id="storyChapter"></div><div class="title" id="storyTitle"></div>
+          <div class="obj" id="storyObj"></div><div class="progress" id="storyProgress"></div>
+        </div></div>
+      </section>
+
+      <section class="panel">
+        <h2>行動 · 강호생활</h2>
+        <div class="pad">
+          <div class="location" id="location"></div><div class="scene" id="scene"></div>
+          <div class="actions" id="actions"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>天下小識 · 천하소식</h2><div class="feed" id="feed"></div>
+      </section>
+
+      <section class="panel">
+        <div class="tabs">
+          <button class="tab on" data-tab="people">인물</button><button class="tab" data-tab="factions">문파</button>
+          <button class="tab" data-tab="relations">인연</button><button class="tab" data-tab="history">연대기</button>
+        </div><div class="detail" id="detail"></div>
+      </section>
+    </main>
+
+    <aside class="right">
+      <section class="panel">
+        <h2>因緣 · 같은 지역의 인물</h2><div class="pad"><div class="npcgrid" id="localnpcs"></div></div>
+      </section>
+      <section class="panel">
+        <h2>勢力 · 문파와 세가</h2><div class="pad" id="factions"></div>
+      </section>
+      <section class="panel">
+        <h2>任務 · 현재 임무</h2><div class="pad" id="quests"></div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="footerbar">
+    <button class="smallbtn" id="save">저장</button><button class="smallbtn" id="load">불러오기</button>
+    <button class="smallbtn" id="reset">새 세계</button><button class="smallbtn" id="skip7">7일 흐름</button>
+    <button class="smallbtn" id="skip30">30일 흐름</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal">
+<button class="close" id="closeModal">×</button><h3 id="modalTitle"></h3><div id="modalBody"></div>
+</div></div>
+
+<script>
+(() => {
+"use strict";
+const REALMS=[
+{name:"무공 없음",power:1,need:25},{name:"삼류",power:3,need:50},{name:"이류",power:7,need:95},
+{name:"일류",power:15,need:170},{name:"절정",power:31,need:300},{name:"초절정",power:58,need:480},
+{name:"화경",power:100,need:760},{name:"현경",power:170,need:1100}
+];
+const REGIONS=["하남","섬서","호북","사천","하북","강남"];
+const PLACES={
+"하남":["낙양 객잔","하남 시장","백학무관","청풍약방","복호산","하남 관도"],
+"섬서":["장안 객잔","화산 산문","서안 시장","매화곡","관중 관도"],
+"호북":["무창 객잔","무당산","한수 나루","호북 시장","죽림"],
+"사천":["성도 객잔","촉도","약왕곡 외곽","사천 시장","흑풍림"],
+"하북":["업성 객잔","남궁세가 외원","하북 표국","북망산","하북 시장"],
+"강남":["소주 객잔","운하 나루","강남 시장","대나무 숲","비단상회"]
+};
+const FACTIONS=[
+{id:"shaolin",name:"소림",region:"하남",ethos:"정파",wealth:8200,power:82,entry:"나한당 외원"},
+{id:"wudang",name:"무당",region:"호북",ethos:"정파",wealth:6900,power:77,entry:"무당산"},
+{id:"huashan",name:"화산",region:"섬서",ethos:"정파",wealth:5200,power:69,entry:"화산 산문"},
+{id:"namgung",name:"남궁세가",region:"하북",ethos:"세가",wealth:10400,power:75,entry:"남궁세가 외원"},
+{id:"blood",name:"혈교",region:"사천",ethos:"마도",wealth:4300,power:61,entry:"흑풍림"}
+];
+const MARTIAL={
+shaolin:[
+{id:"luohan",name:"나한권",type:"권법",tier:1,req:0,power:5},{id:"iron",name:"철포삼",type:"외공",tier:1,req:30,power:4},
+{id:"vajra",name:"금강장",type:"장법",tier:2,req:90,power:10},{id:"greatvajra",name:"대력금강장",type:"절기",tier:3,req:190,power:19},
+{id:"yijin",name:"역근경",type:"절세내공",tier:4,req:360,power:31}],
+wudang:[
+{id:"wdheart",name:"무당심법",type:"내공",tier:1,req:0,power:4},{id:"cloudstep",name:"유운보",type:"보법",tier:1,req:30,power:5},
+{id:"taijiquan",name:"태극권",type:"권법",tier:2,req:90,power:10},{id:"taijisword",name:"태극검",type:"검법",tier:3,req:190,power:18},
+{id:"pureyang",name:"순양무극공",type:"절세내공",tier:4,req:360,power:31}],
+huashan:[
+{id:"hsheart",name:"화산기공",type:"내공",tier:1,req:0,power:4},{id:"fallingshadow",name:"낙영검법",type:"검법",tier:1,req:30,power:6},
+{id:"plumstep",name:"매화보",type:"보법",tier:2,req:90,power:9},{id:"plumsword",name:"매화검법",type:"검법",tier:3,req:190,power:19},
+{id:"purple",name:"자하신공",type:"절세내공",tier:4,req:360,power:32}],
+namgung:[
+{id:"ngheart",name:"남궁심법",type:"내공",tier:1,req:0,power:4},{id:"skyblade",name:"창궁검법",type:"검법",tier:1,req:30,power:7},
+{id:"shadowstep",name:"창궁무영보",type:"보법",tier:2,req:90,power:10},{id:"kingsword",name:"제왕검형",type:"검법",tier:3,req:190,power:20},
+{id:"heavensword",name:"창천제왕검",type:"절기",tier:4,req:360,power:33}],
+blood:[
+{id:"bloodstep",name:"혈영보",type:"보법",tier:1,req:0,power:6},{id:"bloodhand",name:"혈수마공",type:"조법",tier:1,req:30,power:7},
+{id:"bloodheart",name:"혈마심법",type:"내공",tier:2,req:90,power:12},{id:"bloodsword",name:"천마혈검",type:"검법",tier:3,req:190,power:22},
+{id:"bloodgod",name:"혈마신공",type:"절세마공",tier:4,req:360,power:35}]
+};
+const RANKS=["문외인","외문제자","내문제자","친전제자","수제자"];
+const SURNAMES=["진","남궁","백","서문","제갈","당","유","한","위","장","심","연","임","독고","목","하","소","주","공손","황보","악","허","문","곽"];
+const GA=["무","진","연","하","설","청","천","현","운","도","영","소","유","강","태","린","백","휘","명","월","호","윤"];
+const GB=["혁","화","린","우","진","검","아","성","현","광","월","연","호","경","빈","하","운","서","룡","민","준","희"];
+const TRAITS=["오만","신중","다혈질","냉정","의리","야심","자비","교활","호승심","충성","탐욕","고독","명예중시","복수심"];
+const GOALS=["천하제일인이 된다","장문인이 된다","가문의 명예를 드높인다","원수를 찾는다","절세무공을 얻는다","큰 부를 이룬다","제자를 키운다","강호를 떠나 평온하게 산다"];
+let S=null,activeTab="people",combat=null;
+
+function rng32(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function r(){return S.rng()} function ri(n){return Math.floor(r()*n)} function pick(a){return a[ri(a.length)]}
+function chance(p){return r()<p} function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function $(q){return document.querySelector(q)} function uid(){return Math.floor(r()*1e9).toString(36)+Math.floor(r()*1e9).toString(36)}
+function fmtDate(day){const y=312+Math.floor(day/360),rem=day%360,m=Math.floor(rem/30)+1,d=rem%30+1;return`천무력 ${y}년 ${m}월 ${d}일`}
+function ageOf(n){return n.age0+Math.floor(S.day/360)} function fac(id){return S.factions.find(f=>f.id===id)}
+function npc(id){return S.npcs.find(n=>n.id===id)} function living(){return S.npcs.filter(n=>n.alive)}
+function mName(art){return art.name+" · "+art.type}
+function playerRel(n){if(!S.player.relations[n.id])S.player.relations[n.id]={affection:0,trust:0,respect:0,hatred:0,rivalry:0};return S.player.relations[n.id]}
+function addNews(text,type=""){const e={id:uid(),day:S.day,text,type};S.news.unshift(e);S.history.unshift(e);if(S.news.length>90)S.news.length=90;if(S.history.length>600)S.history.length=600}
+function addQuest(id,title,text){if(!S.quests.some(q=>q.id===id))S.quests.push({id,title,text,done:false})}
+function completeQuest(id){const q=S.quests.find(q=>q.id===id);if(q)q.done=true}
+function nameGen(used){for(let i=0;i<100;i++){const n=pick(SURNAMES)+pick(GA)+(chance(.64)?pick(GB):"");if(!used.has(n)){used.add(n);return n}}return"무명"+used.size}
+
+function createWorld(seed=(Date.now()>>>0)){
+  const old=S;S={rng:rng32(seed)};
+  const factions=FACTIONS.map(x=>({...x,members:[],prestige:55+ri(31),relation:{},ambition:pick(["세력 확장","인재 육성","비급 탐색","숙적 견제","재정 확보"])}));
+  factions.forEach(a=>factions.forEach(b=>{if(a.id!==b.id)a.relation[b.id]=0}));
+  const blood=factions.find(x=>x.id==="blood"); factions.filter(x=>x.id!=="blood").forEach(f=>{f.relation.blood=-70-ri(25);blood.relation[f.id]=-70-ri(25)});
+  const used=new Set(),npcs=[];
+  for(let i=0;i<60;i++){
+    const f=factions[i%5],notable=i<18,realm=notable?2+ri(4):ri(4);
+    const n={id:"n"+i,name:nameGen(used),gender:chance(.48)?"여":"남",age0:17+ri(notable?34:49),faction:f.id,
+      region:f.region,place:pick(PLACES[f.region]),rank:notable?pick(["장로","친전제자","핵심제자","객경","호법"]):pick(["외문제자","내문제자","무인","식객"]),
+      realm,xp:ri(REALMS[realm].need),talent:45+ri(55),hp:72+ri(29),maxHp:100,wealth:4+ri(180),fame:notable?25+ri(70):ri(30),
+      traits:[pick(TRAITS),pick(TRAITS)].filter((x,j,a)=>a.indexOf(x)===j),goal:pick(GOALS),alive:true,injured:0,wins:0,losses:0,kills:0,memories:[],rel:{}};
+    npcs.push(n);f.members.push(n.id);
+  }
+  Object.assign(npcs[0],{name:"진무혁",faction:"huashan",region:"섬서",place:"화산 산문",age0:18,realm:3,talent:94,fame:36,traits:["호승심","의리"],goal:"화산파 수제자가 된다"});
+  Object.assign(npcs[1],{name:"남궁진",faction:"namgung",region:"하북",place:"남궁세가 외원",age0:19,realm:3,talent:92,fame:43,traits:["오만","명예중시"],goal:"천하제일인이 된다"});
+  Object.assign(npcs[2],{name:"백연화",faction:"wudang",region:"호북",place:"무당산",age0:18,realm:2,talent:96,fame:28,traits:["냉정","자비"],goal:"절세무공을 얻는다"});
+  Object.assign(npcs[3],{name:"악진천",faction:"huashan",region:"섬서",place:"화산 산문",age0:54,realm:5,talent:88,fame:79,traits:["신중","명예중시"],goal:"화산의 검맥을 지킨다"});
+  Object.assign(npcs[4],{name:"혈영",faction:"blood",region:"사천",place:"흑풍림",age0:31,realm:5,talent:91,fame:72,traits:["냉정","복수심"],goal:"혈교의 옛 위세를 되찾는다"});
+  factions.forEach(f=>f.members=[]);npcs.forEach(n=>factions.find(f=>f.id===n.faction).members.push(n.id));
+  const world={seed,rng:S.rng,day:0,factions,npcs,news:[],history:[],quests:[],story:{chapter:1,stage:0,path:null,token:false,hunter:false,completed:false},
+    stats:{duels:0,deaths:0,wars:0},sideCooldown:0,
+    player:{name:"이지우",age:16,region:"하남",place:"낙양 객잔",realm:0,xp:0,hp:100,maxHp:100,qi:0,maxQi:20,money:4,fame:0,
+      faction:null,factionRank:0,contribution:0,injured:0,dead:false,relations:{},martial:[],flags:{},reputation:{righteous:0,demonic:0}}};
+  S=world; addQuest("main1","피 묻은 옥패","낙양 객잔에서 수상한 사건을 조사하십시오.");
+  addNews("강호는 고요해 보이지만, 사천에서 혈교의 흔적을 봤다는 소문이 퍼집니다.","danger");
+  addNews("화산파의 신예 진무혁이 입문자들 사이에서 두각을 드러내고 있습니다.","good");
+  if(old&&old.__dummy)S=old; return world;
+}
+
+function npcPower(n){return REALMS[n.realm].power*(.75+n.talent/180)*(n.hp/100)*(n.injured?.8:1)*(0.92+r()*.16)}
+function learnedPower(){return S.player.martial.reduce((a,m)=>a+(m.power||0)*(m.mastery/100),0)}
+function pPower(){const p=S.player;return REALMS[p.realm].power*(.9+p.fame/300)*(p.hp/100)+learnedPower()*.55}
+function trainNpc(n){n.xp+=1+Math.floor(n.talent/25)+ri(4);if(n.realm<REALMS.length-1&&n.xp>=REALMS[n.realm].need){n.xp-=REALMS[n.realm].need;n.realm++;n.fame+=4+n.realm*2;if(n.realm>=4||n.talent>92)addNews(`${n.name}이(가) ${REALMS[n.realm].name}의 경지에 올랐습니다.`,"major")}}
+function npcDuel(a,b,cause="비무"){if(!a.alive||!b.alive)return;S.stats.duels++;const win=r()<npcPower(a)/(npcPower(a)+npcPower(b)),w=win?a:b,l=win?b:a;w.wins++;l.losses++;w.fame+=1+ri(3);if(cause==="원한"&&chance(.07)){l.alive=false;l.hp=0;w.kills++;S.stats.deaths++;addNews(`${w.name}이(가) ${l.name}을(를) 생사결 끝에 죽였습니다.`,"danger")}else{l.injured=Math.max(l.injured,2+ri(9));l.hp=clamp(l.hp-(8+ri(24)),1,100);if(w.fame>38||l.fame>38||chance(.12))addNews(`${a.name}과(와) ${b.name}의 ${cause}에서 ${w.name}이(가) 승리했습니다.`)}}
+function npcDay(n){if(!n.alive)return;if(n.injured){n.injured--;n.hp=clamp(n.hp+5,0,100);if(chance(.78))return}const x=r();if(x<.43)trainNpc(n);else if(x<.58){const pool=S.npcs.filter(o=>o.alive&&o.id!==n.id&&o.region===n.region);if(pool.length&&chance(.12))npcDuel(n,pick(pool),chance(.22)?"원한":"비무")}else if(x<.7){if(chance(.3)){n.region=pick(REGIONS);n.place=pick(PLACES[n.region])}else n.place=pick(PLACES[n.region])}else if(x<.83)n.wealth+=ri(8);else n.fame+=chance(.1)?1:0}
+function factionMonth(){for(const f of S.factions){f.wealth+=f.members.filter(id=>npc(id)?.alive).length*(2+ri(3));f.prestige=clamp(f.prestige+ri(5)-2,0,100);const o=pick(S.factions.filter(x=>x.id!==f.id));const rel=f.relation[o.id]||0;if(rel<-68&&chance(.12)){S.stats.wars++;const win=(f.power*(.8+r()*.45))>(o.power*(.8+r()*.45))?f:o;addNews(`${f.name}과(와) ${o.name}의 무력 충돌에서 ${win.name}이(가) 우세를 점했습니다.`,"danger");f.relation[o.id]=clamp(rel-4,-100,100)}else if(chance(.11))f.relation[o.id]=clamp(rel+(chance(.5)?5:-5),-100,100)}}
+function worldDay(){S.day++;S.npcs.forEach(npcDay);if(S.day%30===0)factionMonth();const p=S.player;if(p.injured){p.injured--;p.hp=clamp(p.hp+7,0,100)}else p.hp=clamp(p.hp+2,0,100);p.qi=clamp(p.qi+1,0,p.maxQi);if(chance(.02)){const n=pick(living());n.xp+=25+ri(50);n.fame+=4;addNews(`${n.name}이(가) ${n.region}에서 기연을 얻었다는 소문이 돕니다.`,"major")}}
+function pass(days){for(let i=0;i<days;i++)worldDay();render()}
+function afterAction(days=1){pass(days);checkMainStory();if(!$("#overlay").classList.contains("show"))maybeSideStory()}
+
+function storyInfo(){
+ const st=S.story;
+ if(st.completed)return{c:"제1장 완료",t:"피 묻은 옥패",o:"첫 번째 단서를 얻었습니다. 다음 장은 아직 열리지 않았습니다.",p:"강호 생활을 이어가십시오."};
+ if(st.stage===0)return{c:"제1장 · 강호입문",t:"피 묻은 옥패",o:"낙양 객잔에서 이상한 소문을 조사하십시오.",p:"객잔에서 정보를 듣는다를 선택하십시오."};
+ if(st.stage===1)return{c:"제1장 · 강호입문",t:"검은 옥패",o:"죽어가는 무인이 맡긴 검은 옥패의 정체를 알아내십시오.",p:"객잔·무림인·문파를 통해 단서를 모으십시오."};
+ if(st.stage===2)return{c:"제1장 · 강호입문",t:"등 뒤의 발자국",o:"당신을 추적하는 자가 있습니다. 복호산으로 가 흔적을 확인하십시오.",p:"산으로 간다를 선택하십시오."};
+ return{c:"제1장 · 강호입문",t:"피 묻은 옥패",o:"혈교와 연결된 단서를 붙잡았습니다.",p:"문파에 입문하거나 자유롭게 강호를 살아가십시오."};
+}
+function checkMainStory(){
+ const st=S.story;if(st.completed)return;
+ if(st.stage===1&&S.day>=3&&!st.hunter){st.hunter=true;st.stage=2;addQuest("main2","등 뒤의 발자국","복호산에서 자신을 뒤쫓는 자의 흔적을 확인하십시오.");eventModal("등 뒤의 발자국",`며칠 전부터 같은 회색 두건의 사내가 자꾸 눈에 밟힙니다.<div class="quote">“옥패를 내놓아라. 그러면 목숨은 살려주지.”</div>그는 곧 사람들 사이로 사라집니다. 복호산 쪽에서 다시 모습을 봤다는 이야기가 들립니다.`)}
+}
+function triggerInnStory(){
+ const st=S.story;if(st.stage!==0)return false;
+ st.stage=1;st.token=true;completeQuest("main1");addQuest("token","검은 옥패의 정체","검은 옥패를 조사하십시오.");
+ choiceModal("피 묻은 옥패",`한밤중, 객잔 문이 부서질 듯 열립니다. 피투성이 무인이 비틀거리며 들어와 당신 손목을 붙잡습니다.
+ <div class="quote">“혈교가… 돌아왔다. 이걸… 믿을 수 있는 자에게…”</div>
+ 그는 검은 옥패를 당신 손에 쥐여주고 숨이 끊어집니다.`,[
+ {label:"옥패를 숨긴다",desc:"비밀을 지키고 직접 조사한다.",fn:()=>{S.story.path="hidden";S.player.reputation.righteous+=1;S.player.flags.tokenHidden=true;closeModal();addNews("낙양 객잔에서 신원불명의 무인이 죽었다는 소문이 퍼집니다.","danger");afterAction(1)}},
+ {label:"관아에 넘긴다",desc:"위험에서 거리를 둔다.",fn:()=>{S.story.path="official";S.player.fame+=1;S.player.flags.official=true;closeModal();afterAction(1)}},
+ {label:"무림인에게 보여준다",desc:"강호의 도움을 구한다.",fn:()=>{S.story.path="jianghu";S.player.flags.askJianghu=true;S.player.fame+=2;closeModal();afterAction(1)}},
+ {label:"시체를 더 살핀다",desc:"위험하지만 추가 단서를 얻을 수 있다.",fn:()=>{S.story.path="search";S.player.flags.bloodMap=true;S.player.money+=3;closeModal();addNews("객잔 사건 현장에서 누군가 작은 지도를 가져갔다는 소문이 돕니다.");afterAction(1)}}
+ ]);return true
+}
+function resolveMountainStory(){
+ if(S.story.stage!==2)return false;
+ choiceModal("복호산의 매복",`복호산 협곡에 들어선 순간, 회색 두건의 사내 셋이 길을 막습니다.
+ <div class="quote">“마지막이다. 옥패를 내놓아라.”</div>
+ 멀리서 누군가 이쪽을 지켜보는 기척도 느껴집니다.`,[
+ {label:"맞서 싸운다",desc:"위험하지만 단서를 확보할 수 있다.",fn:()=>{closeModal();const enemy=living().find(n=>n.faction==="blood"&&n.realm<=Math.max(2,S.player.realm+1))||living().find(n=>n.faction==="blood");startCombat(enemy,false,()=>finishChapter("fight"))}},
+ {label:"옥패를 내주는 척 기습한다",desc:"명성과 무공보다 기지가 중요하다.",fn:()=>{const ok=chance(.58+S.player.fame/400);closeModal();if(ok){finishChapter("trick");eventModal("기습 성공","사내 하나를 제압하고 품에서 혈교의 암호문을 찾아냈습니다.")}else{const enemy=living().find(n=>n.faction==="blood");startCombat(enemy,false,()=>finishChapter("fight"))}}},
+ {label:"도망친다",desc:"살아남는 것도 강호의 실력이다.",fn:()=>{S.player.fame=Math.max(0,S.player.fame-1);closeModal();pass(2);eventModal("탈출","간신히 추격을 따돌렸습니다. 하지만 옥패를 노리는 자들이 있다는 사실은 분명해졌습니다.");finishChapter("escape")}}
+ ]);return true
+}
+function finishChapter(how){S.story.stage=3;S.story.completed=true;completeQuest("main2");completeQuest("token");S.player.fame+=4;S.player.money+=5;addNews(`무명 무인 이지우가 혈교와 관련된 수상한 사건에 휘말렸다는 소문이 퍼집니다.`,"major");addQuest("join","강호에 뿌리내리기","소림·무당·화산·남궁세가·혈교 중 하나에 입문하거나 무소속으로 살아가십시오.");render()}
+
+function factionHere(){return S.factions.find(f=>f.region===S.player.region)}
+function visitFaction(){
+ const f=factionHere();if(!f)return eventModal("문파","이 지역에는 직접 찾아갈 수 있는 대세력이 없습니다.");
+ if(S.player.faction===f.id)return factionHall(f);
+ if(S.player.faction&&S.player.faction!==f.id)return eventModal(f.name,`당신은 이미 ${fac(S.player.faction).name} 소속입니다. 타 문파에 정식 입문할 수 없습니다.`);
+ const bloodWarning=f.id==="blood"?"<br><span class='red'>혈교에 입문하면 정파와의 관계가 크게 악화됩니다.</span>":"";
+ choiceModal(`${f.name} 입문`,`${f.entry}에 도착했습니다. ${f.name}의 문하에 들면 고유 무공을 배우고 공헌을 쌓아 상위 무공을 전수받을 수 있습니다.${bloodWarning}`,[
+ {label:`${f.name}에 입문한다`,desc:"외문제자로 시작합니다.",fn:()=>joinFaction(f)},
+ {label:"조금 더 생각한다",desc:"아직 무소속으로 남습니다.",fn:closeModal}
+ ])
+}
+function joinFaction(f){
+ S.player.faction=f.id;S.player.factionRank=1;S.player.contribution=10;completeQuest("join");
+ if(f.id==="blood"){S.player.reputation.demonic+=20;S.player.reputation.righteous-=20}else S.player.reputation.righteous+=8;
+ const first=MARTIAL[f.id][0];learnArt(first);closeModal();addNews(`이지우가 ${f.name}의 외문제자가 되었습니다.`,"good");
+ eventModal(`${f.name} 입문`,`당신은 ${f.name}의 외문제자가 되었습니다.<br><br><b>${first.name}</b>을(를) 전수받았습니다.`);pass(1)
+}
+function factionHall(f){
+ const p=S.player,avail=MARTIAL[f.id].filter(a=>!p.martial.some(m=>m.id===a.id));
+ const choices=[
+ {label:"문파 임무를 받는다",desc:"공헌도와 은자를 얻습니다.",fn:()=>factionMission(f)},
+ {label:"무공을 전수받는다",desc:"공헌 조건을 충족한 무공을 배웁니다.",fn:()=>teachMenu(f)},
+ {label:"승급 심사를 요청한다",desc:"공헌과 실력을 증명합니다.",fn:()=>rankUp(f)}
+ ];
+ choiceModal(`${f.name} · ${RANKS[p.factionRank]}`,`공헌도 <b>${p.contribution}</b> · 배울 수 있는 미습득 무공 ${avail.length}종`,choices)
+}
+function factionMission(f){
+ const missions=["인근 도적을 소탕","상단 호위","문파 서신 전달","약재 확보","사문 주변 정찰"],m=pick(missions),gain=12+ri(19),silver=2+ri(5);
+ S.player.contribution+=gain;S.player.money+=silver;S.player.fame+=chance(.3)?1:0;closeModal();pass(2);
+ eventModal("문파 임무 완료",`${m} 임무를 마쳤습니다.<br><br>공헌도 +${gain}<br>은자 +${silver}냥`)
+}
+function teachMenu(f){
+ const arts=MARTIAL[f.id].filter(a=>!S.player.martial.some(m=>m.id===a.id));
+ if(!arts.length)return eventModal("전수","이미 현재 문파의 모든 무공을 익혔습니다.");
+ const cs=arts.map(a=>({label:`${a.name} · ${a.type}`,desc:`필요 공헌 ${a.req} · 현재 ${S.player.contribution}`,fn:()=>{if(S.player.contribution<a.req)return eventModal("전수 불가",`공헌도가 부족합니다. ${a.req-S.player.contribution}이 더 필요합니다.`);learnArt(a);closeModal();eventModal("무공 전수",`${a.name}의 구결과 기본 초식을 전수받았습니다.`)}}));
+ choiceModal("비전 전수","배우고 싶은 무공을 고르십시오.",cs)
+}
+function learnArt(a){if(!S.player.martial.some(m=>m.id===a.id))S.player.martial.push({...a,mastery:1})}
+function rankUp(f){
+ const p=S.player,next=p.factionRank+1,req=[0,0,80,190,360][next]||9999;
+ if(next>=RANKS.length)return eventModal("승급","이미 문파에서 오를 수 있는 가장 높은 지위입니다.");
+ if(p.contribution<req||p.realm<Math.max(1,next-1))return eventModal("승급 불가",`다음 지위 <b>${RANKS[next]}</b> 조건:<br>공헌도 ${req} 이상 · 경지 ${REALMS[Math.max(1,next-1)].name} 이상`);
+ p.factionRank=next;p.fame+=4;addNews(`이지우가 ${f.name}의 ${RANKS[next]}(으)로 승급했습니다.`,"good");closeModal();eventModal("승급",`${f.name}의 <b>${RANKS[next]}</b>(으)로 인정받았습니다.`)
+}
+
+function trainPlayer(){
+ if(S.player.injured)return eventModal("부상","몸이 성치 않아 깊은 수련을 할 수 없습니다.");
+ if(S.player.martial.length){
+   const cs=[{label:"기초 내공과 체력을 수련한다",desc:"경지 수련도를 올립니다.",fn:()=>basicTrain()}].concat(S.player.martial.map(m=>({label:`${m.name} 수련`,desc:`숙련도 ${Math.floor(m.mastery)}%`,fn:()=>artTrain(m.id)})));
+   choiceModal("수련","오늘 어떤 수련을 하시겠습니까?",cs)
+ }else basicTrain()
+}
+function basicTrain(){
+ const gain=5+ri(8);S.player.xp+=gain;S.player.qi=clamp(S.player.qi+3,0,S.player.maxQi);closeModal();let extra=tryRealmUp();pass(1);eventModal("수련",`기초 호흡과 초식을 반복했습니다. 수련도 +${gain}.${extra}`)
+}
+function artTrain(id){
+ const m=S.player.martial.find(x=>x.id===id),gain=5+ri(8);m.mastery=clamp(m.mastery+gain,0,100);S.player.xp+=2+ri(4);S.player.qi=clamp(S.player.qi+2,0,S.player.maxQi);closeModal();const extra=tryRealmUp();pass(1);
+ eventModal(m.name,`${m.name}을(를) 집중적으로 수련했습니다.<br>숙련도 +${gain} → ${Math.floor(m.mastery)}%${extra}`)
+}
+function tryRealmUp(){const p=S.player;if(p.realm<REALMS.length-1&&p.xp>=REALMS[p.realm].need){p.xp-=REALMS[p.realm].need;p.realm++;p.maxQi+=10;p.qi=p.maxQi;p.fame+=2;addNews(`이지우가 ${REALMS[p.realm].name}의 경지에 올랐습니다.`,"major");return`<br><br><b>${REALMS[p.realm].name}</b>의 벽을 넘었습니다.`}return""}
+function work(){const pay=1+ri(4);S.player.money+=pay;pass(1);eventModal("품팔이",`하루 일을 도와 은자 ${pay}냥을 벌었습니다.`)}
+function inn(){if(triggerInnStory())return;if(S.player.money>0){S.player.money--;const recent=S.news[ri(Math.min(12,S.news.length))];pass(1);eventModal("객잔의 소문",`술 한 잔을 주문했습니다.<div class="quote">${recent?recent.text:"강호는 겉으로 고요하지만 물밑에서는 수많은 원한이 움직이고 있습니다."}</div>은자 1냥을 사용했습니다.`)}else{pass(1);eventModal("객잔","주머니가 가벼워 차만 얻어 마셨습니다.")}}
+function mountain(){if(resolveMountainStory())return;const x=r();if(x<.22){const g=10+ri(18);S.player.xp+=g;pass(1);eventModal("산중의 검흔",`바위에 남은 오래된 검흔을 살피다 깨달음을 얻었습니다. 수련도 +${g}.`)}else if(x<.48){const g=2+ri(5);S.player.money+=g;pass(1);eventModal("약초",`쓸 만한 약초를 찾아 은자 ${g}냥의 수입을 얻었습니다.`)}else if(x<.72){const foe=pick(living().filter(n=>n.region===S.player.region));if(foe)startCombat(foe,false);else{pass(1);eventModal("산길","고요한 산길을 돌아왔습니다.")}}else{pass(1);eventModal("산길","별다른 일은 없었습니다. 하지만 멀리서 무인들의 검광이 스쳤습니다.")}}
+function move(){const cs=REGIONS.filter(x=>x!==S.player.region).map(reg=>({label:`${reg}으로 간다`,desc:"이동 2일",fn:()=>{S.player.region=reg;S.player.place=pick(PLACES[reg]);closeModal();pass(2);checkMainStory();eventModal("강호행",`${reg}에 도착했습니다.`)}}));choiceModal("지역 이동","어디로 향하시겠습니까?",cs)}
+function market(){const x=r();if(x<.4&&S.player.money>=2){S.player.money-=2;S.player.hp=clamp(S.player.hp+20,0,100);pass(1);eventModal("시장","탕약과 식량을 구입했습니다. 체력 +20.")}else{const g=1+ri(3);S.player.money+=g;pass(1);eventModal("시장",`상인의 일을 도와 은자 ${g}냥을 얻었습니다.`)}}
+
+function localNpcs(){return living().filter(n=>n.region===S.player.region).sort((a,b)=>b.fame-a.fame)}
+function openNpc(n){
+ const rel=playerRel(n),f=fac(n.faction);
+ const quote=npcLine(n,rel);
+ const actions=[
+ {label:"대화한다",desc:"호감과 정보를 얻습니다.",fn:()=>talkNpc(n)},
+ {label:"술이나 차를 권한다",desc:"은자 1냥 · 친분을 쌓습니다.",fn:()=>drinkNpc(n)},
+ {label:"무공에 대해 묻는다",desc:"존경·신뢰가 높으면 도움을 받을 수 있습니다.",fn:()=>askMartial(n)},
+ {label:"비무를 청한다",desc:"죽지 않는 승부. 존경과 경쟁심이 변합니다.",fn:()=>{closeModal();startCombat(n,false)}},
+ {label:"도발한다",desc:"원한과 경쟁심이 크게 오릅니다.",fn:()=>provoke(n)}
+ ];
+ if(rel.hatred>=55||rel.rivalry>=65)actions.push({label:"생사결을 청한다",desc:"패자는 죽을 수 있습니다.",fn:()=>{closeModal();startCombat(n,true)}});
+ const body=`<div class="quote">“${quote}”</div>
+ <div class="profile"><div><b>소속</b><span>${f?.name||"무소속"} · ${n.rank}</span></div><div><b>경지</b><span>${REALMS[n.realm].name}</span></div>
+ <div><b>성격</b><span>${n.traits.join(" · ")}</span></div><div><b>목표</b><span>${n.goal}</span></div></div>
+ <div class="relgrid"><div class="rel"><b>호감</b><span>${rel.affection}</span></div><div class="rel"><b>신뢰</b><span>${rel.trust}</span></div>
+ <div class="rel"><b>존경</b><span>${rel.respect}</span></div><div class="rel"><b>원한</b><span>${rel.hatred}</span></div></div>`;
+ choiceModal(n.name,body,actions)
+}
+function npcLine(n,rel){
+ if(rel.hatred>60)return"당신과 길게 말하고 싶지 않군. 검을 뽑고 싶다면 언제든 뽑아라.";
+ if(rel.affection>60&&rel.trust>45)return"또 만났군. 이번에는 내가 차를 사지. 요즘 무공은 좀 늘었나?";
+ if(n.name==="진무혁")return"검은 말보다 정직하지. 언젠가 제대로 한번 겨뤄보자.";
+ if(n.name==="남궁진")return"강호에서 이름을 남기고 싶다면, 먼저 스스로 그럴 자격이 있는지 증명해라.";
+ if(n.name==="백연화")return"사람의 말보다 숨결을 보면 거짓이 더 잘 보이는 법입니다.";
+ if(n.faction==="blood")return"세상은 정과 사를 나누지만, 살아남는 자에게는 그런 이름이 중요하지 않지.";
+ return pick(["처음 보는 얼굴이군. 어디에서 왔나?","강호는 넓고 인연은 짧지. 용건이 있나?","요즘 이 지역이 시끄럽다. 밤길은 조심하는 게 좋을 걸세."])
+}
+function talkNpc(n){
+ const rel=playerRel(n),good=chance(.68+(rel.affection/400));if(good){rel.affection=clamp(rel.affection+4+ri(6),-100,100);rel.trust=clamp(rel.trust+1+ri(4),0,100);if(chance(.25))rel.respect=clamp(rel.respect+2,0,100)}else{rel.affection=clamp(rel.affection-1-ri(3),-100,100)}
+ closeModal();pass(1);const topic=pick(["최근 문파 사이의 긴장","사천의 혈교 소문","강호의 기연","근처의 고수","요즘 떠도는 비급 이야기"]);
+ eventModal(n.name,good?`${n.name}과 제법 긴 이야기를 나눴습니다.<div class="quote">${topic}에 관한 이야기를 들었습니다.</div>호감과 신뢰가 조금 올랐습니다.`:`대화의 결이 잘 맞지 않았습니다. ${n.name}의 표정이 조금 굳었습니다.`)
+}
+function drinkNpc(n){if(S.player.money<1)return eventModal("주머니","술이나 차를 살 은자가 없습니다.");S.player.money--;const rel=playerRel(n);rel.affection=clamp(rel.affection+7+ri(7),-100,100);rel.trust=clamp(rel.trust+3+ri(5),0,100);closeModal();pass(1);eventModal("한잔",`${n.name}과 술이나 차를 나눴습니다. 말수가 조금씩 편해집니다.`)}
+function askMartial(n){
+ const rel=playerRel(n);if(rel.respect+rel.trust<70){rel.respect=clamp(rel.respect+2,0,100);closeModal();pass(1);return eventModal("무공 이야기",`${n.name}이(가) 몇 마디 조언은 해주었지만 깊은 구결까지 말해주지는 않았습니다.<br><span class="muted">신뢰와 존경을 더 쌓으면 특별한 도움을 받을 수 있습니다.</span>`)}
+ const bonus=8+ri(10);S.player.xp+=bonus;const same=S.player.faction&&S.player.faction===n.faction,known=same?S.player.martial.filter(m=>MARTIAL[S.player.faction].some(a=>a.id===m.id)):[];if(known.length){const m=pick(known);m.mastery=clamp(m.mastery+5+ri(8),0,100)}
+ rel.respect=clamp(rel.respect+3,0,100);closeModal();pass(1);eventModal("무공 담론",`${n.name}이(가) 자신의 경험을 바탕으로 무공의 이치를 설명해주었습니다. 수련도 +${bonus}.${same?" 같은 문파 무공의 숙련도도 조금 깊어졌습니다.":""}`)
+}
+function provoke(n){const rel=playerRel(n);rel.hatred=clamp(rel.hatred+12+ri(10),0,100);rel.rivalry=clamp(rel.rivalry+10+ri(12),0,100);rel.affection=clamp(rel.affection-8,-100,100);closeModal();pass(1);eventModal("도발",`${n.name}의 눈빛이 차갑게 가라앉습니다.<div class="quote">“그 말을 후회하게 해주지.”</div>원한과 경쟁심이 크게 올랐습니다.`)}
+
+function startCombat(n,lethal=false,onWin=null){
+ if(!n||!n.alive)return eventModal("전투","상대가 없습니다.");
+ combat={npcId:n.id,lethal,onWin,pHp:S.player.hp,nHp:n.hp,pMax:S.player.maxHp,nMax:n.maxHp,pFocus:0,nFocus:0,round:1,log:[`${n.name}과(와) ${lethal?"생사결":"비무"}가 시작되었습니다.`]};
+ renderCombat()
+}
+function renderCombat(){
+ const n=npc(combat.npcId),p=S.player;
+ $("#modalTitle").textContent=combat.lethal?"生死決 · 생사결":"比武 · 비무";
+ const best=[...p.martial].sort((a,b)=>(b.power*b.mastery)-(a.power*a.mastery))[0];
+ $("#modalBody").innerHTML=`
+ <div class="combatHead"><div class="fighter"><b>${p.name}</b><small>${REALMS[p.realm].name}</small><div class="hpbig"><i style="width:${clamp(combat.pHp/combat.pMax*100,0,100)}%"></i></div></div>
+ <div class="vs">VS</div><div class="fighter"><b>${n.name}</b><small>${REALMS[n.realm].name}</small><div class="hpbig"><i style="width:${clamp(combat.nHp/combat.nMax*100,0,100)}%"></i></div></div></div>
+ <div class="combatlog">${combat.log.slice(-10).join("<br>")}</div>
+ <div class="combatgrid">
+ <button class="combatbtn" data-move="attack"><b>정면 공격</b><small>안정적인 공격</small></button>
+ <button class="combatbtn" data-move="evade"><b>보법·회피</b><small>피해 감소와 반격</small></button>
+ <button class="combatbtn" data-move="focus"><b>내공 집중</b><small>다음 공격 강화</small></button>
+ <button class="combatbtn" data-move="art"><b>${best?best.name:"필살의 일격"}</b><small>${best?"무공 숙련도를 활용":"큰 위험을 감수한 공격"}</small></button>
+ </div>`;
+ $("#overlay").classList.add("show");
+ document.querySelectorAll("[data-move]").forEach(b=>b.onclick=()=>combatTurn(b.dataset.move))
+}
+function combatTurn(move){
+ const n=npc(combat.npcId),p=S.player;if(!n?.alive)return;
+ const pp=pPower()*(1+combat.pFocus*.18),np=npcPower(n)*(1+combat.nFocus*.14);combat.pFocus=0;
+ let hit=.58+Math.log((pp+1)/(np+1))*.16,damage=0,evade=false;
+ if(move==="evade"){evade=true;hit=.32}
+ if(move==="focus"){combat.pFocus=1;combat.log.push(`<span class="gold">당신은 호흡을 가다듬어 내공을 한 점에 모읍니다.</span>`)}
+ else{
+   if(move==="art"){const best=[...p.martial].sort((a,b)=>(b.power*b.mastery)-(a.power*a.mastery))[0];hit-=.05;damage=(best?8+best.power*(.35+best.mastery/120):12)+ri(10)}
+   else damage=7+pp*.35+ri(8);
+   if(chance(clamp(hit,.18,.88))){combat.nHp-=damage;combat.log.push(`<span class="green">당신의 ${move==="art"?"무공":"공격"}이 적중! ${Math.floor(damage)} 피해.</span>`)}else combat.log.push("당신의 공격을 상대가 흘려냈습니다.")
+ }
+ if(combat.nHp<=0)return endCombat(true);
+ const nMove=chance(.22)?"focus":"attack";if(nMove==="focus"){combat.nFocus=1;combat.log.push(`${n.name}이(가) 기세를 가라앉히며 다음 초식을 준비합니다.`)}
+ else{let nh=.58+Math.log((np+1)/(pp+1))*.16-(evade?.24:0),nd=7+np*.32+ri(8);if(chance(clamp(nh,.14,.9))){combat.pHp-=nd;combat.log.push(`<span class="red">${n.name}의 공격이 적중! ${Math.floor(nd)} 피해.</span>`)}else{combat.log.push(`${n.name}의 공격을 피하거나 흘려냈습니다.`);if(evade&&chance(.45)){const c=5+pp*.2;combat.nHp-=c;combat.log.push(`<span class="green">회피 직후 반격해 ${Math.floor(c)} 피해.</span>`);if(combat.nHp<=0)return endCombat(true)}}}
+ if(combat.pHp<=0)return endCombat(false);combat.round++;renderCombat()
+}
+function endCombat(playerWin){
+ const n=npc(combat.npcId),lethal=combat.lethal,onWin=combat.onWin;S.stats.duels++;
+ if(playerWin){S.player.fame+=lethal?6:2;n.losses++;const rel=playerRel(n);rel.respect=clamp(rel.respect+6,0,100);rel.rivalry=clamp(rel.rivalry+4,0,100);
+   if(lethal){n.alive=false;n.hp=0;S.stats.deaths++;rel.hatred=100;addNews(`이지우가 ${n.name}을(를) 생사결에서 죽였습니다.`,"danger");const f=fac(n.faction);if(f&&S.player.faction!==f.id)f.prestige=Math.max(0,f.prestige-2)}
+   else{n.injured=2;n.hp=Math.max(25,combat.nHp);addNews(`이지우가 ${n.name}과의 비무에서 승리했습니다.`,"good")}
+ }else{S.player.hp=Math.max(1,combat.pHp);n.wins++;const rel=playerRel(n);rel.respect=clamp(rel.respect+2,0,100);
+   if(lethal){S.player.dead=true;S.player.hp=0;addNews(`이지우가 ${n.name}과의 생사결에서 목숨을 잃었습니다.`,"danger")}
+   else{S.player.injured=3;S.player.hp=Math.max(20,S.player.hp);addNews(`이지우가 ${n.name}과의 비무에서 패했습니다.`)}
+ }
+ combat=null;closeModal();pass(1);
+ if(S.player.dead)return eventModal("강호에서의 죽음",`당신은 생사결에서 목숨을 잃었습니다.<br><br>저장된 세계를 불러오거나 새 세계를 시작할 수 있습니다.`);
+ if(playerWin&&onWin){onWin();eventModal("단서 확보",`${n.name}을(를) 제압했습니다. 그의 품에서 혈교의 암호문과 낯선 표식을 발견했습니다.<br><br><b>제1장 「피 묻은 옥패」 완료</b>`)} else eventModal(playerWin?"승리":"패배",playerWin?`${n.name}을(를) 꺾었습니다.${lethal?" 상대는 다시 일어나지 않습니다.":""}`:`${n.name}에게 패했습니다. ${lethal?"": "며칠간 상처를 회복해야 합니다."}`)
+}
+
+const SIDE=[
+ {title:"아이의 울음",text:"시장 골목에서 어린아이가 약값이 없다며 울고 있습니다.",choices:[
+  ["은자 2냥을 건넨다",()=>{if(S.player.money>=2){S.player.money-=2;S.player.reputation.righteous+=3;S.player.fame+=1;return"아이는 몇 번이고 고개를 숙였습니다. 작은 선행이 언젠가 인연이 될지도 모릅니다."}return"도와주고 싶었지만 가진 은자가 부족했습니다."}],
+  ["지나친다",()=>{return"강호에는 모든 사람을 구할 수 없는 순간도 있습니다."}]]},
+ {title:"수상한 비급 장수",text:"허름한 노인이 낡은 책자를 흔들며 절세비급이라 주장합니다.",choices:[
+  ["은자 3냥에 산다",()=>{if(S.player.money<3)return"은자가 부족합니다.";S.player.money-=3;const g=chance(.25)?18:4;S.player.xp+=g;return g>10?"놀랍게도 낡은 책 속에 진짜 운기 구결 한 줄이 숨어 있었습니다.":"대부분 허황된 내용이었지만 몇 가지 자세는 참고할 만했습니다."}],
+  ["무시한다",()=> "노인은 다른 손님을 찾아 사라졌습니다."]]},
+ {title:"표국의 구원 요청",text:"부상당한 표사가 상단을 습격한 도적을 쫓아달라고 부탁합니다.",choices:[
+  ["돕는다",()=>{const g=3+ri(5);S.player.money+=g;S.player.fame+=2;S.player.reputation.righteous+=2;return`도적들을 몰아내고 은자 ${g}냥을 사례로 받았습니다.`}],
+  ["거절한다",()=> "표사는 실망한 표정으로 다른 무인을 찾아갑니다."]]},
+ {title:"검집 없는 검객",text:"길 한복판에 검집 없는 검을 든 낯선 검객이 서 있습니다. 강자와 겨루고 싶다고 합니다.",choices:[
+  ["비무한다",()=>{const foe=pick(localNpcs());if(foe){setTimeout(()=>startCombat(foe,false),0);return"검객과 마주 섭니다."}return"상대는 이미 사라졌습니다."}],
+  ["피한다",()=> "괜한 싸움을 피하고 길을 돌아갑니다."]]}
+];
+function maybeSideStory(){
+ if(S.sideCooldown>0){S.sideCooldown--;return}
+ if(chance(.18)){S.sideCooldown=3+ri(4);const e=pick(SIDE);choiceModal(e.title,e.text,e.choices.map(c=>({label:c[0],desc:"",fn:()=>{const result=c[1]();closeModal();pass(1);if(result)eventModal(e.title,result)}})))}
+}
+
+function actionList(){
+ const arr=[
+ ["객잔에서 정보를 듣는다","소문과 메인스토리 단서를 얻습니다.",inn],
+ ["수련한다","경지 또는 익힌 무공 숙련도를 올립니다.",trainPlayer],
+ ["주변 인물을 만난다","대화·친분·비무·생사결.",()=>showLocalNpcMenu()],
+ ["문파·세가를 방문한다","입문·임무·무공 전수.",visitFaction],
+ ["산으로 간다","기연·비무·스토리 사건.",mountain],
+ ["시장에 간다","회복·일거리·우연한 사건.",market],
+ ["돈을 번다","품팔이로 은자를 법니다.",work],
+ ["다른 지역으로 떠난다","강호 각지를 이동합니다.",move]
+ ];
+ return arr
+}
+function showLocalNpcMenu(){const list=localNpcs().slice(0,12);if(!list.length)return eventModal("주변 인물","이 지역에는 지금 만날 만한 이름 있는 무인이 없습니다.");choiceModal("주변 인물",`현재 ${S.player.region}에서 만날 수 있는 인물들입니다.`,list.map(n=>({label:`${n.name} · ${fac(n.faction)?.name||"무소속"}`,desc:`${REALMS[n.realm].name} · ${n.traits.join(" / ")}`,fn:()=>openNpc(n)})))}
+
+function sideQuestText(){const active=S.quests.filter(q=>!q.done);return active.length?active.map(q=>`<div class="tech"><div class="tn">${q.title}</div><div class="tm">${q.text}</div></div>`).join(""):`<div class="muted" style="font-size:10px">진행 중인 임무가 없습니다.</div>`}
+function sceneText(){const season=["초봄","늦봄","초여름","한여름","초가을","늦가을","초겨울","한겨울"][Math.floor((S.day%360)/45)],cnt=localNpcs().length;return`${season}. ${S.player.place}. 이 지역에는 이름 있는 무인 ${cnt}명이 머물고 있습니다. 당신이 누구와 인연을 맺는지에 따라 같은 사건도 전혀 다르게 흘러갈 수 있습니다.`}
+function notableScore(n){return n.fame+n.realm*18+n.talent*.25+n.wins*2}
+function render(){
+ const p=S.player,st=storyInfo();$("#date").innerHTML=`${fmtDate(S.day)}<br><span class="muted">세계 생성값 ${S.seed}</span>`;
+ $("#pname").textContent=p.name;$("#psub").textContent=`${p.age+Math.floor(S.day/360)}세 · ${p.region} · ${p.place}`;
+ $("#hpbar").style.width=`${p.maxHp?p.hp/p.maxHp*100:0}%`;$("#hpv").textContent=`${Math.round(p.hp)}/${p.maxHp}`;
+ $("#qibar").style.width=`${p.maxQi?p.qi/p.maxQi*100:0}%`;$("#qiv").textContent=`${p.qi}/${p.maxQi}`;
+ const need=REALMS[p.realm].need;$("#xpbar").style.width=`${clamp(p.xp/need*100,0,100)}%`;$("#xpv").textContent=`${p.xp}/${need}`;
+ $("#realm").textContent=REALMS[p.realm].name;$("#pfaction").textContent=p.faction?fac(p.faction).name:"무소속";$("#money").textContent=p.money+"냥";$("#fame").textContent=p.fame;
+ $("#prank").textContent=p.faction?RANKS[p.factionRank]:"-";$("#contrib").textContent=p.faction?p.contribution:"-";
+ $("#storyChapter").textContent=st.c;$("#storyTitle").textContent=st.t;$("#storyObj").textContent=st.o;$("#storyProgress").textContent=st.p;
+ $("#location").textContent=`${p.region} · ${p.place}`;$("#scene").textContent=sceneText();
+ $("#actions").innerHTML=actionList().map((a,i)=>`<button class="action" data-act="${i}" ${p.dead?"disabled":""}><strong>${a[0]}</strong><small>${a[1]}</small></button>`).join("");
+ document.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>actionList()[+b.dataset.act][2]());
+ $("#feed").innerHTML=S.news.slice(0,28).map(e=>`<div class="news ${e.type}"><div class="when">${fmtDate(e.day)}</div><div class="txt">${e.text}</div></div>`).join("");
+ $("#techniques").innerHTML=p.martial.length?p.martial.map(m=>`<div class="tech"><div class="tn">${mName(m)}</div><div class="tm">숙련 ${Math.floor(m.mastery)}% · 위력 ${m.power}</div><div class="meter"><i style="width:${m.mastery}%"></i></div></div>`).join(""):`<div class="muted" style="font-size:10px">아직 익힌 무공이 없습니다. 문파에 입문하거나 기연을 찾아보십시오.</div>`;
+ const locals=localNpcs().slice(0,8);$("#localnpcs").innerHTML=locals.length?locals.map(n=>{const rel=playerRel(n);return`<button class="npcbtn" data-npc="${n.id}"><div><div class="nm">${n.name}</div><div class="meta">${fac(n.faction)?.name||"무소속"} · ${REALMS[n.realm].name} · 호감 ${rel.affection} · 원한 ${rel.hatred}</div></div><span class="badge">${n.rank}</span></button>`}).join(""):`<div class="muted" style="font-size:10px">지금 만날 수 있는 인물이 없습니다.</div>`;
+ document.querySelectorAll("[data-npc]").forEach(b=>b.onclick=()=>openNpc(npc(b.dataset.npc)));
+ $("#factions").innerHTML=S.factions.map(f=>`<div class="factionrow"><div><div class="n">${f.name}</div><div class="m">${f.ethos} · ${f.region} · ${f.members.filter(id=>npc(id)?.alive).length}명</div></div><span class="badge">위세 ${f.prestige}</span></div>`).join("");
+ $("#quests").innerHTML=sideQuestText();
+ $("#worldstats").innerHTML=`<div class="factionrow"><div><div class="n">생존 인물</div><div class="m">실시간 시뮬레이션</div></div><span class="badge">${living().length}/60</span></div>
+ <div class="factionrow"><div><div class="n">누적 비무</div><div class="m">NPC·플레이어 포함</div></div><span class="badge">${S.stats.duels}</span></div>
+ <div class="factionrow"><div><div class="n">사망자</div><div class="m">영구 사망</div></div><span class="badge">${S.stats.deaths}</span></div>
+ <div class="factionrow"><div><div class="n">세력 충돌</div><div class="m">문파 AI 분쟁</div></div><span class="badge">${S.stats.wars}</span></div>`;
+ renderDetail()
+}
+function renderDetail(){
+ const d=$("#detail");
+ if(activeTab==="people")d.innerHTML=[...S.npcs].sort((a,b)=>notableScore(b)-notableScore(a)).map(n=>`<div class="${n.alive?"":"dead"}">${n.name} · ${ageOf(n)}세 · ${fac(n.faction)?.name} · ${n.alive?REALMS[n.realm].name:"사망"} · 명성 ${n.fame} · ${n.goal}</div>`).join("");
+ else if(activeTab==="factions")d.innerHTML=S.factions.map(f=>`<div style="margin-bottom:7px"><span class="gold">${f.name}</span> · 위세 ${f.prestige} · 자금 ${Math.floor(f.wealth)}냥 · 목표 ${f.ambition}</div>`).join("");
+ else if(activeTab==="relations"){const arr=Object.entries(S.player.relations).map(([id,rel])=>({n:npc(id),rel})).filter(x=>x.n).sort((a,b)=>(b.rel.affection+b.rel.trust)-(a.rel.affection+a.rel.trust));d.innerHTML=arr.length?arr.map(x=>`${x.n.name} · 호감 ${x.rel.affection} · 신뢰 ${x.rel.trust} · 존경 ${x.rel.respect} · 원한 ${x.rel.hatred} · 경쟁 ${x.rel.rivalry}`).join("<br>"):"아직 특별한 인연이 없습니다."}
+ else d.innerHTML=S.history.slice(0,130).map(e=>`[${fmtDate(e.day)}] ${e.text}`).join("<br>")
+}
+function eventModal(title,html){$("#modalTitle").textContent=title;$("#modalBody").innerHTML=`<p>${html}</p>`;$("#overlay").classList.add("show")}
+function choiceModal(title,html,choices){$("#modalTitle").textContent=title;$("#modalBody").innerHTML=`<p>${html}</p><div class="choicegrid">${choices.map((c,i)=>`<button class="choice" data-ci="${i}"><b>${c.label}</b>${c.desc?`<small>${c.desc}</small>`:""}</button>`).join("")}</div>`;$("#overlay").classList.add("show");document.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>choices[+b.dataset.ci].fn())}
+function closeModal(){if(combat)return;$("#overlay").classList.remove("show")}
+function saveSilent(){const data={...S};delete data.rng;localStorage.setItem("cheonha_v02",JSON.stringify(data))}
+function save(){saveSilent();eventModal("저장","현재 강호의 역사를 저장했습니다.")}
+function load(){const raw=localStorage.getItem("cheonha_v02");if(!raw)return eventModal("불러오기","저장된 v0.2 세계가 없습니다.");const data=JSON.parse(raw);data.rng=rng32((data.seed^(data.day*2654435761))>>>0);S=data;render();eventModal("불러오기","저장된 강호로 돌아왔습니다.")}
+function reset(){if(!confirm("현재 세계를 버리고 새 천하를 생성하시겠습니까?"))return;S=createWorld();render();saveSilent()}
+
+document.addEventListener("click",e=>{if(e.target.matches(".tab")){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));e.target.classList.add("on");activeTab=e.target.dataset.tab;renderDetail()}});
+$("#closeModal").onclick=()=>{if(!combat)$("#overlay").classList.remove("show")};$("#overlay").onclick=e=>{if(e.target.id==="overlay"&&!combat)closeModal()};
+$("#save").onclick=save;$("#load").onclick=load;$("#reset").onclick=reset;
+$("#skip7").onclick=()=>{pass(7);checkMainStory();eventModal("7일 후","일주일 동안 천하는 당신과 무관하게 계속 움직였습니다.")};
+$("#skip30").onclick=()=>{pass(30);checkMainStory();eventModal("한 달 후","한 달이 흘렀습니다. 인물들의 경지와 문파 관계가 달라졌습니다.")};
+
+try{const raw=localStorage.getItem("cheonha_v02");if(raw){const data=JSON.parse(raw);data.rng=rng32((data.seed^(data.day*2654435761))>>>0);S=data}else S=createWorld()}catch(e){S=createWorld()}
+render();setInterval(saveSilent,9000);
+})();
+</script>
+</body>
+</html>
