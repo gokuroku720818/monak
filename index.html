@@ -542,11 +542,11 @@
         combo = 0,
         promotionPending = false;
       const chapterNames = [
-        "翡翠原野 / 초원",
-        "사구 요새 / 사막",
-        "잿불 왕국 / 불지옥",
-        "천상의 관문 / 천국",
-        "공허의 왕좌 / 우주",
+        "초원",
+        "사막",
+        "불지옥",
+        "천국",
+        "우주",
       ];
       function tone(f = 180, d = 0.08) {
         if (muted) return;
@@ -692,7 +692,7 @@
           $("pad").classList.add("playing");
           $("routebar").classList.add("hidden");
           buildSkills();
-          say("자동 평타 · Q 회피 · W 광역 · E 집중 공격");
+          say("WASD/방향키 이동 · Q 회피 · W 광역 · E 집중 공격");
         } else {
           chapter = 0;
           startDom();
@@ -1491,14 +1491,10 @@
       function segmentDistance(e, p) {
         let dx = p.x - p.px,
           dy = p.y - p.py,
-          t = clamp(
-            ((e.x - p.px) * dx + (e.y - p.py) * dy) / (dx * dx + dy * dy || 1),
-            0,
-            1,
-          );
+          denom = Math.max(1e-6, dx * dx + dy * dy),
+          t = clamp(((e.x - p.px) * dx + (e.y - p.py) * dy) / denom, 0, 1);
         return Math.hypot(e.x - p.px - t * dx, e.y - p.py - t * dy);
       }
-      // DOMINATION: per-class roles, living-unit caps, real-time cooldowns, validated saves.
       const stats = {
         Knight: { hp: 180, d: 21, range: 48, speed: 71, rate: 0.85 },
         Mage: { hp: 95, d: 25, range: 130, speed: 70, rate: 1.35 },
@@ -1561,7 +1557,7 @@
           if (b.team >= 0) for (let n = 0; n < 6; n++) produce(b);
         cam = { x: 260, y: 300, z: Math.max(0.4, Math.min(W / 1250, H / 850)) };
         boundCam();
-        say("아군 기지 → 목표 기지 드래그 · 같은 연결을 다시 그리면 해제");
+        say("아군 기지 → 목표 기지 드래그 · 같은 기지 클릭 시 전체 해제");
         updateHUD();
       }
       function teamJob(t) {
@@ -1715,7 +1711,7 @@
                 u.home = b.id;
                 if (b.routes.length) {
                   u.target =
-                    b.routes[Math.floor(Math.random() * b.routes.length)]
+                    b.routes[Math.floor(Math.random() * b.routes.length)];
                   b = bases.find((b) => b.id === u.target);
                 }
               }
@@ -1922,7 +1918,7 @@
             : `<span class="muted">다음 보스 ${Math.max(0, Math.ceil(bossDue - elapsed))}초</span>`;
           $("hint").textContent = matchMedia("(pointer:coarse)").matches
             ? "왼쪽 패드 이동 · 오른쪽 스킬 · 화면 터치 이동"
-            : "방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
+            : "WASD/방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
         } else {
           $("status").textContent =
             `${chapter + 1}/5 ${chapterNames[chapter]} · ${time} / 10:00`;
@@ -1930,10 +1926,9 @@
           $("vitals").innerHTML =
             `<div class="gold">아군 기지 ${bases.filter((b) => b.team === 0).length} · 부대 ${units.filter((u) => u.team === 0).length} / 110</div><div class="muted" style="margin-top:6px">10 → 2 → 2 → 2 합체 · 신화 기술 9초 간격</div>`;
           $("hint").textContent =
-            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 이동 · 휠 확대 · 같은 기지 클릭: 보급선 전체 해제";
+            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 화면 이동 · 휠 확대 · 기지 클릭: 연결 전체 해제";
         }
       }
-      // Original vector silhouettes: layered armor, cloth, weapons, monsters and terrain.
       function poly(points, fill, stroke) {
         ctx.beginPath();
         points.forEach((p, i) => (i ? ctx.lineTo(...p) : ctx.moveTo(...p)));
@@ -2619,6 +2614,14 @@
           boundCam();
         }
       };
+
+      const KEY_MAP = {
+        KeyW: "ArrowUp",
+        KeyS: "ArrowDown",
+        KeyA: "ArrowLeft",
+        KeyD: "ArrowRight",
+      };
+
       addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           pause();
@@ -2632,6 +2635,9 @@
         if (e.key.startsWith("Arrow")) {
           e.preventDefault();
           keys[e.key] = true;
+        } else if (KEY_MAP[e.code]) {
+          e.preventDefault();
+          keys[KEY_MAP[e.code]] = true;
         }
         if (!e.repeat && SK.includes(e.key.toLowerCase())) {
           e.preventDefault();
@@ -2639,26 +2645,23 @@
         }
       });
       addEventListener("keyup", (e) => {
-        delete keys[e.key];
+        if (e.key.startsWith("Arrow")) {
+          delete keys[e.key];
+        } else if (KEY_MAP[e.code]) {
+          delete keys[KEY_MAP[e.code]];
+        }
       });
-      addEventListener("blur", () => {
-        clearInput();
-        if (state === "play") pause();
-      });
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden && state === "play") pause();
-      });
+
       cv.addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         pointer = { x: e.clientX, y: e.clientY };
-        cv.setPointerCapture(e.pointerId);
         let p = toWorld(pointer);
         if (mode === "hunter") {
           target = p;
           if (e.pointerType === "mouse") aim = p;
         } else {
           drag =
-            bases.find((b) => b.team === 0 && dist(b, p) < 55 / cam.z) || null;
+            bases.find((b) => b.team === 0 && dist(b, p) < 55) || null;
           pan = { x: e.clientX, y: e.clientY };
         }
       });
@@ -2677,7 +2680,7 @@
       cv.addEventListener("pointerup", (e) => {
         if (state === "play" && drag) {
           let p = toWorld({ x: e.clientX, y: e.clientY }),
-            b = bases.find((b) => dist(b, p) < 55 / cam.z);
+            b = bases.find((b) => dist(b, p) < 55);
           if (b === drag) {
             let removed = [...drag.routes];
             drag.routes = [];
