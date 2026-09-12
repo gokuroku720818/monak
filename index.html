@@ -706,11 +706,13 @@
             anim: 0,
             job: j,
           };
-          cam = { x: 1300, y: 800, z: W < 650 ? 0.7 : 0.9 };
+          cam = { x: 1300, y: 800, z: innerWidth < 650 ? 0.7 : 0.9 };
           $("pad").classList.add("playing");
           $("routebar").classList.add("hidden");
           buildSkills();
-          say("자동 평타 · Q 회피 · W 광역 · E 집중 공격");
+          close();
+          state = "play";
+          say("WASD/방향키 이동 · Q 회피 · W 광역 · E 집중 공격");
         } else {
           chapter = 0;
           startDom();
@@ -1235,12 +1237,13 @@
               });
             break;
           default:
-            throw Error("Unknown skill " + type);
+            break;
         }
         skillAccent(job, i, type, x, y, tx, ty, a, r, c);
         if (i === 8) say(name + "!");
       }
       function spawnEnemy(isBoss = false) {
+        if (!hero) return;
         let a = rnd(0, TAU),
           d = rnd(500, 680),
           type = isBoss
@@ -1935,14 +1938,15 @@
                 : v > 0
                   ? v.toFixed(1) + "s"
                   : "준비";
-            s.style.transform = `scaleY(${v / (ss[i][2] * up.cd)})`;
+            let baseCool = (ss[i][2] || 1) * (up.cd || 1);
+            s.style.transform = `scaleY(${clamp(v / baseCool, 0, 1)})`;
           }
           $("boss").innerHTML = boss
             ? `<span>${["가시숲 수문장", "모래의 거신", "화염 군주", "공허의 사신"][bossIndex]} · ${Math.ceil(boss.hp)} / ${boss.maxHp}</span><div class="meter"><i style="width:${(boss.hp / boss.maxHp) * 100}%"></i></div>`
             : `<span class="muted">다음 보스 ${Math.max(0, Math.ceil(bossDue - elapsed))}초</span>`;
           $("hint").textContent = matchMedia("(pointer:coarse)").matches
             ? "왼쪽 패드 이동 · 오른쪽 스킬 · 화면 터치 이동"
-            : "방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
+            : "WASD/방향키 이동 · 마우스로 조준 · 클릭 이동 · Q 회피 · 1/2/3 선택 · ESC 일시정지";
         } else {
           $("status").textContent =
             `${chapter + 1}/5 ${chapterNames[chapter]} · ${time} / 10:00`;
@@ -1950,7 +1954,7 @@
           $("vitals").innerHTML =
             `<div class="gold">아군 기지 ${bases.filter((b) => b.team === 0).length} · 부대 ${units.filter((u) => u.team === 0).length} / 110</div><div class="muted" style="margin-top:6px">10 → 2 → 2 → 2 합체 · 신화 기술 9초 간격</div>`;
           $("hint").textContent =
-            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 이동 · 휠 확대 · 같은 기지 클릭: 보급선 전체 해제";
+            "기지 → 기지 드래그로 연결/해제 · 빈 곳 드래그 화면 이동 · 휠 확대 · 기지 클릭: 연결 전체 해제";
         }
       }
       // Original vector silhouettes: layered armor, cloth, weapons, monsters and terrain.
@@ -2720,6 +2724,13 @@
           boundCam();
         }
       };
+      const KEY_MAP = {
+        KeyW: "ArrowUp",
+        KeyS: "ArrowDown",
+        KeyA: "ArrowLeft",
+        KeyD: "ArrowRight",
+      };
+
       addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           pause();
@@ -2733,6 +2744,9 @@
         if (e.key.startsWith("Arrow")) {
           e.preventDefault();
           keys[e.key] = true;
+        } else if (KEY_MAP[e.code]) {
+          e.preventDefault();
+          keys[KEY_MAP[e.code]] = true;
         }
         if (!e.repeat && SK.includes(e.key.toLowerCase())) {
           e.preventDefault();
@@ -2740,26 +2754,23 @@
         }
       });
       addEventListener("keyup", (e) => {
-        delete keys[e.key];
+        if (e.key.startsWith("Arrow")) {
+          delete keys[e.key];
+        } else if (KEY_MAP[e.code]) {
+          delete keys[KEY_MAP[e.code]];
+        }
       });
-      addEventListener("blur", () => {
-        clearInput();
-        if (state === "play") pause();
-      });
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden && state === "play") pause();
-      });
+
       cv.addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         pointer = { x: e.clientX, y: e.clientY };
-        cv.setPointerCapture(e.pointerId);
         let p = toWorld(pointer);
         if (mode === "hunter") {
           target = p;
           if (e.pointerType === "mouse") aim = p;
         } else {
           drag =
-            bases.find((b) => b.team === 0 && dist(b, p) < 55 / cam.z) || null;
+            bases.find((b) => b.team === 0 && dist(b, p) < 55) || null;
           pan = { x: e.clientX, y: e.clientY };
         }
       });
@@ -2778,7 +2789,7 @@
       cv.addEventListener("pointerup", (e) => {
         if (state === "play" && drag) {
           let p = toWorld({ x: e.clientX, y: e.clientY }),
-            b = bases.find((b) => dist(b, p) < 55 / cam.z);
+            b = bases.find((b) => dist(b, p) < 55);
           if (b === drag) {
             let removed = [...drag.routes];
             drag.routes = [];
@@ -2831,7 +2842,6 @@
       $("pad").addEventListener("pointerdown", (e) => {
         if (state !== "play") return;
         padId = e.pointerId;
-        $("pad").setPointerCapture(e.pointerId);
         movePad(e);
       });
       $("pad").addEventListener("pointermove", (e) => {
